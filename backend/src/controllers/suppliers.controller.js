@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import db from '../db/connection.js';
 import { ApiError } from '../middleware/errorHandler.js';
+import { likePattern, LIKE_ESCAPE } from '../utils/query.js';
 
 export const linkSchema = z.object({
   supplierId: z.number().int().positive(),
@@ -34,12 +35,14 @@ export function linked(req, res, next) {
 // Search existing Supplier accounts (id, name, username only).
 export function search(req, res, next) {
   try {
-    const q = (req.query.q || '').toString().trim();
+    const q = (req.query.q ?? '').toString().trim();
     let sql = "SELECT id, name, username FROM users WHERE role = 'supplier'";
     const params = [];
     if (q) {
-      sql += ' AND (name LIKE ? OR username LIKE ?)';
-      params.push(`%${q}%`, `%${q}%`);
+      // Escape LIKE wildcards so a search for "%" does not return every supplier.
+      const pattern = likePattern(q);
+      sql += ` AND (name LIKE ? ${LIKE_ESCAPE} OR username LIKE ? ${LIKE_ESCAPE})`;
+      params.push(pattern, pattern);
     }
     sql += ' ORDER BY name COLLATE NOCASE ASC LIMIT 50';
     const rows = db.prepare(sql).all(...params);

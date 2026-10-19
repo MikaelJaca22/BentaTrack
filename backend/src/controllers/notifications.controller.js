@@ -1,4 +1,5 @@
 import db from '../db/connection.js';
+import { parseBool, parsePagination } from '../utils/query.js';
 
 function mapRow(n) {
   return {
@@ -15,14 +16,34 @@ function mapRow(n) {
 
 export function list(req, res, next) {
   try {
-    const onlyUnread = (req.query.unread || '').toString() === 'true';
-    let sql = 'SELECT * FROM notifications WHERE user_id = ?';
+    const onlyUnread = parseBool(req.query.unread);
+    const { limit, offset } = parsePagination(req.query, { defaultLimit: 50 });
+
+    let where = 'user_id = ?';
     const params = [req.user.id];
-    if (onlyUnread) sql += ' AND is_read = 0';
-    sql += ' ORDER BY created_at DESC, id DESC';
-    const rows = db.prepare(sql).all(...params);
-    const unreadCount = rows.filter((r) => !r.is_read).length;
-    res.json({ notifications: rows.map(mapRow), unreadCount });
+    if (onlyUnread) where += ' AND is_read = 0';
+
+    // unreadCount must describe the whole set, not just the current page,
+    // otherwise the badge count changes as the user pages through history.
+    const unreadCount = db
+      .prepare('SELECT COUNT(*) AS c FROM notifications WHERE user_id = ? AND is_read = 0')
+      .get(req.user.id).c;
+    const { total } = db
+      .prepare(`SELECT COUNT(*) AS total FROM notifications WHERE ${where}`)
+      .get(...params);
+
+    const rows = db
+      .prepare(
+        `SELECT * FROM notifications WHERE ${where}
+         ORDER BY created_at DESC, id DESC LIMIT ? OFFSET ?`
+      )
+      .all(...params, limit, offset);
+
+    res.json({
+      notifications: rows.map(mapRow),
+      unreadCount,
+      pagination: { total, limit, offset, hasMore: offset + rows.length < total },
+    });
   } catch (e) {
     next(e);
   }

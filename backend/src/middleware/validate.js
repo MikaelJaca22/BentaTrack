@@ -1,5 +1,9 @@
 // validate: zod wrapper. Parses req[where] and replaces it with the
 // transformed data, or returns a consistent 400 error.
+//
+// Query strings are validated by the controllers themselves (see utils/query.js)
+// rather than by this middleware, because coercion there is lenient by design:
+// ?limit=abc should degrade to a default page rather than return a 400.
 export function validate(schema, where = 'body') {
   return (req, res, next) => {
     const result = schema.safeParse(req[where]);
@@ -12,12 +16,7 @@ export function validate(schema, where = 'body') {
         },
       });
     }
-    if (where === 'query') {
-      // Express 5 makes req.query a getter; expose parsed value separately.
-      req.validatedQuery = result.data;
-    } else {
-      req[where] = result.data;
-    }
+    req[where] = result.data;
     next();
   };
 }

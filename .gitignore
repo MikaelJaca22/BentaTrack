@@ -1,7 +1,7 @@
 # Dependencies
 node_modules/
 
-# Local environment (copy .env.example instead)
+# Local environment (gitignored; create these yourself — see README steps 1-3)
 .env
 .env.local
 .env.*.local

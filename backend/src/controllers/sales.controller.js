@@ -3,22 +3,31 @@ import db from '../db/connection.js';
 import { ApiError } from '../middleware/errorHandler.js';
 import { nextReceiptNo } from '../utils/receipt.js';
 import { notify } from '../utils/notify.js';
+import { parseDate, parsePagination } from '../utils/query.js';
+import { toMinor, toMajor } from '../utils/money.js';
 
 export const createSaleSchema = z.object({
   items: z
     .array(
       z.object({
         productId: z.number().int().positive(),
-        quantity: z.number().int().min(1, 'Quantity must be at least 1'),
+        quantity: z
+          .number()
+          .int()
+          .min(1, 'Quantity must be at least 1')
+          .max(1_000_000, 'Quantity is unreasonably large'),
       })
     )
     .min(1, 'Cart is empty'),
-  amountTendered: z.number().min(0, 'Amount tendered cannot be negative'),
+  amountTendered: z
+    .number()
+    .finite('Amount tendered must be a finite number')
+    .min(0, 'Amount tendered cannot be negative')
+    .max(1_000_000_000, 'Amount tendered is unreasonably large'),
 });
 
-function roundMoney(n) {
-  return Math.round((Number(n) + Number.EPSILON) * 100) / 100;
-}
+// All money below is in INTEGER minor units, so sums are exact. The API
+// converts to major units at the boundary via toMajor().
 
 function getLowStockProducts(ownerId, productIds) {
   if (!productIds.length) return [];
@@ -47,9 +56,9 @@ function buildReceipt(saleId, ownerId) {
     sale: {
       id: sale.id,
       receiptNo: sale.receipt_no,
-      total: roundMoney(sale.total),
-      amountTendered: roundMoney(sale.amount_tendered),
-      changeDue: roundMoney(sale.change_due),
+      total: toMajor(sale.total),
+      amountTendered: toMajor(sale.amount_tendered),
+      changeDue: toMajor(sale.change_due),
       paymentMethod: sale.payment_method,
       createdAt: sale.created_at,
     },
@@ -58,9 +67,9 @@ function buildReceipt(saleId, ownerId) {
       id: it.id,
       productId: it.product_id,
       name: it.product_name_snapshot,
-      unitPrice: roundMoney(it.unit_price_snapshot),
+      unitPrice: toMajor(it.unit_price_snapshot),
       quantity: it.quantity,
-      lineTotal: roundMoney(it.line_total),
+      lineTotal: toMajor(it.line_total),
     })),
     lowStock: low.map((p) => ({
       id: p.id,
@@ -88,6 +97,8 @@ export function create(req, res, next) {
       }
 
       // Recompute totals from DB prices; never trust client totals.
+      // p.price is already in minor units, so price * quantity is exact integer
+      // arithmetic and the line sums can never drift.
       let total = 0;
       const lines = [];
       for (const [productId, quantity] of qtyByProduct.entries()) {
@@ -105,20 +116,20 @@ export function create(req, res, next) {
             'items'
           );
         }
-        const lineTotal = roundMoney(p.price * quantity);
+        const lineTotal = p.price * quantity;
         total += lineTotal;
         lines.push({ product: p, quantity, lineTotal });
       }
-      total = roundMoney(total);
 
-      if (amountTendered < total) {
+      const tendered = toMinor(amountTendered);
+      if (tendered < total) {
         throw new ApiError(
           400,
           'Amount tendered is less than the total',
           'amountTendered'
         );
       }
-      const changeDue = roundMoney(amountTendered - total);
+      const changeDue = tendered - total;
 
       const receiptNo = nextReceiptNo(ownerId);
       const saleInfo = db
@@ -126,7 +137,7 @@ export function create(req, res, next) {
           `INSERT INTO sales (owner_id, receipt_no, total, amount_tendered, change_due)
            VALUES (?, ?, ?, ?, ?)`
         )
-        .run(ownerId, receiptNo, total, amountTendered, changeDue);
+        .run(ownerId, receiptNo, total, tendered, changeDue);
       const saleId = saleInfo.lastInsertRowid;
 
       const insertItem = db.prepare(
@@ -154,16 +165,26 @@ export function create(req, res, next) {
     })();
 
     // After commit: build receipt (includes fresh low-stock info) and notify.
+    // The transaction has already committed at this point. If anything below
+    // throws, the client would see a 500 for a sale that was actually saved and
+    // would likely retry it, deducting stock twice. So the receipt is built
+    // first (it can only fail on a genuinely missing sale), and notification
+    // failures are logged and swallowed rather than turned into an error.
     const receipt = buildReceipt(result.saleId, ownerId);
     for (const p of receipt.lowStock) {
-      notify({
-        userId: ownerId,
-        type: 'low_stock',
-        title: 'Low stock alert',
-        body: `"${p.name}" is low (${p.stockQty} left, reorder at ${p.reorderLevel}).`,
-        referenceType: 'product',
-        referenceId: p.id,
-      });
+      try {
+        notify({
+          userId: ownerId,
+          type: 'low_stock',
+          title: 'Low stock alert',
+          body: `"${p.name}" is low (${p.stockQty} left, reorder at ${p.reorderLevel}).`,
+          referenceType: 'product',
+          referenceId: p.id,
+        });
+      } catch (notifyErr) {
+        // eslint-disable-next-line no-console
+        console.error('Low-stock notification failed after sale commit:', notifyErr);
+      }
     }
     res.status(201).json(receipt);
   } catch (e) {
@@ -173,30 +194,46 @@ export function create(req, res, next) {
 
 export function list(req, res, next) {
   try {
-    const from = (req.query.from || '').toString();
-    const to = (req.query.to || '').toString();
-    let sql = 'SELECT * FROM sales WHERE owner_id = ?';
+    const q = req.query;
+    const from = parseDate(q.from);
+    const to = parseDate(q.to);
+    const { limit, offset } = parsePagination(q);
+    let where = 'owner_id = ?';
     const params = [req.user.id];
     if (from) {
-      sql += ' AND date(created_at) >= date(?)';
+      where += ' AND date(created_at) >= date(?)';
       params.push(from);
     }
     if (to) {
-      sql += ' AND date(created_at) <= date(?)';
+      where += ' AND date(created_at) <= date(?)';
       params.push(to);
     }
-    sql += ' ORDER BY created_at DESC';
-    const rows = db.prepare(sql).all(...params);
+    // Count first so the client knows whether more pages exist.
+    const { total } = db.prepare(`SELECT COUNT(*) AS total FROM sales WHERE ${where}`).get(...params);
+    // Deterministic ordering: created_at alone is not unique, so id breaks ties
+    // and keeps OFFSET pagination from skipping or repeating a row.
+    const rows = db
+      .prepare(
+        `SELECT * FROM sales WHERE ${where}
+         ORDER BY created_at DESC, id DESC LIMIT ? OFFSET ?`
+      )
+      .all(...params, limit, offset);
     res.json({
       sales: rows.map((s) => ({
         id: s.id,
         receiptNo: s.receipt_no,
-        total: roundMoney(s.total),
-        amountTendered: roundMoney(s.amount_tendered),
-        changeDue: roundMoney(s.change_due),
+        total: toMajor(s.total),
+        amountTendered: toMajor(s.amount_tendered),
+        changeDue: toMajor(s.change_due),
         paymentMethod: s.payment_method,
         createdAt: s.created_at,
       })),
+      pagination: {
+        total,
+        limit,
+        offset,
+        hasMore: offset + rows.length < total,
+      },
     });
   } catch (e) {
     next(e);

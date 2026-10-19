@@ -27,7 +27,8 @@ export default function SupplierNotificationsScreen() {
   const load = useCallback(() => {
     setLoading(true);
     client
-      .get('/notifications')
+      // limit=200 is the server maximum.
+      .get('/notifications?limit=200')
       .then((res) => setItems(res.data.notifications))
       .catch((e) => toast.error(extractError(e).message))
       .finally(() => setLoading(false));

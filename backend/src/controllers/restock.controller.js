@@ -2,11 +2,14 @@ import { z } from 'zod';
 import db from '../db/connection.js';
 import { ApiError } from '../middleware/errorHandler.js';
 import { notify } from '../utils/notify.js';
+import { parsePagination } from '../utils/query.js';
 
 const itemQty = z.object({
   productId: z.number().int().positive(),
   quantity: z.number().int().min(1, 'Quantity must be at least 1'),
 });
+
+const RESTOCK_STATUSES = ['pending', 'declined', 'accepted', 'delivered', 'discrepancy', 'completed'];
 
 export const createRequestSchema = z.object({
   supplierId: z.number().int().positive(),
@@ -47,10 +50,6 @@ export const discrepancySchema = verifySchema.extend({
 export const resendSchema = z.object({
   supplierId: z.number().int().positive(),
 });
-
-function roundMoney(n) {
-  return Math.round((Number(n) + Number.EPSILON) * 100) / 100;
-}
 
 function logEvent(requestId, actorId, eventType, message = null) {
   db.prepare(
@@ -155,9 +154,6 @@ export function create(req, res, next) {
       return requestId;
     })();
 
-    const supplierName = db
-      .prepare('SELECT name FROM users WHERE id = ?')
-      .get(ownerId)?.name;
     notify({
       userId: supplierId,
       type: 'restock_new',
@@ -175,42 +171,50 @@ export function create(req, res, next) {
 // ---- Both roles: list (filtered to caller) ----
 export function list(req, res, next) {
   try {
-    const status = (req.query.status || '').toString();
-    let sql = 'SELECT * FROM restock_requests WHERE ';
-    const params = [];
-    if (req.user.role === 'store_owner') {
-      sql += 'owner_id = ?';
-      params.push(req.user.id);
-    } else {
-      sql += 'supplier_id = ?';
-      params.push(req.user.id);
-    }
+    const q = req.query;
+    const status = RESTOCK_STATUSES.includes(q.status) ? q.status : '';
+    const { limit, offset } = parsePagination(q);
+
+    let where = req.user.role === 'store_owner' ? 'r.owner_id = ?' : 'r.supplier_id = ?';
+    const params = [req.user.id];
     if (status) {
-      sql += ' AND status = ?';
+      where += ' AND r.status = ?';
       params.push(status);
     }
-    sql += ' ORDER BY created_at DESC';
-    const rows = db.prepare(sql).all(...params);
+
+    // Single joined query: the previous version ran two extra queries per row
+    // (counterpart name + item count), so listing N requests meant 2N+1.
+    const rows = db
+      .prepare(
+        `SELECT r.id, r.status, r.note, r.created_at, r.updated_at,
+                r.owner_id, r.supplier_id,
+                u.name AS counterpart_name,
+                (SELECT COUNT(*) FROM restock_items ri WHERE ri.request_id = r.id) AS item_count
+         FROM restock_requests r
+         LEFT JOIN users u ON u.id = CASE
+           WHEN r.owner_id = ? THEN r.supplier_id ELSE r.owner_id END
+         WHERE ${where}
+         ORDER BY r.created_at DESC, r.id DESC
+         LIMIT ? OFFSET ?`
+      )
+      .all(req.user.id, ...params, limit, offset);
+
+    // Count the full filtered set, not just this page.
+    const { total } = db
+      .prepare(`SELECT COUNT(*) AS total FROM restock_requests r WHERE ${where}`)
+      .get(...params);
+
     res.json({
-      requests: rows.map((r) => {
-        const otherId =
-          req.user.role === 'store_owner' ? r.supplier_id : r.owner_id;
-        const other = db
-          .prepare('SELECT name FROM users WHERE id = ?')
-          .get(otherId);
-        const itemCount = db
-          .prepare('SELECT COUNT(*) c FROM restock_items WHERE request_id = ?')
-          .get(r.id).c;
-        return {
-          id: r.id,
-          status: r.status,
-          note: r.note,
-          itemCount,
-          counterpart: other ? other.name : '',
-          createdAt: r.created_at,
-          updatedAt: r.updated_at,
-        };
-      }),
+      requests: rows.map((r) => ({
+        id: r.id,
+        status: r.status,
+        note: r.note,
+        itemCount: r.item_count,
+        counterpart: r.counterpart_name || '',
+        createdAt: r.created_at,
+        updatedAt: r.updated_at,
+      })),
+      pagination: { total, limit, offset, hasMore: offset + rows.length < total },
     });
   } catch (e) {
     next(e);
@@ -293,6 +297,28 @@ export function deliver(req, res, next) {
       .prepare('SELECT * FROM restock_items WHERE request_id = ?')
       .all(reqRow.id);
     const map = new Map(req.body.items.map((i) => [i.itemId, i.quantityDelivered]));
+
+    // A supplier must not be able to inflate the delivered quantity beyond what
+    // was ordered: the owner credits exactly this number to stock on verify.
+    for (const it of items) {
+      if (map.has(it.id) && map.get(it.id) > it.quantity_requested) {
+        throw new ApiError(
+          400,
+          `Delivered quantity cannot exceed the ordered quantity for "${it.product_name_snapshot}"`,
+          'quantityDelivered'
+        );
+      }
+    }
+
+    // Items omitted from a re-delivery must keep their previously reported
+    // quantity rather than being silently reset to the ordered quantity. The
+    // supplier is correcting a discrepancy, not re-entering everything.
+    for (const it of items) {
+      if (!map.has(it.id)) {
+        map.set(it.id, it.quantity_delivered ?? it.quantity_requested);
+      }
+    }
+
     db.transaction(() => {
       const upd = db.prepare(
         'UPDATE restock_items SET quantity_delivered = ? WHERE id = ? AND request_id = ?'
@@ -438,6 +464,16 @@ export function resend(req, res, next) {
       .get(reqRow.owner_id, targetSupplier);
     if (!link) {
       throw new ApiError(400, 'Supplier is not linked to your store');
+    }
+    // A declined request may only be resent once: otherwise one decline could
+    // spawn an unbounded number of new requests against different suppliers.
+    const alreadyResent = db
+      .prepare(
+        `SELECT 1 FROM restock_events WHERE request_id = ? AND event_type = 'resent' LIMIT 1`
+      )
+      .get(reqRow.id);
+    if (alreadyResent) {
+      throw new ApiError(400, 'This request has already been resent');
     }
     const items = db
       .prepare('SELECT * FROM restock_items WHERE request_id = ?')

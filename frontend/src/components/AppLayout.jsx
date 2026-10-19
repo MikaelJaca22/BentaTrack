@@ -62,8 +62,10 @@ export default function AppLayout() {
 
   const refreshUnread = useCallback(() => {
     client
-      .get('/notifications?unread=true')
-      .then((res) => setUnread(res.data.notifications.length))
+      // limit=1 is enough: unreadCount is a COUNT(*) over the whole set, so it
+      // is accurate without transferring every unread notification.
+      .get('/notifications?unread=true&limit=1')
+      .then((res) => setUnread(res.data.unreadCount))
       .catch(() => {});
   }, []);
 

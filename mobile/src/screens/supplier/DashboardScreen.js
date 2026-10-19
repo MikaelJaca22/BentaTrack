@@ -19,14 +19,21 @@ export default function SupplierDashboardScreen() {
     async function load() {
       setLoading(true);
       try {
-        const all = await client.get('/restock');
-        const reqs = all.data.requests;
-        setCounts({
-          pending: reqs.filter((r) => r.status === 'pending').length,
-          accepted: reqs.filter((r) => r.status === 'accepted').length,
-          delivered: reqs.filter((r) => r.status === 'delivered').length,
-        });
-        setRecent(reqs.slice(0, 6));
+        // Counts come from the server: filtering one page of /restock would
+      // under-report once a supplier has more than 50 requests. limit=1 is
+      // enough because pagination.total counts every matching row.
+      const countFor = async (status) => {
+        const res = await client.get(`/restock?status=${status}&limit=1`);
+        return res.data.pagination.total;
+      };
+      const [pending, accepted, delivered, all] = await Promise.all([
+        countFor('pending'),
+        countFor('accepted'),
+        countFor('delivered'),
+        client.get('/restock?limit=6'),
+      ]);
+      setCounts({ pending, accepted, delivered });
+      setRecent(all.data.requests);
       } catch (e) {
         toast.error('Could not load dashboard');
       } finally {

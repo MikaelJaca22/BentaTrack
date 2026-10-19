@@ -24,15 +24,42 @@ export default function NotificationsView({ refreshUnread }) {
   const { user } = useAuth();
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [pageInfo, setPageInfo] = useState({ hasMore: false, offset: 0 });
+  const [loadingMore, setLoadingMore] = useState(false);
 
   const load = useCallback(() => {
     setLoading(true);
     client
       .get('/notifications')
-      .then((res) => setItems(res.data.notifications))
+      .then((res) => {
+        setItems(res.data.notifications);
+        setPageInfo(res.data.pagination);
+      })
       .catch((e) => toast.error(extractError(e).message))
       .finally(() => setLoading(false));
   }, [toast]);
+
+  // Fetch the next page and append. The server returns rows newest-first, so
+  // offset pagination is stable as long as new notifications don't arrive
+  // mid-scroll; a duplicate id is filtered out as a safety net.
+  const loadMore = useCallback(async () => {
+    if (!pageInfo.hasMore || loadingMore) return;
+    setLoadingMore(true);
+    try {
+      const res = await client.get('/notifications', {
+        params: { offset: pageInfo.offset, limit: 50 },
+      });
+      setItems((prev) => {
+        const seen = new Set(prev.map((n) => n.id));
+        return [...prev, ...res.data.notifications.filter((n) => !seen.has(n.id))];
+      });
+      setPageInfo(res.data.pagination);
+    } catch (e) {
+      toast.error(extractError(e).message);
+    } finally {
+      setLoadingMore(false);
+    }
+  }, [pageInfo, loadingMore, toast]);
 
   useEffect(() => {
     load();
@@ -112,6 +139,14 @@ export default function NotificationsView({ refreshUnread }) {
           })}
         </div>
       )}
+
+      {pageInfo.hasMore ? (
+        <div className="flex justify-center no-print">
+          <Button variant="secondary" onClick={loadMore} disabled={loadingMore}>
+            {loadingMore ? 'Loading...' : 'Load older'}
+          </Button>
+        </div>
+      ) : null}
     </div>
   );
 }

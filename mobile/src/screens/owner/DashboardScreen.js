@@ -21,20 +21,22 @@ export default function DashboardScreen() {
       setLoading(true);
       try {
         const today = new Date().toISOString().slice(0, 10);
-        const [prod, sales, restock] = await Promise.all([
+        // The report endpoint aggregates over the whole date range in SQL, so
+        // these figures are exact. Summing the /sales page in JS would only add
+        // up the first 50 rows and under-report a busy day.
+        const [report, prod, restock] = await Promise.all([
+          client.get(`/reports/sales?from=${today}&to=${today}`),
           client.get('/products?lowStock=true'),
-          client.get(`/sales?from=${today}&to=${today}`),
-          client.get('/restock?status=pending'),
+          client.get('/restock?status=pending&limit=1'),
         ]);
-        const todayTotal = sales.data.sales.reduce((s, x) => s + x.total, 0);
         setStats({
-          todaySales: todayTotal,
-          todayCount: sales.data.sales.length,
+          todaySales: report.data.summary.totalSales,
+          todayCount: report.data.summary.transactionCount,
           lowStock: prod.data.products.length,
-          pending: restock.data.requests.length,
+          pending: restock.data.pagination.total,
         });
-        const all = await client.get('/sales');
-        setReceipts(all.data.sales.slice(0, 6));
+        const recent = await client.get('/sales?limit=6');
+        setReceipts(recent.data.sales);
       } catch (e) {
         toast.error('Could not load dashboard');
       } finally {

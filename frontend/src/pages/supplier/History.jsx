@@ -6,25 +6,37 @@ import { useToast } from '../../components/Toast.jsx';
 import Badge from '../../components/Badge.jsx';
 import EmptyState from '../../components/EmptyState.jsx';
 import { SkeletonList } from '../../components/Skeleton.jsx';
+import Button from '../../components/Button.jsx';
 
 export default function History() {
   const toast = useToast();
   const navigate = useNavigate();
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [limit, setLimit] = useState(50);
 
+  // Each status is requested separately. Filtering a single /restock page would
+  // hide completed requests whenever 50 newer requests of other statuses pushed
+  // them off the first page.
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await client.get('/restock');
-      // Completed and declined requests.
-      setRows(res.data.requests.filter((r) => r.status === 'completed' || r.status === 'declined'));
+      const [done, declined] = await Promise.all([
+        client.get(`/restock?status=completed&limit=${limit}`),
+        client.get(`/restock?status=declined&limit=${limit}`),
+      ]);
+      const merged = [...done.data.requests, ...declined.data.requests].sort(
+        (a, b) => String(b.updatedAt).localeCompare(String(a.updatedAt))
+      );
+      setRows(merged);
     } catch (e) {
       toast.error(extractError(e).message);
     } finally {
       setLoading(false);
     }
-  }, [toast]);
+  }, [limit, toast]);
+
+  const hasMore = rows.length >= limit;
 
   useEffect(() => {
     load();
@@ -59,6 +71,14 @@ export default function History() {
           ))}
         </div>
       )}
+
+      {hasMore ? (
+        <div className="flex justify-center">
+          <Button variant="secondary" onClick={() => setLimit((n) => n + 50)} disabled={loading}>
+            {loading ? 'Loading...' : 'Load older'}
+          </Button>
+        </div>
+      ) : null}
     </div>
   );
 }

@@ -21,7 +21,9 @@ export default function Restock() {
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await client.get('/restock');
+      // limit=200 is the server maximum, so a large catalogue of requests is
+      // shown in one page rather than silently truncated at the default 50.
+      const res = await client.get('/restock?limit=200');
       setRequests(res.data.requests);
     } catch (e) {
       toast.error(extractError(e).message);

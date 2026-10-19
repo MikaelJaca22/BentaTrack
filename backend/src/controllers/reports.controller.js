@@ -1,14 +1,25 @@
 import db from '../db/connection.js';
+import { parseDate } from '../utils/query.js';
+import { toMajor } from '../utils/money.js';
 
-function roundMoney(n) {
-  return Math.round((Number(n) + Number.EPSILON) * 100) / 100;
-}
+// Cap on the receipts list embedded in the sales report. The summary totals
+// above it are computed over the full date range regardless; only this
+// convenience list is truncated.
+const MAX_RECEIPTS = 200;
+
+// Every SUM() below runs over INTEGER minor units, so totals are exact.
+// toMajor() converts to pesos only at the API boundary.
 
 // Convert an array of flat objects to CSV text.
 function toCsv(rows, columns) {
   const esc = (v) => {
     if (v === null || v === undefined) return '';
-    const s = String(v);
+    let s = String(v);
+    // Neutralise spreadsheet formula injection. Free-text fields such as a
+    // supplier's name come from open registration, so an attacker could store
+    // "=HYPERLINK(...)" and have it evaluated when an owner opens the export.
+    // Leading =, +, -, @, tab and CR all trigger a formula in Excel/Sheets.
+    if (/^[=+\-@\t\r]/.test(s)) s = `'${s}`;
     return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
   };
   const header = columns.map((c) => esc(c.label)).join(',');
@@ -19,7 +30,7 @@ function toCsv(rows, columns) {
 }
 
 function sendMaybeCsv(req, res, jsonPayload, csvRows, columns) {
-  const format = (req.validatedQuery?.format ?? req.query.format ?? 'json').toString();
+  const format = req.query.format === 'csv' ? 'csv' : 'json';
   if (format === 'csv') {
     res.setHeader('Content-Type', 'text/csv; charset=utf-8');
     res.setHeader('Content-Disposition', 'attachment; filename="report.csv"');
@@ -32,8 +43,8 @@ function sendMaybeCsv(req, res, jsonPayload, csvRows, columns) {
 export function sales(req, res, next) {
   try {
     const ownerId = req.user.id;
-    const from = (req.query.from || '').toString();
-    const to = (req.query.to || '').toString();
+    const from = parseDate(req.query.from);
+    const to = parseDate(req.query.to);
     let where = 'owner_id = ?';
     const params = [ownerId];
     if (from) {
@@ -67,7 +78,7 @@ export function sales(req, res, next) {
          GROUP BY day ORDER BY day ASC`
       )
       .all(...params)
-      .map((d) => ({ day: d.day, txns: d.txns, revenue: roundMoney(d.revenue) }));
+      .map((d) => ({ day: d.day, txns: d.txns, revenue: toMajor(d.revenue) }));
 
     const topByQty = db
       .prepare(
@@ -79,7 +90,7 @@ export function sales(req, res, next) {
          ORDER BY quantity DESC LIMIT 10`
       )
       .all(...params)
-      .map((p) => ({ name: p.name, quantity: p.quantity, revenue: roundMoney(p.revenue) }));
+      .map((p) => ({ name: p.name, quantity: p.quantity, revenue: toMajor(p.revenue) }));
 
     const topByRevenue = db
       .prepare(
@@ -91,28 +102,32 @@ export function sales(req, res, next) {
          ORDER BY revenue DESC LIMIT 10`
       )
       .all(...params)
-      .map((p) => ({ name: p.name, quantity: p.quantity, revenue: roundMoney(p.revenue) }));
+      .map((p) => ({ name: p.name, quantity: p.quantity, revenue: toMajor(p.revenue) }));
 
+    // Bounded: this array previously returned every sale ever made for the
+    // store, so a year of trading meant a multi-megabyte response.
     const receipts = db
       .prepare(
         `SELECT id, receipt_no, total, created_at FROM sales WHERE ${where}
-         ORDER BY created_at DESC`
+         ORDER BY created_at DESC, id DESC LIMIT ?`
       )
-      .all(...params)
+      .all(...params, MAX_RECEIPTS)
       .map((r) => ({
         id: r.id,
         receiptNo: r.receipt_no,
-        total: roundMoney(r.total),
+        total: toMajor(r.total),
         createdAt: r.created_at,
       }));
 
     const payload = {
       range: { from: from || null, to: to || null },
       summary: {
-        totalSales: roundMoney(totals.revenue),
+        totalSales: toMajor(totals.revenue),
         transactionCount: totals.txns,
         itemsSold: itemsSold.qty,
-        averageSale: totals.txns ? roundMoney(totals.revenue / totals.txns) : 0,
+        // Division can still be inexact, so the average is rounded once here
+        // and stays in minor units until it reaches the client.
+        averageSale: totals.txns ? Math.round(totals.revenue / totals.txns) / 100 : 0,
       },
       daily,
       topProductsByQuantity: topByQty,
@@ -144,6 +159,10 @@ export function inventory(req, res, next) {
         `SELECT * FROM products WHERE owner_id = ? ORDER BY name COLLATE NOCASE ASC`
       )
       .all(req.user.id);
+    // Sum the total in minor units first, then convert once. Adding the already
+    // converted per-row values would reintroduce the float drift this change
+    // exists to remove.
+    const totalStockValueMinor = rows.reduce((s, p) => s + p.stock_qty * p.cost, 0);
     const products = rows.map((p) => ({
       id: p.id,
       productCode: p.product_code,
@@ -152,13 +171,14 @@ export function inventory(req, res, next) {
       unit: p.unit,
       stockQty: p.stock_qty,
       reorderLevel: p.reorder_level,
-      cost: roundMoney(p.cost),
-      price: roundMoney(p.price),
-      stockValue: roundMoney(p.stock_qty * p.cost),
+      cost: toMajor(p.cost),
+      price: toMajor(p.price),
+      // Integer minor units: stock_qty * cost is exact, no float drift.
+      stockValue: toMajor(p.stock_qty * p.cost),
       isLow: p.reorder_level > 0 && p.stock_qty <= p.reorder_level,
       isActive: !!p.is_active,
     }));
-    const totalStockValue = roundMoney(products.reduce((s, p) => s + p.stockValue, 0));
+    const totalStockValue = toMajor(totalStockValueMinor);
     const lowStockCount = products.filter((p) => p.isLow).length;
     const payload = {
       summary: { totalStockValue, lowStockCount, productCount: products.length },
@@ -189,8 +209,8 @@ export function inventory(req, res, next) {
 export function restock(req, res, next) {
   try {
     const ownerId = req.user.id;
-    const from = (req.query.from || '').toString();
-    const to = (req.query.to || '').toString();
+    const from = parseDate(req.query.from);
+    const to = parseDate(req.query.to);
     // Table-qualified: the per-supplier query joins users, which also has a
     // created_at column, so an unqualified reference makes SQLite error with
     // "ambiguous column name: created_at".

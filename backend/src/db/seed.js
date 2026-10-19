@@ -12,6 +12,7 @@
 import db from './connection.js';
 import { migrate } from './migrate.js';
 import { createProductSchema } from '../controllers/products.controller.js';
+import { toMinor } from '../utils/money.js';
 
 // Ten general-retail items with Philippine peso pricing.
 // A few are deliberately at or below their reorder level so the low-stock
@@ -118,8 +119,10 @@ export function seedProducts(ownerId) {
         p.name,
         p.category || null,
         p.unit || 'pc',
-        p.price,
-        p.cost,
+        // The literal values above are in pesos for readability; the column
+        // stores integer minor units.
+        toMinor(p.price),
+        toMinor(p.cost),
         p.stockQty,
         p.reorderLevel
       );

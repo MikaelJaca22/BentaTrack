@@ -17,8 +17,18 @@ export default function HistoryScreen() {
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await client.get('/restock');
-      setRows(res.data.requests.filter((r) => r.status === 'completed' || r.status === 'declined'));
+      // Each status is fetched separately. Filtering one /restock page would hide
+      // completed requests whenever 50 newer requests of other statuses pushed
+      // them off the first page.
+      const [done, declined] = await Promise.all([
+        client.get('/restock?status=completed&limit=200'),
+        client.get('/restock?status=declined&limit=200'),
+      ]);
+      setRows(
+        [...done.data.requests, ...declined.data.requests].sort((a, b) =>
+          String(b.updatedAt).localeCompare(String(a.updatedAt))
+        )
+      );
     } catch (e) {
       toast.error(extractError(e).message);
     } finally {

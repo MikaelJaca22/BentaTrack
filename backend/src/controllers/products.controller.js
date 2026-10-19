@@ -1,6 +1,8 @@
 import { z } from 'zod';
 import db from '../db/connection.js';
 import { ApiError } from '../middleware/errorHandler.js';
+import { parseBool, likePattern, LIKE_ESCAPE } from '../utils/query.js';
+import { toMinor, toMajor } from '../utils/money.js';
 
 export const createProductSchema = z.object({
   productCode: z.string().trim().max(60).optional().nullable().or(z.literal('')),
@@ -24,10 +26,6 @@ export const stockAdjustSchema = z.object({
   reason: z.string().trim().min(1, 'Reason is required').max(200),
 });
 
-function roundMoney(n) {
-  return Math.round((Number(n) + Number.EPSILON) * 100) / 100;
-}
-
 function mapProduct(row) {
   return {
     id: row.id,
@@ -35,8 +33,8 @@ function mapProduct(row) {
     name: row.name,
     category: row.category,
     unit: row.unit,
-    price: roundMoney(row.price),
-    cost: roundMoney(row.cost),
+    price: toMajor(row.price),
+    cost: toMajor(row.cost),
     stockQty: row.stock_qty,
     reorderLevel: row.reorder_level,
     isActive: !!row.is_active,
@@ -49,13 +47,16 @@ function mapProduct(row) {
 // Scoped list for the owner. Supports ?search= (name or code) and ?lowStock=true.
 export function list(req, res, next) {
   try {
-    const search = (req.validatedQuery?.search ?? req.query.search ?? '').toString().trim();
-    const lowStock = (req.validatedQuery?.lowStock ?? req.query.lowStock) === 'true';
+    const search = (req.query.search ?? '').toString().trim();
+    const lowStock = parseBool(req.query.lowStock);
     let sql = 'SELECT * FROM products WHERE owner_id = ?';
     const params = [req.user.id];
     if (search) {
-      sql += ' AND (name LIKE ? OR product_code LIKE ?)';
-      params.push(`%${search}%`, `%${search}%`);
+      // Wildcards in user input are escaped, so searching for "%" matches a
+      // literal percent sign instead of every product in the store.
+      const pattern = likePattern(search);
+      sql += ` AND (name LIKE ? ${LIKE_ESCAPE} OR product_code LIKE ? ${LIKE_ESCAPE})`;
+      params.push(pattern, pattern);
     }
     if (lowStock) {
       sql += ' AND reorder_level > 0 AND stock_qty <= reorder_level';
@@ -85,8 +86,8 @@ export function create(req, res, next) {
         b.name,
         b.category || null,
         b.unit || 'pc',
-        b.price,
-        b.cost ?? 0,
+        toMinor(b.price),
+        toMinor(b.cost ?? 0),
         b.stockQty ?? 0,
         b.reorderLevel ?? 0
       );
@@ -116,8 +117,8 @@ export function update(req, res, next) {
       name: 'name' in b ? b.name : existing.name,
       category: 'category' in b ? (b.category || null) : existing.category,
       unit: 'unit' in b ? b.unit : existing.unit,
-      price: 'price' in b ? b.price : existing.price,
-      cost: 'cost' in b ? b.cost : existing.cost,
+      price: 'price' in b ? toMinor(b.price) : existing.price,
+      cost: 'cost' in b ? toMinor(b.cost) : existing.cost,
       stock_qty: 'stockQty' in b ? b.stockQty : existing.stock_qty,
       reorder_level: 'reorderLevel' in b ? b.reorderLevel : existing.reorder_level,
     };
@@ -151,15 +152,20 @@ export function remove(req, res, next) {
 // Manual stock adjustment, guarded so stock never goes below zero.
 export function adjustStock(req, res, next) {
   try {
-    const existing = findOwned(req);
-    const newQty = existing.stock_qty + req.body.quantity;
-    if (newQty < 0) {
-      throw new ApiError(400, 'Adjustment would make stock negative', 'quantity');
-    }
-    db.prepare(
-      `UPDATE products SET stock_qty = ?, updated_at = datetime('now') WHERE id = ?`
-    ).run(newQty, existing.id);
-    const row = db.prepare('SELECT * FROM products WHERE id = ?').get(existing.id);
+    // The read-modify-write is wrapped in a transaction so that, even if the
+    // API ever runs as more than one process sharing one file, two concurrent
+    // adjustments cannot read the same stock_qty and clobber each other.
+    const row = db.transaction(() => {
+      const existing = findOwned(req);
+      const newQty = existing.stock_qty + req.body.quantity;
+      if (newQty < 0) {
+        throw new ApiError(400, 'Adjustment would make stock negative', 'quantity');
+      }
+      db.prepare(
+        `UPDATE products SET stock_qty = ?, updated_at = datetime('now') WHERE id = ?`
+      ).run(newQty, existing.id);
+      return db.prepare('SELECT * FROM products WHERE id = ?').get(existing.id);
+    })();
     res.json({ product: mapProduct(row) });
   } catch (e) {
     next(e);

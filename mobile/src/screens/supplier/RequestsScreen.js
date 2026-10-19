@@ -26,7 +26,7 @@ export default function RequestsScreen() {
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      const q = filter ? `?status=${filter}` : '';
+      const q = filter ? `?status=${filter}&limit=200` : '?limit=200';
       const res = await client.get(`/restock${q}`);
       setRequests(res.data.requests);
     } catch (e) {

@@ -15,9 +15,11 @@ export default function TopHeader({ title, notificationsPath }) {
     let active = true;
     const load = () =>
       client
-        .get('/notifications?unread=true')
+        .get('/notifications?unread=true&limit=1')
         .then((res) => {
-          if (active) setUnread(res.data.notifications.length);
+          // unreadCount is a COUNT(*) over all unread rows, so it stays
+          // accurate now that the list itself is paginated.
+          if (active) setUnread(res.data.unreadCount);
         })
         .catch(() => {});
     load();

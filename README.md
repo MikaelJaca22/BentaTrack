@@ -34,7 +34,7 @@ BentaTrack/
 │   │   ├── routes/*.routes.js
 │   │   ├── app.js
 │   │   └── server.js
-│   ├── .env.example
+│   ├── .env                                      # gitignored — create it yourself, see step 1
 │   └── package.json                              # npm run dev / npm start
 ├── frontend/
 │   ├── src/
@@ -56,7 +56,7 @@ BentaTrack/
     │   ├── screens/owner/                        # Dashboard, NewSale, Products, Restock, RestockDetail, Suppliers, Receipt, Reports, Notifications, More
     │   └── screens/supplier/                     # Dashboard, Requests, RequestDetail, History, Notifications
     ├── App.js, app.json, babel.config.js, metro.config.js, tailwind.config.js
-    ├── .env.example
+    ├── .env                                          # gitignored — create it yourself, see step 3
     └── package.json                              # npm start (Expo)
 ```
 
@@ -72,14 +72,58 @@ BentaTrack/
 
 ```bash
 cd backend
-copy .env.example .env      # Windows — or `cp .env.example .env`
 npm install
 npm run dev                 # http://localhost:4000
 ```
 
+Create `backend/.env` first — it is gitignored and **not** shipped with the repo:
+
+```bash
+# Windows PowerShell
+@"
+NODE_ENV=development
+PORT=4000
+JWT_SECRET=$([Convert]::ToBase64String([System.Security.Cryptography.RandomNumberGenerator]::GetBytes(64)))
+DB_PATH=./data/bentatrack.db
+CORS_ORIGINS=http://localhost:3000,http://localhost:8081,exp://localhost:8081
+"@ | Set-Content .env
+
+# macOS / Linux (or Git Bash)
+printf 'NODE_ENV=development\nPORT=4000\nJWT_SECRET=%s\nDB_PATH=./data/bentatrack.db\nCORS_ORIGINS=http://localhost:3000,http://localhost:8081,exp://localhost:8081\n' \
+  "$(openssl rand -base64 64 | tr '+/' '-_')" > .env
+```
+
+Or generate the secret on its own and paste it in — 64 random bytes is the right size for the HS256 signing key:
+
+```bash
+node -e "console.log(require('crypto').randomBytes(64).toString('base64url'))"
+# 3y0RNUUjK9L-iIP-wZNjkIbITDnTiUpyCBJsM6LBmL1I3ZVZ1fpYZP9vnZtr_0Gx3p-kvkjhdAkjwPA8mMeQ7Q
+```
+
+| Variable | Required | Notes |
+| --- | --- | --- |
+| `NODE_ENV` | no | `development` (default) or `production` |
+| `PORT` | no | Defaults to `4000` |
+| `JWT_SECRET` | **yes** | Random string, min 32 chars. Must be the *same* value for every running instance or existing tokens stop verifying |
+| `DB_PATH` | no | Defaults to `backend/data/bentatrack.db` |
+| `CORS_ORIGINS` | **yes in production** | Comma-separated list of every client origin. An empty value would mean "allow any origin", so production refuses to start without one |
+| `TRUST_PROXY` | no | Number of reverse-proxy hops in front of the app (`1` for a single nginx), or `true`/`false`. Unset by default, which is the safe choice — without it every client behind a proxy shares one rate-limit bucket. Only set this when something actually sets `X-Forwarded-For` |
+
+### Money is stored as integer minor units
+
+Prices, costs, totals and change are stored in SQLite as **INTEGER centavos**, never as `REAL`. A `REAL` column cannot represent `0.1` exactly and SQLite has no decimal type, so sums drift (`0.1 + 0.1 + 0.1 = 0.30000000000000004`) and a `REAL` column silently accepts `Infinity`.
+
+`migrate()` converts an existing database automatically: it detects `REAL` money columns and rebuilds those three tables in a single transaction, multiplying each value by 100. It runs only when needed, so a fresh database skips it and re-running `migrate()` is a no-op.
+
+The JSON API is unchanged — clients still send and receive pesos (`15.50`), and the conversion happens at the server boundary in `src/utils/money.js`.
+
 Notes:
 - On first start, `migrate.js` creates all tables (users, products, sales, sale_items, store_suppliers, restock_requests, restock_items, restock_events, notifications) in `data/bentatrack.db`. **No rows are inserted** — the system starts empty by design.
-- Change `JWT_SECRET` in `.env` to a long random string before any real use.
+- With `NODE_ENV=production` the server **refuses to start** if `JWT_SECRET` is missing, shorter than 32 characters, or still a known placeholder. `CORS_ORIGINS` is likewise required — an empty value would let any website make authenticated calls to the API. In development only, a clearly-marked fallback keeps a fresh clone runnable.
+- `POST /api/auth/login` is rate limited to 10 attempts per IP per 15 minutes; registration allows 20. Other routes require a valid token and are not limited.
+- **List endpoints are paginated.** `GET /api/sales`, `GET /api/notifications` and `GET /api/restock` accept `?limit=` (default 50, max 200) and `?offset=`, and return a `pagination: { total, limit, offset, hasMore }` block alongside the rows. Out-of-range or malformed values fall back to the default rather than erroring. `GET /api/notifications` also returns `unreadCount`, a count over all unread rows rather than the length of the current page. The `receipts` array inside the sales report is capped at 200; the summary totals above it still cover the whole date range.
+- Query parameters are parsed leniently in `src/utils/query.js`: dates must be `YYYY-MM-DD` or are ignored, `LIKE` wildcards in search terms are escaped (so searching `%` does not return every row), and `restock` `status` is checked against the known values.
+- Rotating `JWT_SECRET` invalidates every issued token and signs all users out.
 - `CORS_ORIGINS` must list every client origin (Vite dev server, preview, Expo).
 
 ### Optional: loading sample products
@@ -99,22 +143,36 @@ To get back to a truly empty database, stop the backend and delete `backend/data
 
 ```bash
 cd frontend
-copy .env.example .env      # VITE_API_URL=http://localhost:4000/api
 npm install
 npm run dev                 # http://localhost:3000
 npm run build && npm run preview   # production check
 ```
 
+Optional — create `frontend/.env` (gitignored, not shipped) only to point the client at a different API:
+
+```
+VITE_API_URL=http://localhost:4000/api
+```
+
+Defaults to `http://localhost:4000/api`, so most setups need no file.
+
 ## 3. Mobile app (Expo)
 
 ```bash
 cd mobile
-copy .env.example .env      # EXPO_PUBLIC_API_URL — see below
 npm install
 npm start                   # scan the QR code with Expo Go
 ```
 
-**Device testing:** a phone cannot reach `localhost` of your computer. Find your computer's LAN IP (`ipconfig` → e.g. `192.168.1.42`) and set:
+Optional — create `mobile/.env` (gitignored, not shipped) only to point the app at a different API:
+
+```
+EXPO_PUBLIC_API_URL=http://localhost:4000/api
+```
+
+Defaults to `http://localhost:4000/api`, so simulators and most setups need no file. Expo caches env values at bundle time — restart with `npx expo start --clear` after editing.
+
+**Device testing:** a phone cannot reach `localhost` of your computer. Find your computer's LAN IP (`ipconfig` → e.g. `192.168.1.42`) and set `mobile/.env`:
 
 ```
 EXPO_PUBLIC_API_URL=http://192.168.1.42:4000/api
@@ -130,11 +188,11 @@ All routes are under `/api`, require `Authorization: Bearer <jwt>` (except regis
 
 - `POST /api/auth/register` · `POST /api/auth/login` · `GET /api/auth/me`
 - `GET|POST /api/products` · `GET|PUT|DELETE /api/products/:id` · `POST /api/products/:id/adjust-stock` · query `?search=`, `?lowStock=true`
-- `POST /api/sales` (transactional: totals recomputed, stock deducted, receipt `BT-YYYYMMDD-0001` numbered per store/day, low-stock alerts raised) · `GET /api/sales` · `GET /api/sales/:id`
+- `POST /api/sales` (transactional: totals recomputed, stock deducted, receipt `BT-YYYYMMDD-0001` numbered per store/day, low-stock alerts raised) · `GET /api/sales` (paginated) · `GET /api/sales/:id`
 - `GET /api/suppliers/search?q=` · `GET /api/suppliers/linked` · `POST /api/suppliers/link` · `DELETE /api/suppliers/link/:id`
-- `POST /api/restock` · `GET /api/restock?status=` · `GET /api/restock/:id` · `POST /api/restock/:id/accept|decline|deliver|verify|discrepancy|resend`
+- `POST /api/restock` · `GET /api/restock?status=` (paginated) · `GET /api/restock/:id` · `POST /api/restock/:id/accept|decline|deliver|verify|discrepancy|resend`
 - `GET /api/reports/sales|inventory|restock?from=&to=&format=csv`
-- `GET /api/notifications?unread=` · `PATCH /api/notifications/:id/read` · `PATCH /api/notifications/read-all`
+- `GET /api/notifications?unread=` (paginated) · `PATCH /api/notifications/:id/read` · `PATCH /api/notifications/read-all`
 
 Restock state machine (enforced server-side): `pending → accepted → delivered → completed` · `pending → declined (→ resent as a new request)` · `delivered → discrepancy → delivered (re-delivery loop)`. Only the owner verifies; verification completes the request **only when every received quantity equals delivered**, and then adds stock inside a transaction.
 
