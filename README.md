@@ -13,7 +13,7 @@ Two roles, three apps, one backend:
 | --- | --- | --- |
 | REST API backend | Node.js + Express + SQLite (better-sqlite3) + JWT/bcrypt + zod | `backend/` |
 | Web client | React 18 (Vite) + Tailwind CSS + lucide-react + React Router + axios | `frontend/` |
-| Mobile client | React Native (Expo SDK 51) + NativeWind + lucide-react-native + React Navigation + expo-secure-store/print/sharing | `mobile/` |
+| Mobile client | React Native (Expo SDK 52) + NativeWind + lucide-react-native + React Navigation + expo-secure-store/print/sharing/asset | `mobile/` |
 
 Hard rules respected throughout: **cash-only** payments, **no barcode/QR/camera scanning** (search by name/code only), **no email anywhere**, **no seed data** (the database starts completely empty — every list shows an empty state until the user creates data), and a strict **black/white/gray monotone** design (status is communicated with icons, text, fills and borders — never color; no emojis in UI, Lucide icons only). Currency is the Philippine peso (₱), set by a single constant per client (`backend` stores numbers only; `frontend/src/config.js` and `mobile/src/config.js` each define `CURRENCY_SYMBOL`).
 
@@ -29,13 +29,14 @@ BentaTrack/
 │   │   ├── db/connection.js, db/migrate.js      # tables only, zero inserts
 │   │   ├── db/seed.js                           # opt-in sample products, never auto-run
 │   │   ├── middleware/auth.js, validate.js, errorHandler.js
-│   │   ├── utils/receipt.js, notify.js
+│   │   ├── utils/receipt.js, notify.js, money.js, query.js
 │   │   ├── controllers/auth|products|sales|suppliers|restock|reports|notifications.controller.js
 │   │   ├── routes/*.routes.js
 │   │   ├── app.js
 │   │   └── server.js
+│   ├── scripts/dev.js, scripts/smoke.mjs         # dev launcher (used by nodemon) + end-to-end smoke test
 │   ├── .env                                      # gitignored — create it yourself, see step 1
-│   └── package.json                              # npm run dev / npm start
+│   └── package.json                              # npm run dev / start / seed / smoke
 ├── frontend/
 │   ├── src/
 │   │   ├── api/client.js                         # axios + token + 401 handling
@@ -139,6 +140,14 @@ It inserts 10 general-retail products (peso pricing) into an **already registere
 
 To get back to a truly empty database, stop the backend and delete `backend/data/`.
 
+### Optional: end-to-end smoke test
+
+```bash
+npm run smoke                   # boots the API on port 4010, runs, exits 0/1
+```
+
+`scripts/smoke.mjs` spawns the real server against a throwaway database in the system temp folder (never `backend/data/`), waits for `/api/health`, then drives the whole system over HTTP: registration and bad-login rejection, supplier linking, product creation with validation, a sale with receipt numbering and totals, insufficient-stock and short-tender rejection, the low-stock notification, the full restock flow including discrepancy and re-delivery, the resend guard, report totals, and the notifications pagination shape. It prints `PASS`/`FAIL` per assertion, kills the server, deletes the temp database, and exits non-zero on any failure. Useful as a pre-push check — it needs no test framework and no running backend.
+
 ## 2. Web frontend
 
 ```bash
@@ -187,7 +196,7 @@ Add `exp://192.168.1.42:8081` (and the Expo debug origins) to the backend `CORS_
 All routes are under `/api`, require `Authorization: Bearer <jwt>` (except register/login), are zod-validated, role- and ownership-scoped, and return errors as `{ "error": { "message", "field?" } }`.
 
 - `POST /api/auth/register` · `POST /api/auth/login` · `GET /api/auth/me`
-- `GET|POST /api/products` · `GET|PUT|DELETE /api/products/:id` · `POST /api/products/:id/adjust-stock` · query `?search=`, `?lowStock=true`
+- `GET|POST /api/products` · `GET|PUT|DELETE /api/products/:id` · `PATCH /api/products/:id/stock` · query `?search=`, `?lowStock=true`
 - `POST /api/sales` (transactional: totals recomputed, stock deducted, receipt `BT-YYYYMMDD-0001` numbered per store/day, low-stock alerts raised) · `GET /api/sales` (paginated) · `GET /api/sales/:id`
 - `GET /api/suppliers/search?q=` · `GET /api/suppliers/linked` · `POST /api/suppliers/link` · `DELETE /api/suppliers/link/:id`
 - `POST /api/restock` · `GET /api/restock?status=` (paginated) · `GET /api/restock/:id` · `POST /api/restock/:id/accept|decline|deliver|verify|discrepancy|resend`
