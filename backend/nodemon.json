@@ -1,0 +1,8 @@
+{
+  "watch": ["src", ".env"],
+  "ext": "js,mjs,cjs,json",
+  "ignore": ["data/*", "node_modules/*"],
+  "exec": "node scripts/dev.js",
+  "quiet": true,
+  "verbose": false
+}

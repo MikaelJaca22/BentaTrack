@@ -101,7 +101,7 @@ To get back to a truly empty database, stop the backend and delete `backend/data
 cd frontend
 copy .env.example .env      # VITE_API_URL=http://localhost:4000/api
 npm install
-npm run dev                 # http://localhost:5173
+npm run dev                 # http://localhost:3000
 npm run build && npm run preview   # production check
 ```
 
