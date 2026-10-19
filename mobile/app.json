@@ -1,0 +1,28 @@
+{
+  "expo": {
+    "name": "BentaTrack",
+    "slug": "bentatrack",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "scheme": "bentatrack",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "backgroundColor": "#000000"
+    },
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.bentatrack.app"
+    },
+    "android": {
+      "package": "com.bentatrack.app",
+      "adaptiveIcon": {
+        "backgroundColor": "#000000"
+      }
+    },
+    "plugins": ["expo-secure-store"],
+    "extra": {
+      "apiUrl": "http://localhost:4000/api"
+    }
+  }
+}
