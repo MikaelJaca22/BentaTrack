@@ -57,7 +57,7 @@ BentaTrack/
     │   └── screens/supplier/                     # Dashboard, Requests, RequestDetail, History, Notifications
     ├── App.js, app.json, babel.config.js, metro.config.js, tailwind.config.js
     ├── .env                                          # gitignored — create it yourself, see step 3
-    └── package.json                              # npm start (Expo)
+    └── package.json                              # npm run dev (Expo)
 ```
 
 ---
@@ -161,7 +161,7 @@ Defaults to `http://localhost:4000/api`, so most setups need no file.
 ```bash
 cd mobile
 npm install
-npm start                   # scan the QR code with Expo Go
+npm run dev                 # scan the QR code with Expo Go
 ```
 
 Optional — create `mobile/.env` (gitignored, not shipped) only to point the app at a different API:
