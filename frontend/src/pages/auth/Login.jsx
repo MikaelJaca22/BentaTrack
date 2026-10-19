@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { AlertCircle } from 'lucide-react';
+import { AlertCircle, ShoppingBag } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext.jsx';
 import { extractError } from '../../api/client.js';
 import { SYSTEM_TITLE } from '../../config.js';
@@ -32,6 +32,9 @@ export default function Login() {
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray100 px-4 py-10">
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
+          <div className="flex justify-center mb-3">
+            <ShoppingBag size={48} className="text-ink" strokeWidth={1.5} />
+          </div>
           <h1 className="text-2xl font-bold text-ink leading-snug">
             BentaTrack:
           </h1>
