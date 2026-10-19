@@ -40,7 +40,7 @@ export default function RestockDetailScreen({ route, navigation }) {
     setNote('');
     const init = {};
     data.items.forEach((it) => {
-      init[it.id] = it.quantity_delivered ?? it.quantity_requested;
+      init[it.id] = it.quantityDelivered ?? it.quantityRequested;
     });
     setReceived(init);
   }
@@ -93,7 +93,7 @@ export default function RestockDetailScreen({ route, navigation }) {
       const res = await client.post(`/restock/${id}/resend`, { supplierId: Number(resendSupplier) });
       toast.success('Request resent');
       setResendOpen(false);
-      navigation.setParams({ id: res.data.id });
+      navigation.replace('RestockDetail', { id: res.data.id });
     } catch (e) {
       toast.error(extractError(e).message);
     } finally {
@@ -134,7 +134,7 @@ export default function RestockDetailScreen({ route, navigation }) {
           <View key={String(it.id)} className={`px-4 py-3 ${i > 0 ? 'border-t border-gray200' : ''}`}>
             <Text className="text-sm font-medium text-ink">{it.name}</Text>
             <Text className="text-xs text-gray600 mt-1">
-              Req {it.quantityRequested} · Del {it.quantity_delivered ?? '—'} · Rec {it.quantity_received ?? '—'}
+              Req {it.quantityRequested} · Del {it.quantityDelivered ?? '—'} · Rec {it.quantityReceived ?? '—'}
             </Text>
           </View>
         ))}
@@ -191,7 +191,7 @@ export default function RestockDetailScreen({ route, navigation }) {
                 <View key={String(it.id)} className="flex-row items-center justify-between py-2">
                   <View className="flex-1 pr-3">
                     <Text className="text-sm text-ink">{it.name}</Text>
-                    <Text className="text-xs text-gray500">Delivered: {it.quantity_delivered ?? it.quantity_requested}</Text>
+                    <Text className="text-xs text-gray500">Delivered: {it.quantityDelivered ?? it.quantityRequested}</Text>
                   </View>
                   <TextInput
                     keyboardType="numeric"

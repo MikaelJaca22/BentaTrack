@@ -137,6 +137,10 @@ export default function Products() {
   }
   async function saveAdjust() {
     if (adjustForm.quantity === '' || Number(adjustForm.quantity) === 0) return;
+    if (!adjustForm.reason.trim()) {
+      toast.error('A reason is required');
+      return;
+    }
     try {
       await client.patch(`/products/${adjust.id}/stock`, {
         quantity: Number(adjustForm.quantity),

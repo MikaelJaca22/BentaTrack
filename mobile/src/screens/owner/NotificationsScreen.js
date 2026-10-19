@@ -90,7 +90,12 @@ export default function NotificationsScreen() {
                   return (
                     <Pressable
                       key={String(n.id)}
-                      onPress={() => !n.isRead && markRead(n)}
+                      onPress={() => {
+                      if (!n.isRead) markRead(n);
+                      else if (n.referenceType === 'restock_request') {
+                        navigation.navigate('RestockDetail', { id: n.referenceId });
+                      }
+                    }}
                       className={`flex-row gap-3 px-4 py-3 ${
                         i > 0 ? 'border-t border-gray200' : ''
                       } ${n.isRead ? 'opacity-60' : 'active:bg-gray100'}`}

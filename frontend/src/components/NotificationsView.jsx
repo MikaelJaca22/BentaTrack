@@ -46,8 +46,9 @@ export default function NotificationsView({ refreshUnread }) {
     if (!pageInfo.hasMore || loadingMore) return;
     setLoadingMore(true);
     try {
+      const nextOffset = pageInfo.offset + (pageInfo.limit || 50);
       const res = await client.get('/notifications', {
-        params: { offset: pageInfo.offset, limit: 50 },
+        params: { offset: nextOffset, limit: 50 },
       });
       setItems((prev) => {
         const seen = new Set(prev.map((n) => n.id));
@@ -116,7 +117,13 @@ export default function NotificationsView({ refreshUnread }) {
             return (
               <button
                 key={n.id}
-                onClick={() => !n.isRead && markRead(n)}
+                onClick={() => {
+                  if (!n.isRead) markRead(n);
+                  else if (n.referenceType === 'restock_request') {
+                    if (user.role === 'store_owner') navigate(`/owner/restock/${n.referenceId}`);
+                    else navigate(`/supplier/request/${n.referenceId}`);
+                  }
+                }}
                 className={`w-full flex gap-3 px-4 py-3 text-left ${
                   n.isRead ? 'opacity-60' : 'hover:bg-gray100'
                 }`}

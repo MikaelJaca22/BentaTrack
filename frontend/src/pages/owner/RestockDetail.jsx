@@ -45,7 +45,7 @@ export default function RestockDetail() {
     // Default received to delivered quantities.
     const init = {};
     data.items.forEach((it) => {
-      init[it.id] = it.quantity_delivered ?? it.quantity_requested;
+      init[it.id] = it.quantityDelivered ?? it.quantityRequested;
     });
     setReceived(init);
   }
@@ -165,8 +165,8 @@ export default function RestockDetail() {
             <p className="font-medium text-ink">{it.name}</p>
             <div className="mt-1 flex flex-wrap gap-3 text-xs text-gray600">
               <span>Requested: {it.quantityRequested}</span>
-              <span>Delivered: {it.quantity_delivered ?? '—'}</span>
-              <span>Received: {it.quantity_received ?? '—'}</span>
+              <span>Delivered: {it.quantityDelivered ?? '—'}</span>
+              <span>Received: {it.quantityReceived ?? '—'}</span>
             </div>
           </div>
         ))}
@@ -243,7 +243,7 @@ export default function RestockDetail() {
               <div className="flex-1 min-w-0">
                 <p className="text-sm text-ink truncate">{it.name}</p>
                 <p className="text-xs text-gray500">
-                  Delivered: {it.quantity_delivered ?? it.quantity_requested}
+                  Delivered: {it.quantityDelivered ?? it.quantityRequested}
                 </p>
               </div>
               <input

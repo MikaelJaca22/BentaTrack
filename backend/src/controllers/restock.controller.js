@@ -494,7 +494,8 @@ export function resend(req, res, next) {
       for (const it of items) {
         insertItem.run(info.lastInsertRowid, it.product_id, it.product_name_snapshot, it.quantity_requested);
       }
-      logEvent(info.lastInsertRowid, req.user.id, 'resent', 'Resent to another supplier');
+      logEvent(reqRow.id, req.user.id, 'resent', 'Resent to another supplier');
+      logEvent(info.lastInsertRowid, req.user.id, 'created', 'Resent restock request created');
       return info.lastInsertRowid;
     })();
 

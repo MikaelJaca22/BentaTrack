@@ -66,7 +66,7 @@ export default function RequestDetailScreen({ route, navigation }) {
   function openDeliver() {
     const init = {};
     data.items.forEach((it) => {
-      init[it.id] = it.quantity_delivered ?? it.quantity_requested;
+      init[it.id] = it.quantityDelivered ?? it.quantityRequested;
     });
     setDelivered(init);
     setDeliverOpen(true);
@@ -123,7 +123,7 @@ export default function RequestDetailScreen({ route, navigation }) {
           <View key={String(it.id)} className={`px-4 py-3 ${i > 0 ? 'border-t border-gray200' : ''}`}>
             <Text className="text-sm font-medium text-ink">{it.name}</Text>
             <Text className="text-xs text-gray600 mt-1">
-              Req {it.quantityRequested} · Del {it.quantity_delivered ?? '—'} · Rec {it.quantity_received ?? '—'}
+              Req {it.quantityRequested} · Del {it.quantityDelivered ?? '—'} · Rec {it.quantityReceived ?? '—'}
             </Text>
           </View>
         ))}
@@ -140,7 +140,7 @@ export default function RequestDetailScreen({ route, navigation }) {
           </Text>
           {data.items.map((it) => (
             <Text key={String(it.id)} className="text-xs text-gray600 mt-1">
-              {it.name}: delivered {it.quantity_delivered ?? '—'}, received {it.quantity_received ?? '—'}
+              {it.name}: delivered {it.quantityDelivered ?? '—'}, received {it.quantityReceived ?? '—'}
             </Text>
           ))}
         </View>

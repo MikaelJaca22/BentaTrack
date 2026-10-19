@@ -69,7 +69,7 @@ export default function RequestDetail() {
   function openDeliver() {
     const init = {};
     data.items.forEach((it) => {
-      init[it.id] = it.quantity_delivered ?? it.quantity_requested;
+      init[it.id] = it.quantityDelivered ?? it.quantityRequested;
     });
     setDelivered(init);
     setDeliverOpen(true);
@@ -137,8 +137,8 @@ export default function RequestDetail() {
             <p className="font-medium text-ink">{it.name}</p>
             <div className="mt-1 flex flex-wrap gap-3 text-xs text-gray600">
               <span>Requested: {it.quantityRequested}</span>
-              <span>Delivered: {it.quantity_delivered ?? '—'}</span>
-              <span>Received: {it.quantity_received ?? '—'}</span>
+              <span>Delivered: {it.quantityDelivered ?? '—'}</span>
+              <span>Received: {it.quantityReceived ?? '—'}</span>
             </div>
           </div>
         ))}
@@ -156,8 +156,8 @@ export default function RequestDetail() {
           <div className="mt-2 text-xs text-gray600 space-y-1">
             {data.items.map((it) => (
               <p key={it.id}>
-                {it.name}: delivered {it.quantity_delivered ?? '—'}, received{' '}
-                {it.quantity_received ?? '—'}
+                {it.name}: delivered {it.quantityDelivered ?? '—'}, received{' '}
+                {it.quantityReceived ?? '—'}
               </p>
             ))}
           </div>
