@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, ScrollView, Pressable } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { Inbox, CheckCircle2, Truck, ArrowRight } from 'lucide-react-native';
 import client from '../../api/client.js';
 import { useToast } from '../../components/Toast.js';
@@ -11,11 +11,13 @@ import Badge from '../../components/Badge.js';
 export default function SupplierDashboardScreen() {
   const toast = useToast();
   const navigation = useNavigation();
+  const isFocused = useIsFocused();
   const [loading, setLoading] = useState(true);
   const [counts, setCounts] = useState({ pending: 0, accepted: 0, delivered: 0 });
   const [recent, setRecent] = useState([]);
 
   useEffect(() => {
+    if (!isFocused) return;
     async function load() {
       setLoading(true);
       try {
@@ -41,7 +43,7 @@ export default function SupplierDashboardScreen() {
       }
     }
     load();
-  }, []);
+  }, [isFocused]);
 
   return (
     <View className="flex-1 bg-gray100">

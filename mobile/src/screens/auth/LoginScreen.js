@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AlertCircle } from 'lucide-react-native';
 import { useAuth } from '../../context/AuthContext.js';
 import { extractError } from '../../api/client.js';
@@ -9,6 +10,7 @@ import Input from '../../components/Input.js';
 
 export default function LoginScreen({ navigation }) {
   const { login } = useAuth();
+  const insets = useSafeAreaInsets();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -32,7 +34,14 @@ export default function LoginScreen({ navigation }) {
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       className="flex-1"
     >
-      <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }}>
+      <ScrollView
+        contentContainerStyle={{
+          flexGrow: 1,
+          justifyContent: 'center',
+          paddingTop: insets.top,
+          paddingBottom: insets.bottom,
+        }}
+      >
         <View className="px-6 py-10">
           <View className="items-center mb-8">
             <Text className="text-2xl font-bold text-ink">BentaTrack</Text>

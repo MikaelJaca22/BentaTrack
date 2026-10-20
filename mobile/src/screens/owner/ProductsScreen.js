@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { View, Text, TextInput, ScrollView, Pressable, Modal, Alert } from 'react-native';
+import { useIsFocused } from '@react-navigation/native';
 import { Plus, Search, Pencil, Trash2, SlidersHorizontal, AlertTriangle } from 'lucide-react-native';
 import client, { extractError } from '../../api/client.js';
 import { formatMoney } from '../../config.js';
@@ -14,6 +15,7 @@ const empty = { productCode: '', name: '', category: '', unit: 'pc', price: '', 
 
 export default function ProductsScreen() {
   const toast = useToast();
+  const isFocused = useIsFocused();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -40,9 +42,10 @@ export default function ProductsScreen() {
   }, [search]);
 
   useEffect(() => {
+    if (!isFocused) return;
     const t = setTimeout(load, 250);
     return () => clearTimeout(t);
-  }, [load]);
+  }, [load, isFocused]);
 
   function openNew() {
     setForm(empty);

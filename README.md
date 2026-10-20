@@ -165,29 +165,43 @@ VITE_API_URL=http://localhost:4000/api
 
 Defaults to `http://localhost:4000/api`, so most setups need no file.
 
-## 3. Mobile app (Expo)
+## 3. Mobile app (Expo Go)
+
+Requirements:
+
+- Expo Go installed on the phone. This project targets **Expo SDK 57**; use the current Expo Go from the Play Store on Android (the iOS App Store build can lag behind SDK 57).
+- Phone and computer on the same Wi-Fi network.
+- Backend running on port 4000.
+
+Start the backend first, then the mobile app:
 
 ```bash
-cd mobile
+cd backend
 npm install
-npm run dev                 # scan the QR code with Expo Go
+npm run dev                 # API on http://localhost:4000
+
+cd ../mobile
+npm install
+npx expo start              # npm run dev also works
 ```
 
-Optional — create `mobile/.env` (gitignored, not shipped) only to point the app at a different API:
+Scan the QR code printed in the terminal with Expo Go. No `.env` is required: the app automatically uses the host Metro is served from (your computer's LAN IP) and connects to port 4000, so it keeps working when the IP changes.
 
-```
-EXPO_PUBLIC_API_URL=http://localhost:4000/api
-```
-
-Defaults to `http://localhost:4000/api`, so simulators and most setups need no file. Expo caches env values at bundle time — restart with `npx expo start --clear` after editing.
-
-**Device testing:** a phone cannot reach `localhost` of your computer. Find your computer's LAN IP (`ipconfig` → e.g. `192.168.1.42`) and set `mobile/.env`:
+Optional override — create `mobile/.env` (gitignored, not shipped) only if the API runs on a different machine, port, or tunnel:
 
 ```
 EXPO_PUBLIC_API_URL=http://192.168.1.42:4000/api
 ```
 
-Add `exp://192.168.1.42:8081` (and the Expo debug origins) to the backend `CORS_ORIGINS`, restart the backend, then reload Expo. Phone and computer must be on the same Wi-Fi network.
+Restart with `npx expo start --clear` after editing it.
+
+**If the phone cannot connect:**
+
+- Confirm both devices are on the same Wi-Fi and the backend is running.
+- Allow Node.js through Windows Firewall for the active network profile (Private/Public).
+- If the computer has multiple adapters or a VPN, force the correct LAN interface before starting Expo (PowerShell):
+  `$env:REACT_NATIVE_PACKAGER_HOSTNAME='192.168.1.42'; npx expo start`
+- If Metro loads but API calls fail, set `EXPO_PUBLIC_API_URL` in `mobile/.env` to `http://<LAN-IP>:4000/api` and restart with `--clear`.
 
 ---
 
@@ -251,6 +265,6 @@ Run the backend, then exercise the flow on web and mobile. Every step is expecte
 | Problem | Fix |
 | --- | --- |
 | `better-sqlite3` install error | Use `better-sqlite3@^12` (prebuilt binaries). Node 18+ required. |
-| Mobile "Cannot reach the server" | Set `EXPO_PUBLIC_API_URL` to the computer's LAN IP (not localhost) and add the Expo origin to backend `CORS_ORIGINS`; restart both. |
+| Mobile "Cannot reach the server" | Confirm phone and computer are on the same Wi-Fi, the backend is running on port 4000, and Node.js is allowed through the firewall. The app auto-detects the API from Metro's host; override with `EXPO_PUBLIC_API_URL` in `mobile/.env` if needed, then restart with `npx expo start --clear`. |
 | Port 4000 in use | Change `PORT` in `backend/.env` and update the clients' API URLs. |
 | Want a clean slate | Stop the backend and delete the `backend/data/` folder — the DB is recreated empty on next start. |

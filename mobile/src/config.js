@@ -10,11 +10,33 @@ export function formatMoney(amount) {
   return `${CURRENCY_SYMBOL}${n.toFixed(2)}`;
 }
 
-// Resolve the backend URL. Prefer EXPO_PUBLIC_API_URL. When running on a
-// physical device, replace "localhost" with your computer's LAN IP.
+import Constants from 'expo-constants';
+
+// In Expo Go the dev server's host is the computer running the backend, so
+// derive the API address from it. This keeps the app working when the
+// computer's LAN IP changes (DHCP), instead of hardcoding an IP in .env.
+function devServerHost() {
+  const hostUri =
+    Constants.expoConfig?.hostUri ||
+    Constants.expoGoConfig?.debuggerHost ||
+    Constants.manifest2?.extra?.expoClient?.hostUri ||
+    Constants.manifest?.debuggerHost;
+  if (!hostUri) return null;
+  // hostUri looks like "192.168.1.14:8081" or "exp://192.168.1.14:8081".
+  const host = String(hostUri)
+    .replace(/^[a-z]+:\/\//i, '')
+    .split('/')[0]
+    .split(':')[0];
+  return host && host !== 'localhost' && host !== '127.0.0.1' ? host : null;
+}
+
+// Resolve the backend URL. EXPO_PUBLIC_API_URL (e.g. in .env) wins when set;
+// otherwise use the Expo dev-server host with the backend port.
 function resolveBaseUrl() {
-  const envUrl = process.env.EXPO_PUBLIC_API_URL;
-  if (envUrl) return envUrl;
+  const envUrl = process.env.EXPO_PUBLIC_API_URL?.trim();
+  if (envUrl) return envUrl.replace(/\/+$/, '');
+  const host = devServerHost();
+  if (host) return `http://${host}:4000/api`;
   return 'http://localhost:4000/api';
 }
 

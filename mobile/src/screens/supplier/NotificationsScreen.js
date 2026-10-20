@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { View, Text, ScrollView, Pressable } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { Bell, CheckCheck, Package, Truck } from 'lucide-react-native';
 import client, { extractError } from '../../api/client.js';
 import { useToast } from '../../components/Toast.js';
@@ -21,6 +21,7 @@ const TYPE_ICON = {
 export default function SupplierNotificationsScreen() {
   const toast = useToast();
   const navigation = useNavigation();
+  const isFocused = useIsFocused();
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -35,8 +36,8 @@ export default function SupplierNotificationsScreen() {
   }, []);
 
   useEffect(() => {
-    load();
-  }, [load]);
+    if (isFocused) load();
+  }, [load, isFocused]);
 
   async function markRead(n) {
     try {

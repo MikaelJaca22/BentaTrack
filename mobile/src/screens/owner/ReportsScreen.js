@@ -2,7 +2,8 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { View, Text, ScrollView, Pressable, TextInput } from 'react-native';
 import * as Print from 'expo-print';
 import * as Sharing from 'expo-sharing';
-import * as FileSystem from 'expo-file-system';
+// SDK 54+ moved the classic URI-based API to the "legacy" entry point.
+import * as FileSystem from 'expo-file-system/legacy';
 import { BarChart3, Package, Truck, Printer, Share2, Download } from 'lucide-react-native';
 import client, { extractError } from '../../api/client.js';
 import { formatMoney, SYSTEM_TITLE } from '../../config.js';

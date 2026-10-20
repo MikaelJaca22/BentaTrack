@@ -1,5 +1,4 @@
 import { Text, Pressable } from 'react-native';
-import { Trash2 } from 'lucide-react-native';
 
 export default function Button({
   variant = 'primary',

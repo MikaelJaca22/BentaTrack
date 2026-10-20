@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { View, Text, TextInput, ScrollView, Pressable, Modal } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useIsFocused, useNavigation } from '@react-navigation/native';
 import {
   Search,
   Plus,
@@ -21,6 +21,7 @@ import { SkeletonList } from '../../components/Skeleton.js';
 export default function NewSaleScreen() {
   const toast = useToast();
   const navigation = useNavigation();
+  const isFocused = useIsFocused();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -43,8 +44,8 @@ export default function NewSaleScreen() {
   }
 
   useEffect(() => {
-    loadProducts();
-  }, []);
+    if (isFocused) loadProducts();
+  }, [isFocused]);
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();

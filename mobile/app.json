@@ -6,12 +6,6 @@
     "orientation": "portrait",
     "scheme": "bentatrack",
     "userInterfaceStyle": "light",
-    "splash": {
-      "backgroundColor": "#000000"
-    },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.bentatrack.app"
@@ -24,10 +18,13 @@
     },
     "plugins": [
       "expo-secure-store",
-      "expo-asset"
-    ],
-    "extra": {
-      "apiUrl": "http://localhost:4000/api"
-    }
+      "expo-asset",
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#000000"
+        }
+      ]
+    ]
   }
 }

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, ScrollView, Pressable } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { ShoppingCart, AlertTriangle, Truck, Receipt as ReceiptIcon, Plus } from 'lucide-react-native';
 import client from '../../api/client.js';
 import { formatMoney } from '../../config.js';
@@ -12,11 +12,13 @@ import Badge from '../../components/Badge.js';
 export default function DashboardScreen() {
   const toast = useToast();
   const navigation = useNavigation();
+  const isFocused = useIsFocused();
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({ todaySales: 0, todayCount: 0, lowStock: 0, pending: 0 });
   const [receipts, setReceipts] = useState([]);
 
   useEffect(() => {
+    if (!isFocused) return;
     async function load() {
       setLoading(true);
       try {
@@ -44,7 +46,7 @@ export default function DashboardScreen() {
       }
     }
     load();
-  }, []);
+  }, [isFocused]);
 
   return (
     <View className="flex-1 bg-gray100">
@@ -59,7 +61,7 @@ export default function DashboardScreen() {
               <Stat icon={AlertTriangle} label="Low Stock" value={String(stats.lowStock)} sub="to reorder" />
               <Stat icon={Truck} label="Pending" value={String(stats.pending)} sub="requests" />
               <Pressable
-                onPress={() => navigation.getParent()?.navigate('Sale') || navigation.navigate('Tabs')}
+                onPress={() => navigation.navigate('Sale')}
                 className="bg-black rounded-xl p-4 flex-1 min-w-[45%] justify-center"
               >
                 <Plus size={18} color="#FFFFFF" />

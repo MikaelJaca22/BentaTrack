@@ -1,17 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, Pressable } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { Bell, LogOut } from 'lucide-react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuth } from '../context/AuthContext.js';
 import client from '../api/client.js';
 
 // Header shown at the top of tab screens (title, notifications, logout).
 export default function TopHeader({ title, notificationsPath }) {
   const navigation = useNavigation();
+  const isFocused = useIsFocused();
+  const insets = useSafeAreaInsets();
   const { user, logout } = useAuth();
   const [unread, setUnread] = useState(0);
 
   useEffect(() => {
+    if (!isFocused) return;
     let active = true;
     const load = () =>
       client
@@ -28,10 +32,13 @@ export default function TopHeader({ title, notificationsPath }) {
       active = false;
       clearInterval(id);
     };
-  }, [title]);
+  }, [isFocused, title]);
 
   return (
-    <View className="bg-white border-b border-gray200 px-4 py-3 flex-row items-center justify-between">
+    <View
+      style={{ paddingTop: insets.top + 12 }}
+      className="bg-white border-b border-gray200 px-4 pb-3 flex-row items-center justify-between"
+    >
       <View className="flex-1 pr-3">
         <Text className="text-base font-semibold text-ink" numberOfLines={1}>
           {title}

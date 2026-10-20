@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { AlertCircle } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext.jsx';
 import { extractError } from '../../api/client.js';
+import Button from '../../components/Button.jsx';
 import Input from '../../components/Input.jsx';
 import { SYSTEM_TITLE } from '../../config.js';
 
@@ -91,6 +92,7 @@ export default function CreateAccount() {
 
           <Input
             label={nameLabel}
+            name="name"
             placeholder={namePlaceholder}
             value={name}
             onChange={(e) => setName(e.target.value)}
@@ -98,23 +100,29 @@ export default function CreateAccount() {
           />
           <Input
             label="Username"
+            name="username"
             placeholder="4-20 characters: letters, numbers, _ or ."
+            autoComplete="username"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             error={fieldErr.username}
           />
           <Input
             label="Password"
+            name="password"
             type="password"
             placeholder="At least 8 characters"
+            autoComplete="new-password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             error={fieldErr.password}
           />
           <Input
             label="Confirm Password"
+            name="confirm"
             type="password"
             placeholder="Re-enter your password"
+            autoComplete="new-password"
             value={confirm}
             onChange={(e) => setConfirm(e.target.value)}
             error={fieldErr.confirm}
@@ -125,6 +133,10 @@ export default function CreateAccount() {
               <AlertCircle size={16} /> {error}
             </p>
           ) : null}
+
+          <Button type="submit" disabled={busy} className="w-full">
+            {busy ? 'Creating…' : 'Create Account'}
+          </Button>
         </form>
 
         {/* Link-style actions, outside the form */}

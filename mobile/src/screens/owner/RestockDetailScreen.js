@@ -80,10 +80,14 @@ export default function RestockDetailScreen({ route, navigation }) {
   }
 
   async function openResend() {
-    const res = await client.get('/suppliers/linked');
-    setSuppliers(res.data.suppliers);
-    setResendSupplier('');
-    setResendOpen(true);
+    try {
+      const res = await client.get('/suppliers/linked');
+      setSuppliers(res.data.suppliers);
+      setResendSupplier('');
+      setResendOpen(true);
+    } catch (e) {
+      toast.error(extractError(e).message);
+    }
   }
 
   async function submitResend() {

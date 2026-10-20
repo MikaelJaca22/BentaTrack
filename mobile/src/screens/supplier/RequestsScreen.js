@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { View, Text, ScrollView, Pressable } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { Inbox } from 'lucide-react-native';
 import client, { extractError } from '../../api/client.js';
 import { useToast } from '../../components/Toast.js';
@@ -19,6 +19,7 @@ const FILTERS = [
 export default function RequestsScreen() {
   const toast = useToast();
   const navigation = useNavigation();
+  const isFocused = useIsFocused();
   const [filter, setFilter] = useState('');
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -37,8 +38,8 @@ export default function RequestsScreen() {
   }, [filter]);
 
   useEffect(() => {
-    load();
-  }, [load]);
+    if (isFocused) load();
+  }, [load, isFocused]);
 
   return (
     <View className="flex-1 bg-gray100">

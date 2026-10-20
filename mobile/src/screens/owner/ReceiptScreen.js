@@ -41,7 +41,7 @@ function receiptHtml(data) {
   </body></html>`;
 }
 
-export default function ReceiptScreen({ route, navigation }) {
+export default function ReceiptScreen({ route }) {
   const toast = useToast();
   const id = route.params.id;
   const [data, setData] = useState(null);
@@ -60,8 +60,8 @@ export default function ReceiptScreen({ route, navigation }) {
     if (!data) return;
     setBusy(true);
     try {
-      const { uri } = await Print.printToFileAsync({ html: receiptHtml(data) });
       if (share) {
+        const { uri } = await Print.printToFileAsync({ html: receiptHtml(data) });
         if (await Sharing.isAvailableAsync()) {
           await Sharing.shareAsync(uri, { mimeType: 'application/pdf' });
         } else {
@@ -88,9 +88,8 @@ export default function ReceiptScreen({ route, navigation }) {
 
   return (
     <View className="flex-1 bg-gray100">
-      <View className="flex-row items-center justify-between bg-white border-b border-gray200 px-4 py-3">
-        <Text className="text-base font-semibold text-ink">Receipt</Text>
-        <View className="flex-row gap-2">
+      <ScrollView contentContainerStyle={{ padding: 16 }}>
+        <View className="flex-row justify-end gap-2 mb-3">
           <Button variant="secondary" icon={Printer} onPress={() => printOrShare(false)} disabled={busy}>
             Print
           </Button>
@@ -98,9 +97,7 @@ export default function ReceiptScreen({ route, navigation }) {
             Share
           </Button>
         </View>
-      </View>
 
-      <ScrollView contentContainerStyle={{ padding: 16 }}>
         <View className="bg-white border border-gray200 rounded-xl p-6">
           <View className="items-center border-b border-gray200 pb-4">
             <Text className="text-sm font-bold text-ink">BentaTrack</Text>

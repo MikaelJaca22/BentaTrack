@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, ScrollView, Pressable, KeyboardAvoidingView, Platform } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AlertCircle } from 'lucide-react-native';
 import { useAuth } from '../../context/AuthContext.js';
 import { extractError } from '../../api/client.js';
@@ -9,6 +10,7 @@ import { SYSTEM_TITLE } from '../../config.js';
 
 export default function CreateAccountScreen({ navigation }) {
   const { register } = useAuth();
+  const insets = useSafeAreaInsets();
   const [role, setRole] = useState('store_owner');
   const [name, setName] = useState('');
   const [username, setUsername] = useState('');
@@ -51,7 +53,13 @@ export default function CreateAccountScreen({ navigation }) {
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       className="flex-1"
     >
-      <ScrollView contentContainerStyle={{ padding: 24 }}>
+      <ScrollView
+        contentContainerStyle={{
+          padding: 24,
+          paddingTop: insets.top + 24,
+          paddingBottom: insets.bottom + 24,
+        }}
+      >
         <View className="mb-6">
           <Text className="text-lg font-bold text-ink">Create Account</Text>
           <Text className="mt-1 text-xs text-gray500">{SYSTEM_TITLE}</Text>

@@ -10,6 +10,10 @@ import Input from '../../components/Input.js';
 import Badge from '../../components/Badge.js';
 import { SkeletonList } from '../../components/Skeleton.js';
 
+// Stable identity so CreateRequest's effect does not reset its form on every
+// parent render when no products were preselected.
+const EMPTY_IDS = [];
+
 export default function RestockScreen({ route }) {
   const toast = useToast();
   const navigation = useNavigation();
@@ -34,7 +38,7 @@ export default function RestockScreen({ route }) {
   }, []);
 
   useEffect(() => {
-    load();
+    if (isFocused) load();
   }, [load, isFocused]);
 
   // Open create modal when arriving from the low-stock alert.
@@ -86,7 +90,7 @@ export default function RestockScreen({ route }) {
 
       <CreateRequest
         visible={creating}
-        preselect={route.params?.preselect || []}
+        preselect={route.params?.preselect || EMPTY_IDS}
         onClose={() => {
           setCreating(false);
           opened.current = false;
