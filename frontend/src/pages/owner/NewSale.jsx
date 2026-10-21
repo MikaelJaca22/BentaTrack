@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useOutletContext } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import {
   Search,
@@ -20,6 +21,7 @@ import { SkeletonList } from '../../components/Skeleton.jsx';
 
 export default function NewSale() {
   const toast = useToast();
+  const ctx = useOutletContext() || {};
   const navigate = useNavigate();
 
   const [products, setProducts] = useState([]);
@@ -122,6 +124,7 @@ export default function NewSale() {
       });
       setSaleResult(res.data);
       await loadProducts();
+      if (ctx.refreshUnread) ctx.refreshUnread();
       toast.success('Sale recorded');
     } catch (e) {
       const { message } = extractError(e);

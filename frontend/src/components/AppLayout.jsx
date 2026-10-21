@@ -72,7 +72,7 @@ export default function AppLayout() {
   // Poll unread count lightly on route changes.
   useEffect(() => {
     refreshUnread();
-    const t = setInterval(refreshUnread, 15000);
+    const t = setInterval(refreshUnread, 5000);
     return () => clearInterval(t);
   }, [refreshUnread, pathname]);
 

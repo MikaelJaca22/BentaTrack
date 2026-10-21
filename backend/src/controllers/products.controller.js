@@ -3,6 +3,7 @@ import db from '../db/connection.js';
 import { ApiError } from '../middleware/errorHandler.js';
 import { parseBool, likePattern, LIKE_ESCAPE } from '../utils/query.js';
 import { toMinor, toMajor } from '../utils/money.js';
+import { raiseLowStockAlerts } from '../utils/stockAlerts.js';
 
 export const createProductSchema = z.object({
   productCode: z.string().trim().max(60).optional().nullable().or(z.literal('')),
@@ -94,6 +95,12 @@ export function create(req, res, next) {
     const row = db
       .prepare('SELECT * FROM products WHERE id = ?')
       .get(info.lastInsertRowid);
+    try {
+      raiseLowStockAlerts(req.user.id);
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error('Low-stock alert failed after product create:', e);
+    }
     res.status(201).json({ product: mapProduct(row) });
   } catch (e) {
     next(e);
@@ -130,6 +137,12 @@ export function update(req, res, next) {
        WHERE id = :id`
     ).run({ ...nextValues, id: existing.id });
     const row = db.prepare('SELECT * FROM products WHERE id = ?').get(existing.id);
+    try {
+      raiseLowStockAlerts(req.user.id);
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error('Low-stock alert failed after product update:', e);
+    }
     res.json({ product: mapProduct(row) });
   } catch (e) {
     next(e);
@@ -166,6 +179,12 @@ export function adjustStock(req, res, next) {
       ).run(newQty, existing.id);
       return db.prepare('SELECT * FROM products WHERE id = ?').get(existing.id);
     })();
+    try {
+      raiseLowStockAlerts(req.user.id);
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error('Low-stock alert failed after stock adjustment:', e);
+    }
     res.json({ product: mapProduct(row) });
   } catch (e) {
     next(e);

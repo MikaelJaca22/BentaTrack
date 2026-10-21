@@ -2,6 +2,7 @@ import { z } from 'zod';
 import db from '../db/connection.js';
 import { ApiError } from '../middleware/errorHandler.js';
 import { notify } from '../utils/notify.js';
+import { raiseLowStockAlerts } from '../utils/stockAlerts.js';
 import { parsePagination } from '../utils/query.js';
 
 const itemQty = z.object({
@@ -392,6 +393,13 @@ export function verify(req, res, next) {
       ).run(reqRow.id);
       logEvent(reqRow.id, req.user.id, 'completed', 'Delivery verified, inventory updated');
     })();
+
+    try {
+      raiseLowStockAlerts(reqRow.owner_id);
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error('Low-stock alert failed after restock verify:', e);
+    }
 
     notify({
       userId: reqRow.supplier_id,

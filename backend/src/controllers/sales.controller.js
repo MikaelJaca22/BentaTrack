@@ -2,7 +2,7 @@ import { z } from 'zod';
 import db from '../db/connection.js';
 import { ApiError } from '../middleware/errorHandler.js';
 import { nextReceiptNo } from '../utils/receipt.js';
-import { notify } from '../utils/notify.js';
+import { raiseLowStockAlerts } from '../utils/stockAlerts.js';
 import { parseDate, parsePagination } from '../utils/query.js';
 import { toMinor, toMajor } from '../utils/money.js';
 
@@ -171,20 +171,14 @@ export function create(req, res, next) {
     // first (it can only fail on a genuinely missing sale), and notification
     // failures are logged and swallowed rather than turned into an error.
     const receipt = buildReceipt(result.saleId, ownerId);
-    for (const p of receipt.lowStock) {
-      try {
-        notify({
-          userId: ownerId,
-          type: 'low_stock',
-          title: 'Low stock alert',
-          body: `"${p.name}" is low (${p.stockQty} left, reorder at ${p.reorderLevel}).`,
-          referenceType: 'product',
-          referenceId: p.id,
-        });
-      } catch (notifyErr) {
-        // eslint-disable-next-line no-console
-        console.error('Low-stock notification failed after sale commit:', notifyErr);
-      }
+    // Real-time, system-wide: re-evaluate every product in the store, not just
+    // the ones on this receipt, so any item that is now at/below its reorder
+    // level gets an alert immediately.
+    try {
+      raiseLowStockAlerts(ownerId);
+    } catch (notifyErr) {
+      // eslint-disable-next-line no-console
+      console.error('Low-stock notification failed after sale commit:', notifyErr);
     }
     res.status(201).json(receipt);
   } catch (e) {

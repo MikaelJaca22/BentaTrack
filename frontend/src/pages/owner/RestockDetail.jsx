@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useOutletContext } from 'react-router-dom';
 import { ArrowLeft, Check, AlertTriangle, RefreshCw, Clock } from 'lucide-react';
 import client, { extractError } from '../../api/client.js';
 import { useToast } from '../../components/Toast.jsx';
@@ -13,6 +13,7 @@ export default function RestockDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const toast = useToast();
+  const ctx = useOutletContext() || {};
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -62,6 +63,7 @@ export default function RestockDetail() {
       toast.success('Delivery verified, inventory updated');
       setMode(null);
       load();
+      if (ctx.refreshUnread) ctx.refreshUnread();
     } catch (e) {
       toast.error(extractError(e).message);
     } finally {

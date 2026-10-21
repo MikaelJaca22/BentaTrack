@@ -1,5 +1,6 @@
 import db from '../db/connection.js';
 import { parseBool, parsePagination } from '../utils/query.js';
+import { raiseLowStockAlerts } from '../utils/stockAlerts.js';
 
 function mapRow(n) {
   return {
@@ -16,6 +17,16 @@ function mapRow(n) {
 
 export function list(req, res, next) {
   try {
+    // Real-time, system-wide low-stock sweep: any product that is currently at
+    // or below its reorder level gets an alert before we return the inbox.
+    if (req.user && req.user.role === 'store_owner') {
+      try {
+        raiseLowStockAlerts(req.user.id);
+      } catch (e) {
+        // eslint-disable-next-line no-console
+        console.error('Low-stock sweep failed while listing notifications:', e);
+      }
+    }
     const onlyUnread = parseBool(req.query.unread);
     const { limit, offset } = parsePagination(req.query, { defaultLimit: 50 });
 

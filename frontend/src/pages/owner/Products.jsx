@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
+import { useOutletContext } from 'react-router-dom';
 import { Plus, Search, Pencil, Trash2, SlidersHorizontal, AlertTriangle } from 'lucide-react';
 import client, { extractError } from '../../api/client.js';
 import { formatMoney } from '../../config.js';
@@ -24,6 +25,7 @@ const empty = {
 
 export default function Products() {
   const toast = useToast();
+  const ctx = useOutletContext() || {};
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -111,6 +113,7 @@ export default function Products() {
       }
       setEditing(null);
       await load();
+      if (ctx.refreshUnread) ctx.refreshUnread();
     } catch (e) {
       const { message } = extractError(e);
       setFormErr({ form: message });
@@ -149,6 +152,7 @@ export default function Products() {
       toast.success('Stock adjusted');
       setAdjust(null);
       await load();
+      if (ctx.refreshUnread) ctx.refreshUnread();
     } catch (e) {
       toast.error(extractError(e).message);
     }

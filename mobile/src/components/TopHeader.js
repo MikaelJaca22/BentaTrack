@@ -27,7 +27,7 @@ export default function TopHeader({ title, notificationsPath }) {
         })
         .catch(() => {});
     load();
-    const id = setInterval(load, 15000);
+    const id = setInterval(load, 5000);
     return () => {
       active = false;
       clearInterval(id);
