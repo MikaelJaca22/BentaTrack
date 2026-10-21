@@ -6,6 +6,8 @@ import { migrate } from './db/migrate.js';
 migrate();
 
 app.listen(env.port, () => {
-  console.log(`🚀 Server ready at http://localhost:${env.port}`);
-  console.log(`📌 Environment: ${env.nodeEnv}`);
+  // eslint-disable-next-line no-console
+  console.log(
+    `BentaTrack API listening on http://localhost:${env.port} (DB: ${env.dbPath})`
+  );
 });

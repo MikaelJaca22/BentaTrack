@@ -3,6 +3,6 @@
   "ext": "js,mjs,cjs,json",
   "ignore": ["data/*", "node_modules/*"],
   "exec": "node scripts/dev.js",
-  "quiet": true,
+  "quiet": false,
   "verbose": false
 }
