@@ -20,16 +20,35 @@ export function raiseLowStockAlerts(ownerId) {
   const products = lowStockProducts(ownerId);
   const alerted = [];
   for (const p of products) {
-    const existing = db
+    // Dedup against the most recent low-stock alert for this product. An unread
+    // alert means we already notified the owner, so skip. A read alert is only
+    // superseded when the product changed since that alert was created (e.g. a
+    // further sale or stock adjustment) — otherwise a still-low product would
+    // re-open an alert the owner just dismissed and the badge could never clear.
+    const latest = db
       .prepare(
-        `SELECT 1 FROM notifications
+        `SELECT is_read, body FROM notifications
          WHERE user_id = ? AND type = 'low_stock'
            AND reference_type = 'product' AND reference_id = ?
-           AND is_read = 0
-         LIMIT 1`
+         ORDER BY id DESC LIMIT 1`
       )
       .get(ownerId, p.id);
-    if (existing) continue;
+    if (latest) {
+      const stillUnread = latest.is_read === 0;
+      if (stillUnread) continue;
+      // Only re-alert when the stock situation actually changed since the
+      // last (read) alert, so a dismissed alert does not keep reappearing on
+      // every poll while the product stays low.
+      const match = String(latest.body || '').match(/\((\d+) left, reorder at (\d+)\)/);
+      const prevStock = match ? Number(match[1]) : null;
+      const prevReorder = match ? Number(match[2]) : null;
+      const changed =
+        prevStock === null ||
+        prevReorder === null ||
+        prevStock !== p.stock_qty ||
+        prevReorder !== p.reorder_level;
+      if (!changed) continue;
+    }
     const id = notify({
       userId: ownerId,
       type: 'low_stock',

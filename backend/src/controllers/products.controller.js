@@ -48,6 +48,16 @@ function mapProduct(row) {
 // Scoped list for the owner. Supports ?search= (name or code) and ?lowStock=true.
 export function list(req, res, next) {
   try {
+    // Real-time, system-wide sweep so any product currently at or below its
+    // reorder level has an alert before the catalogue is returned.
+    if (req.user && req.user.role === 'store_owner') {
+      try {
+        raiseLowStockAlerts(req.user.id);
+      } catch (e) {
+        // eslint-disable-next-line no-console
+        console.error('Low-stock sweep failed while listing products:', e);
+      }
+    }
     const search = (req.query.search ?? '').toString().trim();
     const lowStock = parseBool(req.query.lowStock);
     let sql = 'SELECT * FROM products WHERE owner_id = ?';

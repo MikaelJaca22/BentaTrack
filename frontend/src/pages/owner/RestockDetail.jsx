@@ -88,6 +88,7 @@ export default function RestockDetail() {
       toast.success('Discrepancy reported');
       setMode(null);
       load();
+      if (ctx.refreshUnread) ctx.refreshUnread();
     } catch (e) {
       toast.error(extractError(e).message);
     } finally {

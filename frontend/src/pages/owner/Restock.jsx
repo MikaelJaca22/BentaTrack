@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, useOutletContext } from 'react-router-dom';
 import { Plus, Truck, X, Minus, Search } from 'lucide-react';
 import client, { extractError } from '../../api/client.js';
 import { useToast } from '../../components/Toast.jsx';
@@ -14,6 +14,7 @@ export default function Restock() {
   const toast = useToast();
   const navigate = useNavigate();
   const location = useLocation();
+  const ctx = useOutletContext() || {};
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
@@ -91,6 +92,7 @@ export default function Restock() {
           setCreating(false);
           navigate('/owner/restock', { replace: true });
           load();
+          if (ctx.refreshUnread) ctx.refreshUnread();
         }}
       />
     </div>

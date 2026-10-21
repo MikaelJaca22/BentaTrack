@@ -172,6 +172,14 @@ export function create(req, res, next) {
 // ---- Both roles: list (filtered to caller) ----
 export function list(req, res, next) {
   try {
+    if (req.user && req.user.role === 'store_owner') {
+      try {
+        raiseLowStockAlerts(req.user.id);
+      } catch (e) {
+        // eslint-disable-next-line no-console
+        console.error('Low-stock sweep failed while listing restock requests:', e);
+      }
+    }
     const q = req.query;
     const status = RESTOCK_STATUSES.includes(q.status) ? q.status : '';
     const { limit, offset } = parsePagination(q);
