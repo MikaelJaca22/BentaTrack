@@ -11,7 +11,7 @@ Two roles, three apps, one backend:
 
 | App | Stack | Folder |
 | --- | --- | --- |
-| REST API backend | Node.js + Express + SQLite (better-sqlite3) + JWT/bcrypt + zod | `backend/` |
+| REST API backend | Node.js + Express + SQLite (better-sqlite3) + JWT/bcryptjs + zod | `backend/` |
 | Web client | React 18 (Vite) + Tailwind CSS + lucide-react + React Router + axios | `frontend/` |
 | Mobile client | React Native (Expo SDK 52) + NativeWind + lucide-react-native + React Navigation + expo-secure-store/print/sharing/asset | `mobile/` |
 
