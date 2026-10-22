@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Bell, CheckCheck, Package, Truck } from 'lucide-react';
+import { Bell, CheckCheck, Package, Trash2, Truck } from 'lucide-react';
 import client, { extractError } from '../api/client.js';
 import { useAuth } from '../context/AuthContext.jsx';
 import { useToast } from './Toast.jsx';
@@ -92,14 +92,30 @@ export default function NotificationsView({ refreshUnread }) {
     }
   }
 
+  async function clearAll() {
+    try {
+      await client.delete('/notifications');
+      setItems([]);
+      if (refreshUnread) refreshUnread();
+      toast.success('Notifications cleared');
+    } catch (e) {
+      toast.error(extractError(e).message);
+    }
+  }
+
   if (loading) return <SkeletonList rows={4} />;
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-end no-print">
+      <div className="flex justify-end gap-2 no-print">
         {items.some((n) => !n.isRead) ? (
           <Button variant="secondary" icon={CheckCheck} onClick={markAll}>
             Mark all read
+          </Button>
+        ) : null}
+        {items.length > 0 ? (
+          <Button variant="secondary" icon={Trash2} onClick={clearAll}>
+            Clear notifications
           </Button>
         ) : null}
       </div>

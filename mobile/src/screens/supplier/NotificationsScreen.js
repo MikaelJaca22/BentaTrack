@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { View, Text, ScrollView, Pressable } from 'react-native';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
-import { Bell, CheckCheck, Package, Truck } from 'lucide-react-native';
+import { Bell, CheckCheck, Package, Trash2, Truck } from 'lucide-react-native';
 import client, { extractError } from '../../api/client.js';
 import { useToast } from '../../components/Toast.js';
 import Button from '../../components/Button.js';
@@ -61,6 +61,16 @@ export default function SupplierNotificationsScreen() {
     }
   }
 
+  async function clearAll() {
+    try {
+      await client.delete('/notifications');
+      setItems([]);
+      toast.success('Notifications cleared');
+    } catch (e) {
+      toast.error(extractError(e).message);
+    }
+  }
+
   return (
     <View className="flex-1 bg-gray100">
       <TopHeader title="Alerts" />
@@ -69,10 +79,15 @@ export default function SupplierNotificationsScreen() {
           <SkeletonList rows={4} />
         ) : (
           <>
-            {items.some((n) => !n.isRead) ? (
-              <View className="flex-row justify-end mb-3">
-                <Button variant="secondary" icon={CheckCheck} onPress={markAll}>
-                  Mark all read
+            {items.length > 0 ? (
+              <View className="flex-row justify-end gap-2 mb-3">
+                {items.some((n) => !n.isRead) ? (
+                  <Button variant="secondary" icon={CheckCheck} onPress={markAll}>
+                    Mark all read
+                  </Button>
+                ) : null}
+                <Button variant="secondary" icon={Trash2} onPress={clearAll}>
+                  Clear notifications
                 </Button>
               </View>
             ) : null}

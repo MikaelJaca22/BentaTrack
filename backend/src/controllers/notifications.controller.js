@@ -82,3 +82,12 @@ export function markAllRead(req, res, next) {
     next(e);
   }
 }
+
+export function clearAll(req, res, next) {
+  try {
+    db.prepare('DELETE FROM notifications WHERE user_id = ?').run(req.user.id);
+    res.json({ ok: true });
+  } catch (e) {
+    next(e);
+  }
+}
