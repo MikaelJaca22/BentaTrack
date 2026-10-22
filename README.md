@@ -132,11 +132,10 @@ Notes:
 The empty-by-default rule is not weakened by an opt-in developer script that only runs when you ask for it. `src/db/seed.js` is **never** imported by `server.js` or `migrate.js` — booting the API never seeds anything.
 
 ```bash
-npm run seed                    # seeds the single registered store owner
-npm run seed -- kaeljaca        # or name the owner explicitly (required if >1 owner)
+npm run seed                    # creates dev accounts + a 32-item product catalogue
 ```
 
-It inserts 10 general-retail products (peso pricing) into an **already registered** owner — it never creates users — and is safe to re-run: duplicate codes and names are skipped rather than inserted. Three of the ten sit at or below their reorder level so the low-stock filter, alerts and restock flow can be exercised immediately, and one item intentionally has no `product_code` to cover the no-code path. Every sample is validated against the same zod schema as `POST /api/products`, so sample data cannot drift from the API contract.
+It creates (or reuses) two accounts — store owner `kaeljaca` (password `kael1234`) and supplier `jasmine` (password `jasmine1234`) — links the supplier to the owner, and inserts 32 catalogue products (brand + name, e.g. "NESTEA Apple") with zero price, cost, stock and reorder level. It is idempotent: existing usernames and product names are skipped rather than duplicated. It takes no username argument and does not validate against the product zod schema (values are inserted directly).
 
 To get back to a truly empty database, stop the backend and delete `backend/data/`.
 
