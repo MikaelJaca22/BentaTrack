@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { AlertCircle } from 'lucide-react-native';
+import { AlertCircle, Store } from 'lucide-react-native';
 import { useAuth } from '../../context/AuthContext.js';
 import { extractError } from '../../api/client.js';
 import { SYSTEM_TITLE } from '../../config.js';
@@ -44,6 +44,9 @@ export default function LoginScreen({ navigation }) {
       >
         <View className="px-6 py-10">
           <View className="items-center mb-8">
+            <View className="mb-3">
+              <Store size={48} color="#0A0A0A" strokeWidth={1.5} />
+            </View>
             <Text className="text-2xl font-bold text-ink">BentaTrack</Text>
             <Text className="mt-1 text-xs text-gray500 text-center">{SYSTEM_TITLE}</Text>
           </View>
