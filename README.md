@@ -27,7 +27,7 @@ BentaTrack/
 │   ├── src/
 │   │   ├── config/env.js
 │   │   ├── db/connection.js, db/migrate.js      # tables only, zero inserts
-│   │   ├── db/seed.js                           # opt-in sample products, never auto-run
+│   │   ├── db/seed.js                           # opt-in sample data, never auto-run
 │   │   ├── middleware/auth.js, validate.js, errorHandler.js
 │   │   ├── utils/receipt.js, notify.js, money.js, query.js, stockAlerts.js
 │   │   ├── controllers/auth|products|sales|suppliers|restock|reports|notifications.controller.js
@@ -65,7 +65,7 @@ BentaTrack/
 
 ## Prerequisites
 
-- **Node.js 18+** (the project is verified on Node 20/24; `better-sqlite3` ^12 ships prebuilt binaries for modern Node, so no Visual Studio build tools are required)
+- **Node.js 24 LTS** (Expo SDK 58 requires Node 22.13+/24.3+; the backend's `better-sqlite3` ^12 requires Node 20+ and ships prebuilt binaries, so no Visual Studio build tools are required).
 - **Git** (optional)
 - For the mobile app: the **Expo Go** app on your phone, or an Android/iOS emulator
 
@@ -121,13 +121,13 @@ The JSON API is unchanged — clients still send and receive pesos (`15.50`), an
 Notes:
 - On first start, `migrate.js` creates all tables (users, products, sales, sale_items, store_suppliers, restock_requests, restock_items, restock_events, notifications) in `data/bentatrack.db`. **No rows are inserted** — the system starts empty by design.
 - With `NODE_ENV=production` the server **refuses to start** if `JWT_SECRET` is missing, shorter than 32 characters, or still a known placeholder. `CORS_ORIGINS` is likewise required — an empty value would let any website make authenticated calls to the API. In development only, a clearly-marked fallback keeps a fresh clone runnable.
-- `POST /api/auth/login` is rate limited to 10 attempts per IP per 15 minutes; registration allows 20. Other routes require a valid token and are not limited.
-- **List endpoints are paginated.** `GET /api/sales`, `GET /api/notifications` and `GET /api/restock` accept `?limit=` (default 50, max 200) and `?offset=`, and return a `pagination: { total, limit, offset, hasMore }` block alongside the rows. Out-of-range or malformed values fall back to the default rather than erroring. `GET /api/notifications` also returns `unreadCount`, a count over all unread rows rather than the length of the current page. The `receipts` array inside the sales report is capped at 200; the summary totals above it still cover the whole date range.
+- `POST /api/auth/login` is rate limited to 10 attempts per IP per 15 minutes; registration allows 20. Other API routes (except the public `/api/health` check) require a valid token and are not limited.
+- **List endpoints are paginated.** `GET /api/sales`, `GET /api/notifications` and `GET /api/restock` accept `?limit=` (default 50, max 200) and `?offset=`, and return a `pagination: { total, limit, offset, hasMore }` block alongside the rows. Malformed values fall back to the default, while out-of-range limits are clamped to 1–200 rather than erroring. `GET /api/notifications` also returns `unreadCount`, a count over all unread rows rather than the length of the current page. The `receipts` array inside the sales report is capped at 200; the summary totals above it still cover the whole date range.
 - Query parameters are parsed leniently in `src/utils/query.js`: dates must be `YYYY-MM-DD` or are ignored, `LIKE` wildcards in search terms are escaped (so searching `%` does not return every row), and `restock` `status` is checked against the known values.
 - Rotating `JWT_SECRET` invalidates every issued token and signs all users out.
 - `CORS_ORIGINS` must list every client origin (Vite dev server, preview, Expo).
 
-### Optional: loading sample products
+### Optional: loading sample data
 
 The empty-by-default rule is not weakened by an opt-in developer script that only runs when you ask for it. `src/db/seed.js` is **never** imported by `server.js` or `migrate.js` — booting the API never seeds anything.
 
@@ -135,7 +135,7 @@ The empty-by-default rule is not weakened by an opt-in developer script that onl
 npm run seed                    # creates dev accounts + a 32-item product catalogue
 ```
 
-It creates (or reuses) two accounts — store owner `kaeljaca` (password `kael1234`) and supplier `jasmine` (password `jasmine1234`) — links the supplier to the owner, and inserts 32 catalogue products (brand + name, e.g. "NESTEA Apple") with zero price, cost, stock and reorder level. It is idempotent: existing usernames and product names are skipped rather than duplicated. It takes no username argument and does not validate against the product zod schema (values are inserted directly).
+It creates (or reuses) two accounts — store owner `kaeljaca` (password `kael1234`) and supplier `jasmine` (password `jasmine1234`) — links the supplier to the owner, and inserts 32 catalogue products (brand + name, e.g. "NESTEA Apple") with preset price and cost values, 50 units of stock and a reorder level of 10. It is idempotent: existing usernames and product names are skipped rather than duplicated. It takes no username argument and does not validate against the product zod schema (values are inserted directly).
 
 To get back to a truly empty database, stop the backend and delete `backend/data/`.
 
@@ -206,15 +206,15 @@ Restart with `npx expo start --clear` after editing it.
 
 ## API surface (summary)
 
-All routes are under `/api`, require `Authorization: Bearer <jwt>` (except register/login), are zod-validated, role- and ownership-scoped, and return errors as `{ "error": { "message", "field?" } }`.
+All routes are under `/api`, require `Authorization: Bearer <jwt>` (except register/login and the public `/api/health` check), are zod-validated where they accept input, role- and ownership-scoped, and return errors as `{ "error": { "message", "field?" } }`.
 
 - `POST /api/auth/register` · `POST /api/auth/login` · `GET /api/auth/me`
-- `GET|POST /api/products` · `GET|PUT|DELETE /api/products/:id` · `PATCH /api/products/:id/stock` · query `?search=`, `?lowStock=true`
+- `GET|POST /api/products` · `PUT|DELETE /api/products/:id` · `PATCH /api/products/:id/stock` (`quantity` + `reason`) · query `?search=`, `?lowStock=true`
 - `POST /api/sales` (transactional: totals recomputed, stock deducted, receipt `BT-YYYYMMDD-0001` numbered per store/day, low-stock alerts raised) · `GET /api/sales` (paginated) · `GET /api/sales/:id`
 - `GET /api/suppliers/search?q=` · `GET /api/suppliers/linked` · `POST /api/suppliers/link` · `DELETE /api/suppliers/link/:id`
 - `POST /api/restock` · `GET /api/restock?status=` (paginated) · `GET /api/restock/:id` · `POST /api/restock/:id/accept|decline|deliver|verify|discrepancy|resend`
-- `GET /api/reports/sales|inventory|restock?from=&to=&format=csv`
-- `GET /api/notifications?unread=` (paginated) · `PATCH /api/notifications/:id/read` · `PATCH /api/notifications/read-all` · `DELETE|PATCH /api/notifications/clear` (and `/clear-all`)
+- `GET /api/reports/sales|restock?from=&to=&format=csv` · `GET /api/reports/inventory?format=csv`
+- `GET /api/notifications?unread=` (paginated) · `PATCH /api/notifications/:id/read` · `PATCH /api/notifications/read-all` · `DELETE /api/notifications` (also `DELETE|PATCH` on `/clear` and `/clear-all`)
 
 Restock state machine (enforced server-side): `pending → accepted → delivered → completed` · `pending → declined (→ resent as a new request)` · `delivered → discrepancy → delivered (re-delivery loop)`. Only the owner verifies; verification completes the request **only when every received quantity equals delivered**, and then adds stock inside a transaction.
 
@@ -228,21 +228,21 @@ Run the backend, then exercise the flow on web and mobile. Every step is expecte
 1. Start fresh (delete `backend/data/` if present) → `npm run dev`. Every screen shows an empty-state message; nothing is preloaded.
 
 **Accounts & login**
-2. Create Account → toggle **Supplier**, register supplier `s1`. Toggle **Store Owner**, register owner `o1` (check: username 4–20 chars `[A-Za-z0-9_.]` enforced; password min 8 + confirm; the name label switches between "Store Name" and "Supplier / Business Name").
+2. Create Account → toggle **Supplier**, register supplier `s1`. Toggle **Store Owner**, register owner `o1` (check: username 4–20 chars `[A-Za-z0-9_.]` enforced; password min 8 + confirm; the name label switches between "Store Owner Name" and "Supplier Name").
 3. Log in as `o1` with a wrong password → generic "Invalid username or password" (no role hint). Repeat many times → rate-limit message. Log in correctly → owner UI; the app knows your role from the JWT (no role selector on Login).
 
 **Sales flow (owner)**
-4. Products tab → add 2 products (one with no code; one with code). Stock adjustment +/- works. Duplicate product code for the same owner → rejected.
-5. New Sale → search a product by name (no scanning exists anywhere) → add to cart → increase quantity beyond stock → blocked. Checkout → enter tendered cash below total → change field and confirm stay disabled; enter exact change → allowed.
+4. Products tab → add 2 products (one with no code; one with code). Stock adjustment +/- works (a reason is required). Duplicate product code for the same owner → rejected.
+5. New Sale → search a product by name (no scanning exists anywhere) → add to cart → increase quantity beyond stock → blocked. Checkout → enter tendered cash below total → change due shows "Insufficient" and Confirm Sale stays disabled; enter exact change → allowed.
 6. Confirm sale → receipt appears numbered `BT-<today>-0001`, second sale that day is `-0002`. Product stock decreased. Print / Save-as-PDF / Share all work (web: print dialog; mobile: expo-print PDF + share sheet).
-7. Sell a product down to/below its reorder level → a low-stock notification is created (bell badge updates) with a "Create restock request" shortcut.
+7. Sell a product down to/below its reorder level → a low-stock notification is created (bell badge updates), and the sale result screen offers a "Create Restock Request" shortcut.
 
 **Suppliers & restock (owner → supplier → owner)**
 8. Owner: Suppliers → search for `s1` → Link. Linked supplier appears in the list; unlinking asks for confirmation (test it, re-link).
 9. Trigger the low-stock alert → create a restock request selecting the linked supplier and items with quantities. Status **Pending** (outlined badge), supplier gets a notification.
 10. Supplier login: request visible with store name. **Decline** requires a reason; owner is notified and can **Resend** (to the same or another supplier) — the resent request is a new **Pending** row; history is preserved.
 11. Supplier: **Accept** (badge turns gray-filled) → **Deliver** with delivered quantities (may be partial). Owner is notified.
-12. Owner verify: enter a received quantity that mismatches one item → **Discrepancy** badge (2px black outline + warning icon) and the request loops back to the supplier for re-delivery. Stock is **not** changed yet.
+12. Owner: choose the discrepancy action, enter a received quantity that mismatches one item, and add a note → **Discrepancy** badge (2px black outline + warning icon) and the request loops back to the supplier for re-delivery. (Verifying with a mismatched quantity is rejected.) Stock is **not** changed yet.
 13. Re-deliver → verify with all quantities matching → **Completed** (black fill) and inventory increases by the received amounts. Event history on both roles shows every transition with actor and timestamp.
 
 **Reports (owner)**
@@ -251,7 +251,7 @@ Run the backend, then exercise the flow on web and mobile. Every step is expecte
 16. For each report: on-screen view, Print/PDF, Share (summary/PDF), and CSV download all produce correct output.
 
 **Notifications**
-17. Tapping a restock notification deep-links to that request (owner → RestockDetail, supplier → RequestDetail). Mark-as-read, "Mark all read", and "Clear all notifications" work; the unread badge clears.
+17. Tapping a restock notification deep-links to that request (owner → RestockDetail, supplier → RequestDetail). Mark-as-read, "Mark all read", and "Clear notifications" work; the unread badge clears.
 
 **Design & restrictions sweep**
 18. Any screen: only black/white/gray rendered, no emojis, thin 1px borders, rounded-xl cards, web sidebar on desktop / bottom tabs on narrow screens and mobile; touch targets ≥ 44 px; skeletons appear while loading.
@@ -263,7 +263,7 @@ Run the backend, then exercise the flow on web and mobile. Every step is expecte
 
 | Problem | Fix |
 | --- | --- |
-| `better-sqlite3` install error | Use `better-sqlite3@^12` (prebuilt binaries). Node 18+ required. |
+| `better-sqlite3` install error | Use `better-sqlite3@^12` (prebuilt binaries). Node 20+ required for the backend; Expo SDK 58 needs Node 22.13+/24.3+. |
 | Mobile "Cannot reach the server" | Confirm phone and computer are on the same Wi-Fi, the backend is running on port 4000, and Node.js is allowed through the firewall. The app auto-detects the API from Metro's host; override with `EXPO_PUBLIC_API_URL` in `mobile/.env` if needed, then restart with `npx expo start --clear`. |
 | Port 4000 in use | Change `PORT` in `backend/.env` and update the clients' API URLs. |
 | Want a clean slate | Stop the backend and delete the `backend/data/` folder — the DB is recreated empty on next start. |
