@@ -13,7 +13,7 @@ Two roles, three apps, one backend:
 | --- | --- | --- |
 | REST API backend | Node.js + Express + SQLite (better-sqlite3) + JWT/bcryptjs + zod | `backend/` |
 | Web client | React 18 (Vite) + Tailwind CSS + lucide-react + React Router + axios | `frontend/` |
-| Mobile client | React Native (Expo SDK 52) + NativeWind + lucide-react-native + React Navigation + expo-secure-store/print/sharing/asset | `mobile/` |
+| Mobile client | React Native (Expo SDK 58) + NativeWind + lucide-react-native + React Navigation + expo-secure-store/print/sharing/asset | `mobile/` |
 
 Hard rules respected throughout: **cash-only** payments, **no barcode/QR/camera scanning** (search by name/code only), **no email anywhere**, **no seed data** (the database starts completely empty — every list shows an empty state until the user creates data), and a strict **black/white/gray monotone** design (status is communicated with icons, text, fills and borders — never color; no emojis in UI, Lucide icons only). Currency is the Philippine peso (₱), set by a single constant per client (`backend` stores numbers only; `frontend/src/config.js` and `mobile/src/config.js` each define `CURRENCY_SYMBOL`).
 
@@ -29,7 +29,7 @@ BentaTrack/
 │   │   ├── db/connection.js, db/migrate.js      # tables only, zero inserts
 │   │   ├── db/seed.js                           # opt-in sample products, never auto-run
 │   │   ├── middleware/auth.js, validate.js, errorHandler.js
-│   │   ├── utils/receipt.js, notify.js, money.js, query.js
+│   │   ├── utils/receipt.js, notify.js, money.js, query.js, stockAlerts.js
 │   │   ├── controllers/auth|products|sales|suppliers|restock|reports|notifications.controller.js
 │   │   ├── routes/*.routes.js
 │   │   ├── app.js
@@ -168,7 +168,7 @@ Defaults to `http://localhost:4000/api`, so most setups need no file.
 
 Requirements:
 
-- Expo Go installed on the phone. This project targets **Expo SDK 57**; use the current Expo Go from the Play Store on Android (the iOS App Store build can lag behind SDK 57).
+- Expo Go installed on the phone. This project targets **Expo SDK 58**; use the current Expo Go from the Play Store on Android (the iOS App Store build can lag behind SDK 58).
 - Phone and computer on the same Wi-Fi network.
 - Backend running on port 4000.
 
@@ -214,7 +214,7 @@ All routes are under `/api`, require `Authorization: Bearer <jwt>` (except regis
 - `GET /api/suppliers/search?q=` · `GET /api/suppliers/linked` · `POST /api/suppliers/link` · `DELETE /api/suppliers/link/:id`
 - `POST /api/restock` · `GET /api/restock?status=` (paginated) · `GET /api/restock/:id` · `POST /api/restock/:id/accept|decline|deliver|verify|discrepancy|resend`
 - `GET /api/reports/sales|inventory|restock?from=&to=&format=csv`
-- `GET /api/notifications?unread=` (paginated) · `PATCH /api/notifications/:id/read` · `PATCH /api/notifications/read-all`
+- `GET /api/notifications?unread=` (paginated) · `PATCH /api/notifications/:id/read` · `PATCH /api/notifications/read-all` · `DELETE|PATCH /api/notifications/clear` (and `/clear-all`)
 
 Restock state machine (enforced server-side): `pending → accepted → delivered → completed` · `pending → declined (→ resent as a new request)` · `delivered → discrepancy → delivered (re-delivery loop)`. Only the owner verifies; verification completes the request **only when every received quantity equals delivered**, and then adds stock inside a transaction.
 
@@ -251,7 +251,7 @@ Run the backend, then exercise the flow on web and mobile. Every step is expecte
 16. For each report: on-screen view, Print/PDF, Share (summary/PDF), and CSV download all produce correct output.
 
 **Notifications**
-17. Tapping a restock notification deep-links to that request (owner → RestockDetail, supplier → RequestDetail). Mark-as-read and "Mark all read" work; the unread badge clears.
+17. Tapping a restock notification deep-links to that request (owner → RestockDetail, supplier → RequestDetail). Mark-as-read, "Mark all read", and "Clear all notifications" work; the unread badge clears.
 
 **Design & restrictions sweep**
 18. Any screen: only black/white/gray rendered, no emojis, thin 1px borders, rounded-xl cards, web sidebar on desktop / bottom tabs on narrow screens and mobile; touch targets ≥ 44 px; skeletons appear while loading.
