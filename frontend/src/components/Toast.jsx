@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useCallback } from 'react';
-import { CheckCircle2, AlertCircle, Info } from 'lucide-react';
+import { CheckCircle2, AlertCircle, Info, X } from 'lucide-react';
 
 const ToastContext = createContext(null);
 
@@ -50,7 +50,7 @@ export function ToastProvider({ children }) {
               className="text-gray300 hover:text-white text-xs px-1"
               aria-label="Dismiss"
             >
-              ✕
+              <X size={14} />
             </button>
           </div>
         ))}

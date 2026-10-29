@@ -57,7 +57,7 @@ BentaTrack/
     │   ├── screens/owner/                        # Dashboard, NewSale, Products, Restock, RestockDetail, Suppliers, Receipt, Reports, Notifications, More
     │   └── screens/supplier/                     # Dashboard, Requests, RequestDetail, History, Notifications
     ├── App.js, app.json, babel.config.js, metro.config.js, tailwind.config.js
-    ├── .env                                          # gitignored — create it yourself, see step 3
+    ├── .env                                          # optional, gitignored — only for a custom API URL, see step 3
     └── package.json                              # npm run dev (Expo)
 ```
 
@@ -105,9 +105,9 @@ node -e "console.log(require('crypto').randomBytes(64).toString('base64url'))"
 | --- | --- | --- |
 | `NODE_ENV` | no | `development` (default) or `production` |
 | `PORT` | no | Defaults to `4000` |
-| `JWT_SECRET` | **yes** | Random string, min 32 chars. Must be the *same* value for every running instance or existing tokens stop verifying |
+| `JWT_SECRET` | **yes in production** | Random string, min 32 chars. Must be the *same* value for every running instance or existing tokens stop verifying. Development only falls back to a clearly-marked dev secret when unset |
 | `DB_PATH` | no | Defaults to `backend/data/bentatrack.db` |
-| `CORS_ORIGINS` | **yes in production** | Comma-separated list of every client origin. An empty value would mean "allow any origin", so production refuses to start without one |
+| `CORS_ORIGINS` | **yes in production** | Comma-separated list of every client origin. When empty, browser requests carrying an `Origin` header are rejected, so production refuses to start without one |
 | `TRUST_PROXY` | no | Number of reverse-proxy hops in front of the app (`1` for a single nginx), or `true`/`false`. Unset by default, which is the safe choice — without it every client behind a proxy shares one rate-limit bucket. Only set this when something actually sets `X-Forwarded-For` |
 
 ### Money is stored as integer minor units
@@ -120,7 +120,7 @@ The JSON API is unchanged — clients still send and receive pesos (`15.50`), an
 
 Notes:
 - On first start, `migrate.js` creates all tables (users, products, sales, sale_items, store_suppliers, restock_requests, restock_items, restock_events, notifications) in `data/bentatrack.db`. **No rows are inserted** — the system starts empty by design.
-- With `NODE_ENV=production` the server **refuses to start** if `JWT_SECRET` is missing, shorter than 32 characters, or still a known placeholder. `CORS_ORIGINS` is likewise required — an empty value would let any website make authenticated calls to the API. In development only, a clearly-marked fallback keeps a fresh clone runnable.
+- With `NODE_ENV=production` the server **refuses to start** if `JWT_SECRET` is missing, shorter than 32 characters, or still a known placeholder. `CORS_ORIGINS` is likewise required — when it is empty, requests carrying a browser `Origin` header are denied. In development only, a clearly-marked JWT fallback keeps a fresh clone runnable.
 - `POST /api/auth/login` is rate limited to 10 attempts per IP per 15 minutes; registration allows 20. Other API routes (except the public `/api/health` check) require a valid token and are not limited.
 - **List endpoints are paginated.** `GET /api/sales`, `GET /api/notifications` and `GET /api/restock` accept `?limit=` (default 50, max 200) and `?offset=`, and return a `pagination: { total, limit, offset, hasMore }` block alongside the rows. Malformed values fall back to the default, while out-of-range limits are clamped to 1–200 rather than erroring. `GET /api/notifications` also returns `unreadCount`, a count over all unread rows rather than the length of the current page. The `receipts` array inside the sales report is capped at 200; the summary totals above it still cover the whole date range.
 - Query parameters are parsed leniently in `src/utils/query.js`: dates must be `YYYY-MM-DD` or are ignored, `LIKE` wildcards in search terms are escaped (so searching `%` does not return every row), and `restock` `status` is checked against the known values.
@@ -222,7 +222,7 @@ Restock state machine (enforced server-side): `pending → accepted → delivere
 
 ## Manual test checklist
 
-Run the backend, then exercise the flow on web and mobile. Every step is expected to behave identically on both clients.
+Run the backend, then exercise the flow on web and mobile. The flows are expected to behave consistently on both clients.
 
 **Setup — empty system**
 1. Start fresh (delete `backend/data/` if present) → `npm run dev`. Every screen shows an empty-state message; nothing is preloaded.
@@ -254,7 +254,7 @@ Run the backend, then exercise the flow on web and mobile. Every step is expecte
 17. Tapping a restock notification deep-links to that request (owner → RestockDetail, supplier → RequestDetail). Mark-as-read, "Mark all read", and "Clear notifications" work; the unread badge clears.
 
 **Design & restrictions sweep**
-18. Any screen: only black/white/gray rendered, no emojis, thin 1px borders, rounded-xl cards, web sidebar on desktop / bottom tabs on narrow screens and mobile; touch targets ≥ 44 px; skeletons appear while loading.
+18. Any screen: only black/white/gray rendered, no emojis, thin 1px borders, rounded-xl cards, web top bar + bottom navigation at every width, mobile bottom tabs; primary buttons and list rows are comfortably tappable; skeletons appear while loading.
 19. Log out → back to Login; tokens are cleared (web: localStorage, mobile: SecureStore); navigating to a protected screen while logged out redirects to Login.
 
 ---

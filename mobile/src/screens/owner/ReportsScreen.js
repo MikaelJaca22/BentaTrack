@@ -4,7 +4,7 @@ import * as Print from 'expo-print';
 import * as Sharing from 'expo-sharing';
 // SDK 54+ moved the classic URI-based API to the "legacy" entry point.
 import * as FileSystem from 'expo-file-system/legacy';
-import { BarChart3, Package, Truck, Printer, Share2, Download } from 'lucide-react-native';
+import { BarChart3, Package, Truck, Printer, Share2, Download, ChevronRight } from 'lucide-react-native';
 import client, { extractError } from '../../api/client.js';
 import { formatMoney, SYSTEM_TITLE } from '../../config.js';
 import { useToast } from '../../components/Toast.js';
@@ -27,7 +27,7 @@ function rangeForPreset(preset) {
   return { from: d.toISOString().slice(0, 10), to };
 }
 
-export default function ReportsScreen() {
+export default function ReportsScreen({ navigation }) {
   const toast = useToast();
   const [tab, setTab] = useState('sales');
 
@@ -92,6 +92,12 @@ export default function ReportsScreen() {
         <tr><td>Transactions</td><td class="r">${sales.summary.transactionCount}</td></tr>
         <tr><td>Items Sold</td><td class="r">${sales.summary.itemsSold}</td></tr>
         <tr><td>Average Sale</td><td class="r">${formatMoney(sales.summary.averageSale)}</td></tr>
+      </table>
+      <h2>Daily Breakdown</h2><table><tr><th>Day</th><th class="r">Transactions</th><th class="r">Revenue</th></tr>
+        ${sales.daily.map((d) => `<tr><td>${d.day}</td><td class="r">${d.txns}</td><td class="r">${formatMoney(d.revenue)}</td></tr>`).join('')}
+      </table>
+      <h2>Top Products (quantity)</h2><table><tr><th>Product</th><th class="r">Quantity</th></tr>
+        ${sales.topProductsByQuantity.map((p) => `<tr><td>${p.name}</td><td class="r">${p.quantity}</td></tr>`).join('')}
       </table>
       <h2>Top Products (revenue)</h2><table><tr><th>Product</th><th class="r">Revenue</th></tr>
         ${sales.topProductsByRevenue.map((p) => `<tr><td>${p.name}</td><td class="r">${formatMoney(p.revenue)}</td></tr>`).join('')}
@@ -243,7 +249,7 @@ export default function ReportsScreen() {
       {loading ? (
         <SkeletonList rows={4} />
       ) : tab === 'sales' && sales ? (
-        <SalesReport sales={sales} />
+        <SalesReport sales={sales} navigation={navigation} />
       ) : tab === 'inventory' && inventory ? (
         <InventoryReport inventory={inventory} />
       ) : tab === 'restock' && restock ? (
@@ -281,7 +287,8 @@ function Metric({ label, value }) {
   );
 }
 
-function SalesReport({ sales }) {
+function SalesReport({ sales, navigation }) {
+  const maxDaily = Math.max(1, ...sales.daily.map((d) => d.revenue));
   return (
     <>
       <View className="flex-row flex-wrap gap-3 mb-3">
@@ -290,6 +297,26 @@ function SalesReport({ sales }) {
         <Metric label="Items Sold" value={String(sales.summary.itemsSold)} />
         <Metric label="Average Sale" value={formatMoney(sales.summary.averageSale)} />
       </View>
+      <Card>
+        <Text className="text-sm font-semibold text-ink mb-3">Daily Breakdown</Text>
+        {sales.daily.length === 0 ? (
+          <Text className="text-xs text-gray500">No sales in this range.</Text>
+        ) : (
+          <View className="flex-row items-end gap-2">
+            {sales.daily.slice(-14).map((d) => (
+              <View key={d.day} className="flex-1 items-center gap-1">
+                <View className="w-full justify-end" style={{ height: 96 }}>
+                  <View
+                    className="w-full bg-gray800 rounded-t"
+                    style={{ height: Math.max(4, Math.round((d.revenue / maxDaily) * 96)) }}
+                  />
+                </View>
+                <Text className="text-[9px] text-gray500">{d.day.slice(5)}</Text>
+              </View>
+            ))}
+          </View>
+        )}
+      </Card>
       <Card>
         <Text className="text-sm font-semibold text-ink mb-2">Top Products (quantity)</Text>
         {sales.topProductsByQuantity.length === 0 ? (
@@ -304,15 +331,35 @@ function SalesReport({ sales }) {
         )}
       </Card>
       <Card>
+        <Text className="text-sm font-semibold text-ink mb-2">Top Products (revenue)</Text>
+        {sales.topProductsByRevenue.length === 0 ? (
+          <Text className="text-xs text-gray500">No data.</Text>
+        ) : (
+          sales.topProductsByRevenue.map((p, i) => (
+            <View key={p.name + i} className="flex-row justify-between py-1">
+              <Text className="text-sm text-ink flex-1">{i + 1}. {p.name}</Text>
+              <Text className="text-sm text-gray600">{formatMoney(p.revenue)}</Text>
+            </View>
+          ))
+        )}
+      </Card>
+      <Card>
         <Text className="text-sm font-semibold text-ink mb-2">Receipts</Text>
         {sales.receipts.length === 0 ? (
           <Text className="text-xs text-gray500">No receipts in this range.</Text>
         ) : (
           sales.receipts.map((r) => (
-            <View key={String(r.id)} className="flex-row justify-between py-1.5 border-t border-gray200">
+            <Pressable
+              key={String(r.id)}
+              onPress={() => navigation.navigate('Receipt', { id: r.id })}
+              className="flex-row items-center justify-between py-2.5 border-t border-gray200 active:bg-gray100"
+            >
               <Text className="text-sm text-ink">{r.receiptNo}</Text>
-              <Text className="text-sm text-gray600">{formatMoney(r.total)}</Text>
-            </View>
+              <View className="flex-row items-center gap-1">
+                <Text className="text-sm text-gray600">{formatMoney(r.total)}</Text>
+                <ChevronRight size={14} color="#A3A3A3" />
+              </View>
+            </Pressable>
           ))
         )}
       </Card>
