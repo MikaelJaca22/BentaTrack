@@ -65,7 +65,7 @@ BentaTrack/
 
 ## Prerequisites
 
-- **Node.js 24 LTS** (Expo SDK 58 requires Node 22.13+/24.3+; the backend's `better-sqlite3` ^12 requires Node 20+ and ships prebuilt binaries, so no Visual Studio build tools are required).
+- **Node.js 24 LTS or newer** — the repo pins the current LTS in `.nvmrc` (Node 26), so run `nvm use` inside the repo before installing. Expo SDK 58 requires Node 22.13+/24.3+; the backend's `better-sqlite3` ^12 requires Node 20+. Its install script is pre-approved in `backend/package.json` (`allowScripts`) because npm 11+ blocks dependency install scripts by default; with that approval npm fetches a prebuilt binary or builds one, so no Visual Studio build tools are required.
 - **Git** (optional)
 - For the mobile app: the **Expo Go** app on your phone, or an Android/iOS emulator
 
@@ -126,6 +126,7 @@ Notes:
 - Query parameters are parsed leniently in `src/utils/query.js`: dates must be `YYYY-MM-DD` or are ignored, `LIKE` wildcards in search terms are escaped (so searching `%` does not return every row), and `restock` `status` is checked against the known values.
 - Rotating `JWT_SECRET` invalidates every issued token and signs all users out.
 - `CORS_ORIGINS` must list every client origin (Vite dev server, preview, Expo).
+- `.nvmrc` pins Node 26. `better-sqlite3` is a native module, so its binary is tied to one Node major. `backend/package.json` approves its install script via `allowScripts` (npm 11+ blocks dependency scripts by default), so a fresh `npm install` builds for the active Node. After switching Node versions, run `npm rebuild better-sqlite3`; the server detects the mismatch and prints that command.
 
 ### Optional: loading sample data
 
@@ -264,6 +265,7 @@ Run the backend, then exercise the flow on web and mobile. The flows are expecte
 | Problem | Fix |
 | --- | --- |
 | `better-sqlite3` install error | Use `better-sqlite3@^12` (prebuilt binaries). Node 20+ required for the backend; Expo SDK 58 needs Node 22.13+/24.3+. |
+| `NODE_MODULE_VERSION` mismatch / `ERR_DLOPEN_FAILED` on startup | The native `better-sqlite3` binary was built for a different Node version. From `backend/`, run `nvm use` (reads the repo's `.nvmrc`) and then `npm rebuild better-sqlite3`. |
 | Mobile "Cannot reach the server" | Confirm phone and computer are on the same Wi-Fi, the backend is running on port 4000, and Node.js is allowed through the firewall. The app auto-detects the API from Metro's host; override with `EXPO_PUBLIC_API_URL` in `mobile/.env` if needed, then restart with `npx expo start --clear`. |
 | Port 4000 in use | Change `PORT` in `backend/.env` and update the clients' API URLs. |
 | Want a clean slate | Stop the backend and delete the `backend/data/` folder — the DB is recreated empty on next start. |
