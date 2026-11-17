@@ -29,11 +29,12 @@ BentaTrack/
 │   │   ├── db/connection.js, db/migrate.js      # tables only, zero inserts
 │   │   ├── db/seed.js                           # opt-in sample data, never auto-run
 │   │   ├── middleware/auth.js, validate.js, errorHandler.js
-│   │   ├── utils/receipt.js, notify.js, money.js, query.js, stockAlerts.js
+│   │   ├── utils/receipt.js, notify.js, money.js, query.js, stockAlerts.js, productImages.js
 │   │   ├── controllers/auth|products|sales|suppliers|restock|reports|notifications.controller.js
 │   │   ├── routes/*.routes.js
 │   │   ├── app.js
 │   │   └── server.js
+│   ├── public/products/                          # generated product photos + manifest.json
 │   ├── scripts/dev.js, scripts/smoke.mjs         # dev launcher (used by nodemon) + end-to-end smoke test
 │   ├── .env                                      # gitignored — create it yourself, see step 1
 │   └── package.json                              # npm run dev / start / seed / smoke
@@ -46,11 +47,12 @@ BentaTrack/
 │   │   ├── pages/owner/                          # Dashboard, NewSale, Receipt, Products, Restock, RestockDetail, Suppliers, Reports, Notifications
 │   │   ├── pages/supplier/                       # Dashboard, Requests, RequestDetail, History, Notifications
 │   │   ├── App.jsx, main.jsx, config.js, index.css
+│   ├── public/products/                          # generated product photos + manifest.json
 │   └── package.json                              # npm run dev / build / preview
 └── mobile/
     ├── src/
     │   ├── api/client.js, tokenStore.js          # expo-secure-store + in-memory token
-    │   ├── components/                           # Button, Input, Badge, EmptyState, Skeleton, Card, Toast, TopHeader
+    │   ├── components/                           # Button, Input, Badge, EmptyState, Skeleton, Card, Toast, TopHeader, ProductImage, ProductGallery
     │   ├── context/AuthContext.js
     │   ├── navigation/                           # Root, Owner (5 tabs), Supplier (4 tabs)
     │   ├── screens/auth/                         # LoginScreen, CreateAccountScreen
@@ -136,7 +138,11 @@ The empty-by-default rule is not weakened by an opt-in developer script that onl
 npm run seed                    # creates dev accounts + a 32-item product catalogue
 ```
 
-It creates (or reuses) two accounts — store owner `kaeljaca` (password `kael1234`) and supplier `jasmine` (password `jasmine1234`) — links the supplier to the owner, and inserts 32 catalogue products (brand + name, e.g. "NESTEA Apple") with preset price and cost values, 50 units of stock and a reorder level of 10. It is idempotent: existing usernames and product names are skipped rather than duplicated. It takes no username argument and does not validate against the product zod schema (values are inserted directly).
+It creates (or reuses) two accounts — store owner `kaeljaca` (password `kael1234`) and supplier `jasmine` (password `jasmine1234`) — links the supplier to the owner, and inserts 32 catalogue products (brand + name, e.g. "NESTEA Apple") with preset price and cost values, 50 units of stock, a reorder level of 10 and their generated product photo. It is idempotent: existing usernames and product names are skipped rather than duplicated, and existing catalogue rows from older databases get their `image_url` backfilled. It takes no username argument and does not validate against the product zod schema (values are inserted directly).
+
+### Product photos
+
+The 32 generated catalogue photos live in `backend/public/products/` and are served publicly at `/media/products/<file>` (the same files also remain under `frontend/public/products/`). `app.js` serves that folder before the API routes, so both the web client and Expo can load the images from the API origin. `src/utils/productImages.js` reads `manifest.json` and resolves an image by product name when a row has no stored `image_url`, which keeps older databases working without a reseed. Both dashboards show a **Product Images** gallery: owners see their full catalogue, suppliers see the catalogue of every store linked to them through `GET /api/products/gallery`.
 
 To get back to a truly empty database, stop the backend and delete `backend/data/`.
 
@@ -210,7 +216,8 @@ Restart with `npx expo start --clear` after editing it.
 All routes are under `/api`, require `Authorization: Bearer <jwt>` (except register/login and the public `/api/health` check), are zod-validated where they accept input, role- and ownership-scoped, and return errors as `{ "error": { "message", "field?" } }`.
 
 - `POST /api/auth/register` · `POST /api/auth/login` · `GET /api/auth/me`
-- `GET|POST /api/products` · `PUT|DELETE /api/products/:id` · `PATCH /api/products/:id/stock` (`quantity` + `reason`) · query `?search=`, `?lowStock=true`
+- `GET|POST /api/products` · `PUT|DELETE /api/products/:id` · `PATCH /api/products/:id/stock` (`quantity` + `reason`) · `GET /api/products/gallery` (both roles, returns `{ id, name, imageUrl }` rows) · query `?search=`, `?lowStock=true` · products accept an optional `imageUrl`
+- `GET /media/products/<file>` — public generated product photos (not under `/api`, no token required)
 - `POST /api/sales` (transactional: totals recomputed, stock deducted, receipt `BT-YYYYMMDD-0001` numbered per store/day, low-stock alerts raised) · `GET /api/sales` (paginated) · `GET /api/sales/:id`
 - `GET /api/suppliers/search?q=` · `GET /api/suppliers/linked` · `POST /api/suppliers/link` · `DELETE /api/suppliers/link/:id`
 - `POST /api/restock` · `GET /api/restock?status=` (paginated) · `GET /api/restock/:id` · `POST /api/restock/:id/accept|decline|deliver|verify|discrepancy|resend`

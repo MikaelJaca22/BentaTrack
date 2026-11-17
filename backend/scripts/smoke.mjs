@@ -82,9 +82,41 @@ async function main() {
   assert(link.status === 201, 'link supplier');
 
   // create product
-  const prod = await request('POST', '/products', { token: ownToken, body: { name: 'Widget', price: 10, stockQty: 5, reorderLevel: 2 } });
+  const prod = await request('POST', '/products', {
+    token: ownToken,
+    body: {
+      name: 'Widget',
+      price: 10,
+      stockQty: 5,
+      reorderLevel: 2,
+      imageUrl: '01-nestea-apple.jpg',
+    },
+  });
   assert(prod.status === 201, 'create product');
+  assert(
+    prod.data.product.imageUrl === '/media/products/01-nestea-apple.jpg',
+    'product image path normalized'
+  );
   const productId = prod.data.product.id;
+
+  // generated product photos are visible to both roles and served publicly
+  const ownerGallery = await request('GET', '/products/gallery', { token: ownToken });
+  assert(
+    ownerGallery.status === 200 &&
+      ownerGallery.data.images.length === 1 &&
+      ownerGallery.data.images[0].imageUrl === '/media/products/01-nestea-apple.jpg',
+    'owner product gallery'
+  );
+  const supplierGallery = await request('GET', '/products/gallery', { token: supToken });
+  assert(
+    supplierGallery.status === 200 && supplierGallery.data.images.length === 1,
+    'supplier product gallery'
+  );
+  const media = await fetch(`http://localhost:${port}/media/products/01-nestea-apple.jpg`);
+  assert(
+    media.status === 200 && media.headers.get('content-type')?.startsWith('image/jpeg'),
+    'product image served'
+  );
 
   // duplicate product code rejected (create another with same code? none; test price negative)
   const badProd = await request('POST', '/products', { token: ownToken, body: { name: 'Bad', price: -1 } });
@@ -115,6 +147,10 @@ async function main() {
   // restock flow
   const req = await request('POST', '/restock', { token: ownToken, body: { supplierId: supId, items: [{ productId, quantity: 3 }] } });
   assert(req.status === 201 && req.data.status === 'pending', 'create restock request');
+  assert(
+    req.data.items[0].imageUrl === '/media/products/01-nestea-apple.jpg',
+    'restock item includes product image'
+  );
   const rid = req.data.id;
   const itemId = req.data.items[0].id;
 

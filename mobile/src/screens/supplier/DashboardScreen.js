@@ -7,6 +7,7 @@ import { useToast } from '../../components/Toast.js';
 import { SkeletonList } from '../../components/Skeleton.js';
 import TopHeader from '../../components/TopHeader.js';
 import Badge from '../../components/Badge.js';
+import ProductGallery from '../../components/ProductGallery.js';
 
 export default function SupplierDashboardScreen() {
   const toast = useToast();
@@ -15,6 +16,7 @@ export default function SupplierDashboardScreen() {
   const [loading, setLoading] = useState(true);
   const [counts, setCounts] = useState({ pending: 0, accepted: 0, delivered: 0 });
   const [recent, setRecent] = useState([]);
+  const [images, setImages] = useState([]);
 
   useEffect(() => {
     if (!isFocused) return;
@@ -28,14 +30,16 @@ export default function SupplierDashboardScreen() {
         const res = await client.get(`/restock?status=${status}&limit=1`);
         return res.data.pagination.total;
       };
-      const [pending, accepted, delivered, all] = await Promise.all([
+      const [pending, accepted, delivered, all, gallery] = await Promise.all([
         countFor('pending'),
         countFor('accepted'),
         countFor('delivered'),
         client.get('/restock?limit=6'),
+        client.get('/products/gallery'),
       ]);
       setCounts({ pending, accepted, delivered });
       setRecent(all.data.requests);
+      setImages(gallery.data.images || []);
       } catch (e) {
         toast.error('Could not load dashboard');
       } finally {
@@ -58,6 +62,12 @@ export default function SupplierDashboardScreen() {
               <Stat icon={CheckCircle2} label="Accepted" value={counts.accepted} />
               <Stat icon={Truck} label="Awaiting verify" value={counts.delivered} />
             </View>
+
+            <ProductGallery
+              images={images}
+              title="Product Images"
+              hint="Product photos from the stores linked to your supplier account will appear here."
+            />
 
             <View className="flex-row items-center justify-between mb-2">
               <Text className="text-sm font-semibold text-ink">Recent Requests</Text>

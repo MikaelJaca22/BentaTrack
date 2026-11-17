@@ -9,6 +9,7 @@ import TopHeader from '../../components/TopHeader.js';
 import Button from '../../components/Button.js';
 import Input from '../../components/Input.js';
 import Badge from '../../components/Badge.js';
+import ProductImage from '../../components/ProductImage.js';
 import { SkeletonList } from '../../components/Skeleton.js';
 
 const empty = { productCode: '', name: '', category: '', unit: 'pc', price: '', cost: '', stockQty: '', reorderLevel: '' };
@@ -176,15 +177,18 @@ export default function ProductsScreen() {
             {products.map((p) => (
               <View key={String(p.id)} className={`bg-white border rounded-xl p-4 ${p.isActive ? 'border-gray200' : 'border-gray200 opacity-60'}`}>
                 <View className="flex-row items-start justify-between">
-                  <View className="flex-1 pr-2">
-                    <View className="flex-row items-center gap-2 flex-wrap">
-                      <Text className="text-sm font-semibold text-ink">{p.name}</Text>
-                      {p.isLow && p.isActive ? <Badge status="low">Low</Badge> : null}
-                      {!p.isActive ? <Badge status="declined">Inactive</Badge> : null}
+                  <View className="flex-row items-start flex-1 pr-2 gap-3">
+                    <ProductImage src={p.imageUrl} alt={p.name} size={56} iconSize={18} />
+                    <View className="flex-1">
+                      <View className="flex-row items-center gap-2 flex-wrap">
+                        <Text className="text-sm font-semibold text-ink">{p.name}</Text>
+                        {p.isLow && p.isActive ? <Badge status="low">Low</Badge> : null}
+                        {!p.isActive ? <Badge status="declined">Inactive</Badge> : null}
+                      </View>
+                      <Text className="text-xs text-gray500 mt-1">
+                        {formatMoney(p.price)} · stock {p.stockQty} {p.unit} · reorder {p.reorderLevel}
+                      </Text>
                     </View>
-                    <Text className="text-xs text-gray500 mt-1">
-                      {formatMoney(p.price)} · stock {p.stockQty} {p.unit} · reorder {p.reorderLevel}
-                    </Text>
                   </View>
                 </View>
                 <View className="flex-row gap-1 mt-3 justify-end">

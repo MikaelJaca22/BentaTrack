@@ -8,6 +8,7 @@ import Input from '../../components/Input.jsx';
 import Modal from '../../components/Modal.jsx';
 import Badge from '../../components/Badge.jsx';
 import EmptyState from '../../components/EmptyState.jsx';
+import ProductImage from '../../components/ProductImage.jsx';
 import { SkeletonList } from '../../components/Skeleton.jsx';
 
 export default function Restock() {
@@ -124,7 +125,12 @@ function CreateRequestModal({ open, onClose, onCreated, preselect }) {
         const pre = (preselect || [])
           .map((id) => list.find((x) => x.id === id))
           .filter(Boolean)
-          .map((x) => ({ productId: x.id, name: x.name, quantity: 1 }));
+          .map((x) => ({
+            productId: x.id,
+            name: x.name,
+            imageUrl: x.imageUrl,
+            quantity: 1,
+          }));
         setLines(pre);
         setSupplierId('');
         setNote('');
@@ -136,7 +142,10 @@ function CreateRequestModal({ open, onClose, onCreated, preselect }) {
 
   function addLine(p) {
     if (lines.find((l) => l.productId === p.id)) return;
-    setLines((prev) => [...prev, { productId: p.id, name: p.name, quantity: 1 }]);
+    setLines((prev) => [
+      ...prev,
+      { productId: p.id, name: p.name, imageUrl: p.imageUrl, quantity: 1 },
+    ]);
   }
   function removeLine(id) {
     setLines((prev) => prev.filter((l) => l.productId !== id));
@@ -224,6 +233,12 @@ function CreateRequestModal({ open, onClose, onCreated, preselect }) {
             <p className="text-xs font-medium text-gray600">Items</p>
             {lines.map((l) => (
               <div key={l.productId} className="flex items-center gap-2">
+                <ProductImage
+                  src={l.imageUrl}
+                  alt={l.name}
+                  className="w-9 h-9 shrink-0"
+                  iconSize={14}
+                />
                 <span className="flex-1 text-sm text-ink truncate">{l.name}</span>
                 <div className="flex items-center gap-1">
                   <button
@@ -303,10 +318,18 @@ function ProductPicker({ products, lines, onAdd }) {
             <button
               key={p.id}
               onClick={() => onAdd(p)}
-              className="w-full flex items-center justify-between px-3 py-2 rounded-lg border border-gray200 hover:bg-gray100 text-left"
+              className="w-full flex items-center justify-between gap-2 px-3 py-2 rounded-lg border border-gray200 hover:bg-gray100 text-left"
             >
-              <span className="text-sm text-ink truncate">{p.name}</span>
-              <span className="text-xs text-gray500">stock {p.stockQty}</span>
+              <span className="flex items-center gap-2 min-w-0">
+                <ProductImage
+                  src={p.imageUrl}
+                  alt={p.name}
+                  className="w-9 h-9 shrink-0"
+                  iconSize={14}
+                />
+                <span className="text-sm text-ink truncate">{p.name}</span>
+              </span>
+              <span className="text-xs text-gray500 shrink-0">stock {p.stockQty}</span>
             </button>
           ))
         )}

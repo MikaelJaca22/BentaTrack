@@ -16,6 +16,7 @@ import { formatMoney } from '../../config.js';
 import { useToast } from '../../components/Toast.js';
 import TopHeader from '../../components/TopHeader.js';
 import Button from '../../components/Button.js';
+import ProductImage from '../../components/ProductImage.js';
 import { SkeletonList } from '../../components/Skeleton.js';
 
 export default function NewSaleScreen() {
@@ -219,11 +220,14 @@ export default function NewSaleScreen() {
                   <View className="gap-2">
                     {filtered.map((p) => (
                       <View key={String(p.id)} className="flex-row items-center justify-between bg-white border border-gray200 rounded-xl p-3">
-                        <View className="flex-1 pr-2">
-                          <Text className="text-sm font-medium text-ink" numberOfLines={1}>{p.name}</Text>
-                          <Text className="text-xs text-gray500">
-                            {formatMoney(p.price)} · {p.stockQty} in stock
-                          </Text>
+                        <View className="flex-row items-center flex-1 pr-2 gap-3">
+                          <ProductImage src={p.imageUrl} alt={p.name} size={44} iconSize={16} />
+                          <View className="flex-1">
+                            <Text className="text-sm font-medium text-ink" numberOfLines={1}>{p.name}</Text>
+                            <Text className="text-xs text-gray500">
+                              {formatMoney(p.price)} · {p.stockQty} in stock
+                            </Text>
+                          </View>
                         </View>
                         <Pressable
                           onPress={() => addToCart(p)}
@@ -258,7 +262,15 @@ export default function NewSaleScreen() {
                       {cart.map((c, i) => (
                         <View key={String(c.product.id)} className={`p-4 ${i > 0 ? 'border-t border-gray200' : ''}`}>
                           <View className="flex-row justify-between">
-                            <Text className="text-sm font-medium text-ink flex-1">{c.product.name}</Text>
+                            <View className="flex-row items-start flex-1 pr-2 gap-3">
+                              <ProductImage
+                                src={c.product.imageUrl}
+                                alt={c.product.name}
+                                size={48}
+                                iconSize={16}
+                              />
+                              <Text className="text-sm font-medium text-ink flex-1">{c.product.name}</Text>
+                            </View>
                             <Pressable onPress={() => setQty(c.product.id, 0)} className="p-1">
                               <Trash2 size={16} color="#525252" />
                             </Pressable>

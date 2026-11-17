@@ -4,6 +4,7 @@ import { ApiError } from '../middleware/errorHandler.js';
 import { notify } from '../utils/notify.js';
 import { raiseLowStockAlerts } from '../utils/stockAlerts.js';
 import { parsePagination } from '../utils/query.js';
+import { resolveProductImage } from '../utils/productImages.js';
 
 const itemQty = z.object({
   productId: z.number().int().positive(),
@@ -63,7 +64,13 @@ function buildRequest(id) {
   const req = db.prepare('SELECT * FROM restock_requests WHERE id = ?').get(id);
   if (!req) throw new ApiError(404, 'Request not found');
   const items = db
-    .prepare('SELECT * FROM restock_items WHERE request_id = ? ORDER BY id ASC')
+    .prepare(
+      `SELECT ri.*, p.image_url AS product_image_url
+       FROM restock_items ri
+       LEFT JOIN products p ON p.id = ri.product_id
+       WHERE ri.request_id = ?
+       ORDER BY ri.id ASC`
+    )
     .all(id);
   const owner = db.prepare('SELECT id, name FROM users WHERE id = ?').get(req.owner_id);
   const supplier = db.prepare('SELECT id, name FROM users WHERE id = ?').get(req.supplier_id);
@@ -87,6 +94,10 @@ function buildRequest(id) {
       id: it.id,
       productId: it.product_id,
       name: it.product_name_snapshot,
+      imageUrl: resolveProductImage({
+        name: it.product_name_snapshot,
+        image_url: it.product_image_url,
+      }),
       quantityRequested: it.quantity_requested,
       quantityDelivered: it.quantity_delivered,
       quantityReceived: it.quantity_received,

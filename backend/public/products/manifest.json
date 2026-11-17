@@ -1,0 +1,294 @@
+{
+  "generated": "2026-11-17",
+  "description": "Product photos for the 32-item BentaTrack sample catalogue. Images are normalized to 800x800 JPEGs on a white canvas. Pack sizes and label designs may differ from the seeded unit prices.",
+  "products": [
+    {
+      "id": 1,
+      "name": "NESTEA Apple",
+      "file": "01-nestea-apple.jpg",
+      "source_url": "https://www.oceanicsupermarket.com/wp-content/uploads/2024/04/Nestea-Apple-Iced-Tea-20g.jpg",
+      "source_title": "Oceanic Supermarket — Nestea Apple Iced Tea 20g",
+      "placeholder": false,
+      "note": null
+    },
+    {
+      "id": 2,
+      "name": "NESTEA Lemon",
+      "file": "02-nestea-lemon.jpg",
+      "source_url": "https://www.oceanicsupermarket.com/wp-content/uploads/2022/11/Nestea-Lemon-Black-Tea-25g.jpg",
+      "source_title": "Oceanic Supermarket — Nestea Lemon Black Tea 25g",
+      "placeholder": false,
+      "note": null
+    },
+    {
+      "id": 3,
+      "name": "NESTLE Coffee Mate",
+      "file": "03-nestle-coffee-mate.jpg",
+      "source_url": "https://www.onestop.co.uk/wp-content/uploads/15607687-76fe-4d50-86b0-be2052b21eb7.png",
+      "source_title": "Onestop — Nestlé Coffee Mate Original 325g",
+      "placeholder": false,
+      "note": "325g jar; seeded price may refer to a different pack size."
+    },
+    {
+      "id": 4,
+      "name": "NESTLE Bear Brand",
+      "file": "04-nestle-bear-brand.jpg",
+      "source_url": "https://ph-test-11.slatic.net/p/7d5b980ec69b80620fce1807b4b7f4a6.jpg",
+      "source_title": "Lazada Philippines — Bear Brand Fortified Powdered Milk Drink 300g",
+      "placeholder": false,
+      "note": null
+    },
+    {
+      "id": 5,
+      "name": "NESTLE Milo",
+      "file": "05-nestle-milo.jpg",
+      "source_url": "https://www.milo.com.ph/sites/default/files/2025-05/Powder_Sachet%2024g_Front_3.png",
+      "source_title": "MILO Philippines — MILO Powder Sachet 24g",
+      "placeholder": false,
+      "note": "Official pack shot; source file is served as AVIF."
+    },
+    {
+      "id": 6,
+      "name": "NESCAFE Original",
+      "file": "06-nescafe-original.jpg",
+      "source_url": "https://www.nescafe.com/ph/sites/default/files/2025-03/Orig%20Front%20960x960px.png",
+      "source_title": "Nescafé Philippines — Nescafé Original pack shot",
+      "placeholder": false,
+      "note": null
+    },
+    {
+      "id": 7,
+      "name": "NESCAFE Creamy White",
+      "file": "07-nescafe-creamy-white.jpg",
+      "source_url": "https://www.nescafe.com/ph/sites/default/files/2025-03/CW%20Front%20960x960px.png",
+      "source_title": "Nescafé Philippines — Nescafé Creamy White pack shot",
+      "placeholder": false,
+      "note": null
+    },
+    {
+      "id": 8,
+      "name": "NESCAFE Creamy Latte",
+      "file": "08-nescafe-creamy-latte.jpg",
+      "source_url": "https://www.nescafe.com/ph/sites/default/files/2025-03/CL%20Front%20960x960px.png",
+      "source_title": "Nescafé Philippines — Nescafé Creamy Latte pack shot",
+      "placeholder": false,
+      "note": null
+    },
+    {
+      "id": 9,
+      "name": "KNORR Original (Liquid Seasoning)",
+      "file": "09-knorr-original-liquid-seasoning.jpg",
+      "source_url": "https://www.oceanicsupermarket.com/wp-content/uploads/2021/07/Knorr-Liquid-Seasoning-250ml.jpg",
+      "source_title": "Oceanic Supermarket — Knorr Liquid Seasoning 250ml",
+      "placeholder": false,
+      "note": null
+    },
+    {
+      "id": 10,
+      "name": "KNORR Sinigang (Isda)",
+      "file": "10-knorr-sinigang-isda.jpg",
+      "source_url": "https://down-my.img.susercontent.com/file/my-11134207-7r98x-lv4x6ya2gg913a",
+      "source_title": "Knorr Philippines — Sinigang na Isda pack shot",
+      "placeholder": false,
+      "note": "Official image mirrored on Shopee CDN; original: https://assets.unileversolutions.com/v1/1648398.png"
+    },
+    {
+      "id": 11,
+      "name": "KNORR Sinigang Sampalok Mix (Gabi)",
+      "file": "11-knorr-sinigang-sampalok-gabi.jpg",
+      "source_url": "https://shopsuki.ph/cdn/shop/files/4808680652146_1_1024x.jpg?v=1712794308",
+      "source_title": "Shopsuki — Knorr Sinigang sa Sampalok Mix with Gabi 22g",
+      "placeholder": false,
+      "note": null
+    },
+    {
+      "id": 12,
+      "name": "KNORR Original",
+      "file": "12-knorr-original.jpg",
+      "source_url": "https://vitaplusuk.com/files/products/KNOOR-CUBES-17X50X8GM.png",
+      "source_title": "Vita Plus UK — Knorr Cubes 8g pack",
+      "placeholder": false,
+      "note": "Pack shot shows a multi-cube pack; seeded item is one cube."
+    },
+    {
+      "id": 13,
+      "name": "KNORR Beef",
+      "file": "13-knorr-beef.jpg",
+      "source_url": "https://www.oceanicsupermarket.com/wp-content/uploads/2021/07/Knorr-Beef-Cubes-80G.jpg",
+      "source_title": "Oceanic Supermarket — Knorr Beef Cubes 80g",
+      "placeholder": false,
+      "note": null
+    },
+    {
+      "id": 14,
+      "name": "KNORR Chicken",
+      "file": "14-knorr-chicken.jpg",
+      "source_url": "https://www.oceanicsupermarket.com/wp-content/uploads/2025/05/Knorr-Chicken-Cubes-60g.jpg",
+      "source_title": "Oceanic Supermarket — Knorr Chicken Cubes 60g",
+      "placeholder": false,
+      "note": null
+    },
+    {
+      "id": 15,
+      "name": "AJINOMOTO Seasoning Mix (Pepper)",
+      "file": "15-ajinomoto-seasoning-mix-pepper.jpg",
+      "source_url": "https://www.ajinomoto.com.ph/wp-content/uploads/2023/02/Ajinomoto-Aji-Shio%C2%AE-Pepper.png",
+      "source_title": "Ajinomoto Philippines — Aji-Shio Pepper Seasoning Mix",
+      "placeholder": false,
+      "note": null
+    },
+    {
+      "id": 16,
+      "name": "AJINOMOTO Seasoning Mix (Garlic)",
+      "file": "16-ajinomoto-seasoning-mix-garlic.jpg",
+      "source_url": "https://www.ajinomoto.com.ph/wp-content/uploads/2023/02/Ajinomoto-Aji-Shio%C2%AE-Garlic.png",
+      "source_title": "Ajinomoto Philippines — Aji-Shio Garlic Seasoning Mix",
+      "placeholder": false,
+      "note": null
+    },
+    {
+      "id": 17,
+      "name": "AJINOMOTO Oyster Sauce",
+      "file": "17-ajinomoto-oyster-sauce.jpg",
+      "source_url": "https://ph-test-11.slatic.net/p/mdc/ed0bed252c798d88bc2c34826c96e7bf.jpg",
+      "source_title": "Lazada Philippines — Sarsaya Oyster Sauce 156g (2-pack listing)",
+      "placeholder": false,
+      "note": "One 156g pack cropped from a two-pack listing image."
+    },
+    {
+      "id": 18,
+      "name": "AJINOMOTO Soup Mix",
+      "file": "18-ajinomoto-soup-mix.jpg",
+      "source_url": "https://www.ajinomoto.com.ph/wp-content/uploads/2024/07/Aji-no-moto%C2%AE-Umami-Seasoning-RC_Corn.png",
+      "source_title": "Ajinomoto Philippines — Soup & Go Creamy Corn",
+      "placeholder": false,
+      "note": null
+    },
+    {
+      "id": 19,
+      "name": "AJINOMOTO Flavor Seasoning Mix",
+      "file": "19-ajinomoto-flavor-seasoning-mix.jpg",
+      "source_url": "https://www.ajinomoto.com.ph/wp-content/uploads/2021/03/AJINOMOTO-BRAND-GINISA-8G-1.png",
+      "source_title": "Ajinomoto Philippines — Ginisa Flavor Seasoning Mix 8g",
+      "placeholder": false,
+      "note": null
+    },
+    {
+      "id": 20,
+      "name": "AJINOMOTO All-in-One Seasoning Mix",
+      "file": "20-ajinomoto-all-in-one-seasoning-mix.jpg",
+      "source_url": "https://www.ajinomoto.com.ph/wp-content/uploads/2021/03/AJINOMOTO-BRAND-GINISA-8G-2.png",
+      "source_title": "Ajinomoto Philippines — Porksavor All-in-One Seasoning Mix 8g",
+      "placeholder": false,
+      "note": null
+    },
+    {
+      "id": 21,
+      "name": "AJINOMOTO Umami Seasoning Mix",
+      "file": "21-ajinomoto-umami-seasoning-mix.jpg",
+      "source_url": "https://www.ajinomoto.com.ph/wp-content/uploads/2021/03/Aji-no-moto%C2%AE-Umami-Seasoning-11g.png",
+      "source_title": "Ajinomoto Philippines — Umami Seasoning Mix 11g",
+      "placeholder": false,
+      "note": null
+    },
+    {
+      "id": 22,
+      "name": "AJINOMOTO Tasty Boy All Purpose Breading Mix (Regular)",
+      "file": "22-ajinomoto-tasty-boy.jpg",
+      "source_url": "https://www.ajinomoto.com.ph/wp-content/uploads/2021/03/Tasty-Boy%C2%AE-Regular-1640-%C3%97-850-px.png",
+      "source_title": "Ajinomoto Philippines — Tasty Boy Regular Breading Mix",
+      "placeholder": false,
+      "note": null
+    },
+    {
+      "id": 23,
+      "name": "AJINOMOTO Crispy Fry (Garlic)",
+      "file": "23-ajinomoto-crispy-fry-garlic.jpg",
+      "source_url": "https://www.ajinomoto.com.ph/wp-content/uploads/2023/02/Crispy-Fry%C2%AE-Garlic.png",
+      "source_title": "Ajinomoto Philippines — Crispy Fry Garlic Breading Mix",
+      "placeholder": false,
+      "note": null
+    },
+    {
+      "id": 24,
+      "name": "AJINOMOTO Crispy Fry (Spicy) Party Pack",
+      "file": "24-ajinomoto-crispy-fry-spicy-party-pack.jpg",
+      "source_url": "https://www.oceanicsupermarket.com/wp-content/uploads/2023/11/Ajinomoto-Crispy-Fry-Spicy-Pack.jpg",
+      "source_title": "Oceanic Supermarket — Ajinomoto Crispy Fry Spicy Party Pack",
+      "placeholder": false,
+      "note": null
+    },
+    {
+      "id": 25,
+      "name": "AJINOMOTO Crispy Fry (Original) Party Pack",
+      "file": "25-ajinomoto-crispy-fry-original-party-pack.jpg",
+      "source_url": "https://www.oceanicsupermarket.com/wp-content/uploads/2021/07/Ajinomoto-Crispy-Fry-Breading-Mix-Original-238G.jpg",
+      "source_title": "Oceanic Supermarket — Ajinomoto Crispy Fry Original 238g",
+      "placeholder": false,
+      "note": null
+    },
+    {
+      "id": 26,
+      "name": "MC CORMICK Seasoning Mix",
+      "file": "26-mccormick-seasoning-mix.jpg",
+      "source_url": "https://cdn.frozenfood.com.my/wp20200327/wp-content/uploads/2021/07/16140739/MCCORMICK-CHICKEN-SEASONING-58G.jpg",
+      "source_title": "Frozen Food Malaysia — McCormick Chicken Seasoning 58g",
+      "placeholder": false,
+      "note": null
+    },
+    {
+      "id": 27,
+      "name": "MAGGI Oyster Sauce",
+      "file": "27-maggi-oyster-sauce.jpg",
+      "source_url": "https://www.wmart.com.my/wp-content/uploads/2021/05/Maggi-Oyster-Sauce.jpg",
+      "source_title": "WMart — Maggi Oyster Sauce bottle",
+      "placeholder": false,
+      "note": null
+    },
+    {
+      "id": 28,
+      "name": "MC CODY Chicken Seasoning Mix",
+      "file": "28-mc-cody-chicken-seasoning-mix.jpg",
+      "source_url": null,
+      "source_title": "Placeholder — no product photo found",
+      "placeholder": true,
+      "note": "No usable product image located online."
+    },
+    {
+      "id": 29,
+      "name": "Silver Swan Soy Sauce",
+      "file": "29-silver-swan-soy-sauce.jpg",
+      "source_url": "https://www.oceanicsupermarket.com/wp-content/uploads/2021/08/Silver-Swan-Soy-Sauce-1000ml.jpg",
+      "source_title": "Oceanic Supermarket — Silver Swan Soy Sauce 1000ml",
+      "placeholder": false,
+      "note": null
+    },
+    {
+      "id": 30,
+      "name": "Datu Puti Vinegar",
+      "file": "30-datu-puti-vinegar.jpg",
+      "source_url": "https://www.oceanicsupermarket.com/wp-content/uploads/2021/05/Datu-puti-Vinegar-1L.jpg",
+      "source_title": "Oceanic Supermarket — Datu Puti Vinegar 1L",
+      "placeholder": false,
+      "note": null
+    },
+    {
+      "id": 31,
+      "name": "Sweet Chili Sauce",
+      "file": "31-sweet-chili-sauce.jpg",
+      "source_url": "https://bf1af2.akinoncloudcdn.com/products/2024/09/11/90269/b08dbefc-e8f4-4b47-93dd-2f888c686495.jpg",
+      "source_title": "Mama Sita's Sweet Chili Sauce 390g — online product listing",
+      "placeholder": false,
+      "note": null
+    },
+    {
+      "id": 32,
+      "name": "Barbeque Marinate",
+      "file": "32-barbeque-marinate.jpg",
+      "source_url": "https://www.oceanicsupermarket.com/wp-content/uploads/2021/10/Mama-Sitas-Barbecue-Marinade-350ml.jpg",
+      "source_title": "Oceanic Supermarket — Mama Sita's Barbecue Marinade 350ml",
+      "placeholder": false,
+      "note": null
+    }
+  ]
+}

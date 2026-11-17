@@ -6,12 +6,14 @@ import { useToast } from '../../components/Toast.jsx';
 import { SkeletonList } from '../../components/Skeleton.jsx';
 import EmptyState from '../../components/EmptyState.jsx';
 import Badge from '../../components/Badge.jsx';
+import ProductGallery from '../../components/ProductGallery.jsx';
 
 export default function SupplierDashboard() {
   const toast = useToast();
   const [loading, setLoading] = useState(true);
   const [counts, setCounts] = useState({ pending: 0, accepted: 0, delivered: 0 });
   const [recent, setRecent] = useState([]);
+  const [images, setImages] = useState([]);
 
   useEffect(() => {
     async function load() {
@@ -24,14 +26,16 @@ export default function SupplierDashboard() {
         const res = await client.get(`/restock?status=${status}&limit=1`);
         return res.data.pagination.total;
       };
-      const [pending, accepted, delivered, all] = await Promise.all([
+      const [pending, accepted, delivered, all, gallery] = await Promise.all([
         countFor('pending'),
         countFor('accepted'),
         countFor('delivered'),
         client.get('/restock?limit=6'),
+        client.get('/products/gallery'),
       ]);
       setCounts({ pending, accepted, delivered });
       setRecent(all.data.requests);
+      setImages(gallery.data.images || []);
       } catch (e) {
         toast.error('Could not load dashboard');
       } finally {
@@ -61,6 +65,12 @@ export default function SupplierDashboard() {
         <Stat icon={CheckCircle2} label="Accepted" value={counts.accepted} />
         <Stat icon={Truck} label="Awaiting verify" value={counts.delivered} />
       </div>
+
+      <ProductGallery
+        images={images}
+        title="Product Images"
+        hint="Product photos from the stores linked to your supplier account will appear here."
+      />
 
       <section>
         <div className="flex items-center justify-between mb-3">

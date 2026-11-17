@@ -14,12 +14,14 @@ import { useToast } from '../../components/Toast.jsx';
 import { SkeletonList } from '../../components/Skeleton.jsx';
 import EmptyState from '../../components/EmptyState.jsx';
 import Badge from '../../components/Badge.jsx';
+import ProductGallery from '../../components/ProductGallery.jsx';
 
 export default function Dashboard() {
   const toast = useToast();
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState(null);
   const [receipts, setReceipts] = useState([]);
+  const [images, setImages] = useState([]);
 
   useEffect(() => {
     async function load() {
@@ -29,10 +31,11 @@ export default function Dashboard() {
         // The report endpoint aggregates over the whole date range in SQL, so
         // these figures are exact. Summing /sales here would only add up the
         // first page (50 rows) and silently under-report a busy day.
-        const [report, prod, restock] = await Promise.all([
+        const [report, prod, restock, gallery] = await Promise.all([
           client.get(`/reports/sales?from=${today}&to=${today}`),
           client.get('/products?lowStock=true'),
           client.get('/restock?status=pending&limit=1'),
+          client.get('/products/gallery'),
         ]);
         setStats({
           todaySales: report.data.summary.totalSales,
@@ -41,6 +44,7 @@ export default function Dashboard() {
           // pagination.total counts every matching row, not just this page.
           pending: restock.data.pagination.total,
         });
+        setImages(gallery.data.images || []);
         // Recent receipts (any date) for the list.
         const recent = await client.get('/sales?limit=6');
         setReceipts(recent.data.sales);
@@ -94,6 +98,12 @@ export default function Dashboard() {
           to="/owner/sale"
         />
       </div>
+
+      <ProductGallery
+        images={images}
+        title="Product Images"
+        hint="Add products with images to see the generated catalogue photos here."
+      />
 
       <section>
         <div className="flex items-center justify-between mb-3">

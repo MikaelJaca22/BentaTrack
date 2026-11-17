@@ -5,6 +5,7 @@ import client, { extractError } from '../../api/client.js';
 import { useToast } from '../../components/Toast.js';
 import Button from '../../components/Button.js';
 import Badge from '../../components/Badge.js';
+import ProductImage from '../../components/ProductImage.js';
 import { SkeletonList } from '../../components/Skeleton.js';
 
 export default function RequestDetailScreen({ route, navigation }) {
@@ -121,10 +122,15 @@ export default function RequestDetailScreen({ route, navigation }) {
         <Text className="px-4 py-2 text-xs font-medium text-gray600">Items</Text>
         {data.items.map((it, i) => (
           <View key={String(it.id)} className={`px-4 py-3 ${i > 0 ? 'border-t border-gray200' : ''}`}>
-            <Text className="text-sm font-medium text-ink">{it.name}</Text>
-            <Text className="text-xs text-gray600 mt-1">
-              Req {it.quantityRequested} · Del {it.quantityDelivered ?? '—'} · Rec {it.quantityReceived ?? '—'}
-            </Text>
+            <View className="flex-row items-start gap-3">
+              <ProductImage src={it.imageUrl} alt={it.name} size={44} iconSize={16} />
+              <View className="flex-1">
+                <Text className="text-sm font-medium text-ink">{it.name}</Text>
+                <Text className="text-xs text-gray600 mt-1">
+                  Req {it.quantityRequested} · Del {it.quantityDelivered ?? '—'} · Rec {it.quantityReceived ?? '—'}
+                </Text>
+              </View>
+            </View>
           </View>
         ))}
       </View>
@@ -216,7 +222,8 @@ export default function RequestDetailScreen({ route, navigation }) {
             <ScrollView>
               {data.items.map((it) => (
                 <View key={String(it.id)} className="flex-row items-center justify-between py-2">
-                  <View className="flex-1 pr-3">
+                  <ProductImage src={it.imageUrl} alt={it.name} size={32} iconSize={13} />
+                  <View className="flex-1 px-2">
                     <Text className="text-sm text-ink">{it.name}</Text>
                     <Text className="text-xs text-gray500">Requested: {it.quantityRequested}</Text>
                   </View>

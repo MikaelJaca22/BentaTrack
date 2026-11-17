@@ -8,6 +8,7 @@ import TopHeader from '../../components/TopHeader.js';
 import Button from '../../components/Button.js';
 import Input from '../../components/Input.js';
 import Badge from '../../components/Badge.js';
+import ProductImage from '../../components/ProductImage.js';
 import { SkeletonList } from '../../components/Skeleton.js';
 
 // Stable identity so CreateRequest's effect does not reset its form on every
@@ -130,7 +131,12 @@ function CreateRequest({ visible, onClose, onCreated, preselect }) {
         const pre = (preselect || [])
           .map((id) => list.find((x) => x.id === id))
           .filter(Boolean)
-          .map((x) => ({ productId: x.id, name: x.name, quantity: 1 }));
+          .map((x) => ({
+            productId: x.id,
+            name: x.name,
+            imageUrl: x.imageUrl,
+            quantity: 1,
+          }));
         setLines(pre);
         setSupplierId('');
         setNote('');
@@ -142,7 +148,10 @@ function CreateRequest({ visible, onClose, onCreated, preselect }) {
 
   function addLine(p) {
     if (lines.find((l) => l.productId === p.id)) return;
-    setLines((prev) => [...prev, { productId: p.id, name: p.name, quantity: 1 }]);
+    setLines((prev) => [
+      ...prev,
+      { productId: p.id, name: p.name, imageUrl: p.imageUrl, quantity: 1 },
+    ]);
   }
   function setQty(id, q) {
     setLines((prev) => prev.map((l) => (l.productId === id ? { ...l, quantity: Math.max(1, Number(q) || 1) } : l)));
@@ -212,8 +221,11 @@ function CreateRequest({ visible, onClose, onCreated, preselect }) {
               <TextInput value={pq} onChangeText={setPq} placeholder="Search product" className="flex-1 ml-2 py-2.5 text-sm text-ink" />
             </View>
             {filtered.map((p) => (
-              <Pressable key={String(p.id)} onPress={() => addLine(p)} className="flex-row justify-between px-3 py-2.5 rounded-lg border border-gray200 mb-1.5">
-                <Text className="text-sm text-ink">{p.name}</Text>
+              <Pressable key={String(p.id)} onPress={() => addLine(p)} className="flex-row items-center justify-between px-3 py-2.5 rounded-lg border border-gray200 mb-1.5">
+                <View className="flex-row items-center flex-1 pr-2 gap-2">
+                  <ProductImage src={p.imageUrl} alt={p.name} size={36} iconSize={14} />
+                  <Text className="text-sm text-ink flex-1" numberOfLines={1}>{p.name}</Text>
+                </View>
                 <Text className="text-xs text-gray500">stock {p.stockQty}</Text>
               </Pressable>
             ))}
@@ -223,7 +235,8 @@ function CreateRequest({ visible, onClose, onCreated, preselect }) {
                 <Text className="text-xs font-medium text-gray600 mb-2">Items</Text>
                 {lines.map((l) => (
                   <View key={String(l.productId)} className="flex-row items-center justify-between py-2">
-                    <Text className="flex-1 text-sm text-ink">{l.name}</Text>
+                    <ProductImage src={l.imageUrl} alt={l.name} size={36} iconSize={14} />
+                    <Text className="flex-1 text-sm text-ink ml-2">{l.name}</Text>
                     <Pressable onPress={() => setQty(l.productId, l.quantity - 1)} className="p-2 rounded-lg border border-gray300">
                       <Minus size={14} color="#000000" />
                     </Pressable>

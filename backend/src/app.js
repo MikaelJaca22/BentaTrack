@@ -3,6 +3,8 @@ import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import rateLimit from 'express-rate-limit';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import env from './config/env.js';
 import { notFound, errorHandler, ApiError } from './middleware/errorHandler.js';
 
@@ -13,6 +15,9 @@ import suppliersRoutes from './routes/suppliers.routes.js';
 import restockRoutes from './routes/restock.routes.js';
 import reportsRoutes from './routes/reports.routes.js';
 import notificationsRoutes from './routes/notifications.routes.js';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const PUBLIC_DIR = path.resolve(__dirname, '..', 'public');
 
 const app = express();
 
@@ -26,10 +31,21 @@ if (env.trustProxy !== null) {
   app.set('trust proxy', env.trustProxy);
 }
 
-app.use(helmet());
+// Product photos are served to clients on a different origin (Vite/Expo), so
+// the default same-origin resource policy would make browsers refuse them.
+app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
 // Bounded so a single oversized request cannot exhaust memory.
 app.use(express.json({ limit: '1mb' }));
 app.use(morgan('dev'));
+
+// Generated product photos are public assets. They contain no account data.
+app.use(
+  '/media',
+  express.static(PUBLIC_DIR, {
+    index: false,
+    maxAge: '7d',
+  })
+);
 
 app.use(
   cors({

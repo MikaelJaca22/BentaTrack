@@ -8,6 +8,7 @@ import { useToast } from '../../components/Toast.js';
 import { SkeletonList } from '../../components/Skeleton.js';
 import TopHeader from '../../components/TopHeader.js';
 import Badge from '../../components/Badge.js';
+import ProductGallery from '../../components/ProductGallery.js';
 
 export default function DashboardScreen() {
   const toast = useToast();
@@ -16,6 +17,7 @@ export default function DashboardScreen() {
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({ todaySales: 0, todayCount: 0, lowStock: 0, pending: 0 });
   const [receipts, setReceipts] = useState([]);
+  const [images, setImages] = useState([]);
 
   useEffect(() => {
     if (!isFocused) return;
@@ -26,10 +28,11 @@ export default function DashboardScreen() {
         // The report endpoint aggregates over the whole date range in SQL, so
         // these figures are exact. Summing the /sales page in JS would only add
         // up the first 50 rows and under-report a busy day.
-        const [report, prod, restock] = await Promise.all([
+        const [report, prod, restock, gallery] = await Promise.all([
           client.get(`/reports/sales?from=${today}&to=${today}`),
           client.get('/products?lowStock=true'),
           client.get('/restock?status=pending&limit=1'),
+          client.get('/products/gallery'),
         ]);
         setStats({
           todaySales: report.data.summary.totalSales,
@@ -37,6 +40,7 @@ export default function DashboardScreen() {
           lowStock: prod.data.products.length,
           pending: restock.data.pagination.total,
         });
+        setImages(gallery.data.images || []);
         const recent = await client.get('/sales?limit=6');
         setReceipts(recent.data.sales);
       } catch (e) {
@@ -68,6 +72,12 @@ export default function DashboardScreen() {
                 <Text className="mt-2 text-white text-base font-bold">New Sale</Text>
               </Pressable>
             </View>
+
+            <ProductGallery
+              images={images}
+              title="Product Images"
+              hint="Add products with images to see the generated catalogue photos here."
+            />
 
             <Text className="text-sm font-semibold text-ink mb-2">Recent Receipts</Text>
             {receipts.length === 0 ? (

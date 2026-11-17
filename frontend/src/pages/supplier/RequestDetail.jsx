@@ -7,6 +7,7 @@ import Button from '../../components/Button.jsx';
 import Input from '../../components/Input.jsx';
 import Modal from '../../components/Modal.jsx';
 import Badge from '../../components/Badge.jsx';
+import ProductImage from '../../components/ProductImage.jsx';
 import Skeleton from '../../components/Skeleton.jsx';
 
 export default function RequestDetail() {
@@ -134,11 +135,21 @@ export default function RequestDetail() {
         <div className="px-4 py-2 text-xs font-medium text-gray600">Items</div>
         {data.items.map((it) => (
           <div key={it.id} className="px-4 py-3 text-sm">
-            <p className="font-medium text-ink">{it.name}</p>
-            <div className="mt-1 flex flex-wrap gap-3 text-xs text-gray600">
-              <span>Requested: {it.quantityRequested}</span>
-              <span>Delivered: {it.quantityDelivered ?? '—'}</span>
-              <span>Received: {it.quantityReceived ?? '—'}</span>
+            <div className="flex items-start gap-3">
+              <ProductImage
+                src={it.imageUrl}
+                alt={it.name}
+                className="w-12 h-12 shrink-0"
+                iconSize={16}
+              />
+              <div className="min-w-0">
+                <p className="font-medium text-ink">{it.name}</p>
+                <div className="mt-1 flex flex-wrap gap-3 text-xs text-gray600">
+                  <span>Requested: {it.quantityRequested}</span>
+                  <span>Delivered: {it.quantityDelivered ?? '—'}</span>
+                  <span>Received: {it.quantityReceived ?? '—'}</span>
+                </div>
+              </div>
             </div>
           </div>
         ))}
@@ -250,6 +261,12 @@ export default function RequestDetail() {
         <div className="space-y-3">
           {data.items.map((it) => (
             <div key={it.id} className="flex items-center gap-3">
+              <ProductImage
+                src={it.imageUrl}
+                alt={it.name}
+                className="w-9 h-9 shrink-0"
+                iconSize={14}
+              />
               <div className="flex-1 min-w-0">
                 <p className="text-sm text-ink truncate">{it.name}</p>
                 <p className="text-xs text-gray500">Requested: {it.quantityRequested}</p>

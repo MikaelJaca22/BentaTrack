@@ -4,6 +4,7 @@ import { ApiError } from '../middleware/errorHandler.js';
 import { parseBool, likePattern, LIKE_ESCAPE } from '../utils/query.js';
 import { toMinor, toMajor } from '../utils/money.js';
 import { raiseLowStockAlerts } from '../utils/stockAlerts.js';
+import { normalizeImageUrl, resolveProductImage } from '../utils/productImages.js';
 
 export const createProductSchema = z.object({
   productCode: z.string().trim().max(60).optional().nullable().or(z.literal('')),
@@ -14,6 +15,7 @@ export const createProductSchema = z.object({
   cost: z.number().min(0, 'Cost cannot be negative').default(0),
   stockQty: z.number().int().min(0, 'Stock cannot be negative').default(0),
   reorderLevel: z.number().int().min(0).default(0),
+  imageUrl: z.string().trim().max(500).optional().nullable().or(z.literal('')),
 });
 
 export const updateProductSchema = createProductSchema.partial();
@@ -38,6 +40,7 @@ function mapProduct(row) {
     cost: toMajor(row.cost),
     stockQty: row.stock_qty,
     reorderLevel: row.reorder_level,
+    imageUrl: resolveProductImage(row),
     isActive: !!row.is_active,
     isLow: row.reorder_level > 0 && row.stock_qty <= row.reorder_level,
     createdAt: row.created_at,
@@ -81,6 +84,39 @@ export function list(req, res, next) {
   }
 }
 
+// Product photos visible to the caller. Owners see their own catalogue;
+// suppliers see the catalogue of every store they are linked to. This powers
+// the image galleries on both dashboards without exposing prices or stock.
+export function gallery(req, res, next) {
+  try {
+    const rows =
+      req.user.role === 'supplier'
+        ? db
+            .prepare(
+              `SELECT p.id, p.name, p.image_url
+               FROM products p
+               JOIN store_suppliers ss ON ss.owner_id = p.owner_id
+               WHERE ss.supplier_id = ?
+               ORDER BY p.name COLLATE NOCASE ASC`
+            )
+            .all(req.user.id)
+        : db
+            .prepare(
+              `SELECT id, name, image_url
+               FROM products
+               WHERE owner_id = ?
+               ORDER BY name COLLATE NOCASE ASC`
+            )
+            .all(req.user.id);
+    const images = rows
+      .map((row) => ({ id: row.id, name: row.name, imageUrl: resolveProductImage(row) }))
+      .filter((row) => row.imageUrl);
+    res.json({ images, total: images.length });
+  } catch (e) {
+    next(e);
+  }
+}
+
 export function create(req, res, next) {
   try {
     const b = req.body;
@@ -88,8 +124,8 @@ export function create(req, res, next) {
     const info = db
       .prepare(
         `INSERT INTO products
-          (owner_id, product_code, name, category, unit, price, cost, stock_qty, reorder_level)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
+          (owner_id, product_code, name, category, unit, price, cost, stock_qty, reorder_level, image_url)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
       )
       .run(
         req.user.id,
@@ -100,7 +136,8 @@ export function create(req, res, next) {
         toMinor(b.price),
         toMinor(b.cost ?? 0),
         b.stockQty ?? 0,
-        b.reorderLevel ?? 0
+        b.reorderLevel ?? 0,
+        normalizeImageUrl(b.imageUrl)
       );
     const row = db
       .prepare('SELECT * FROM products WHERE id = ?')
@@ -138,12 +175,14 @@ export function update(req, res, next) {
       cost: 'cost' in b ? toMinor(b.cost) : existing.cost,
       stock_qty: 'stockQty' in b ? b.stockQty : existing.stock_qty,
       reorder_level: 'reorderLevel' in b ? b.reorderLevel : existing.reorder_level,
+      image_url: 'imageUrl' in b ? normalizeImageUrl(b.imageUrl) : existing.image_url,
     };
     db.prepare(
       `UPDATE products SET
         product_code = :product_code, name = :name, category = :category,
         unit = :unit, price = :price, cost = :cost, stock_qty = :stock_qty,
-        reorder_level = :reorder_level, updated_at = datetime('now')
+        reorder_level = :reorder_level, image_url = :image_url,
+        updated_at = datetime('now')
        WHERE id = :id`
     ).run({ ...nextValues, id: existing.id });
     const row = db.prepare('SELECT * FROM products WHERE id = ?').get(existing.id);

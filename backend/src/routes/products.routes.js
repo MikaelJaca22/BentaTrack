@@ -3,6 +3,7 @@ import { verifyToken, requireRole } from '../middleware/auth.js';
 import { validate } from '../middleware/validate.js';
 import {
   list,
+  gallery,
   create,
   update,
   remove,
@@ -14,7 +15,13 @@ import {
 
 const router = Router();
 
-router.use(verifyToken, requireRole('store_owner'));
+router.use(verifyToken);
+
+// Both roles: generated product photos for the dashboard galleries.
+router.get('/gallery', gallery);
+
+// Everything below changes or exposes the owner's catalogue.
+router.use(requireRole('store_owner'));
 
 router.get('/', list);
 router.post('/', validate(createProductSchema), create);

@@ -31,6 +31,7 @@ export function migrate() {
       cost          INTEGER NOT NULL DEFAULT 0,
       stock_qty     INTEGER NOT NULL DEFAULT 0 CHECK (stock_qty >= 0),
       reorder_level INTEGER NOT NULL DEFAULT 0,
+      image_url     TEXT,
       is_active     INTEGER NOT NULL DEFAULT 1,
       created_at    TEXT NOT NULL DEFAULT (datetime('now')),
       updated_at    TEXT NOT NULL DEFAULT (datetime('now'))
@@ -132,12 +133,23 @@ export function migrate() {
       ON notifications(user_id, is_read);
   `);
 
+  ensureProductImageColumn();
+
   // Partial unique index: enforce UNIQUE(owner_id, product_code) only when code is not null.
   db.exec(`
     CREATE UNIQUE INDEX IF NOT EXISTS idx_products_owner_code
       ON products(owner_id, product_code)
       WHERE product_code IS NOT NULL;
   `);
+}
+
+// Products gained generated photo support after the first release. Add the
+// column in place so existing databases keep their rows.
+function ensureProductImageColumn() {
+  const columns = db.pragma('table_info(products)');
+  if (!columns.some((c) => c.name === 'image_url')) {
+    db.exec('ALTER TABLE products ADD COLUMN image_url TEXT');
+  }
 }
 
 // Convert REAL money columns to INTEGER minor units in an existing database.

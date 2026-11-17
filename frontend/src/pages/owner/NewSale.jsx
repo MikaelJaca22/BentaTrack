@@ -17,6 +17,7 @@ import { formatMoney } from '../../config.js';
 import { useToast } from '../../components/Toast.jsx';
 import Button from '../../components/Button.jsx';
 import EmptyState from '../../components/EmptyState.jsx';
+import ProductImage from '../../components/ProductImage.jsx';
 import { SkeletonList } from '../../components/Skeleton.jsx';
 
 export default function NewSale() {
@@ -257,12 +258,20 @@ export default function NewSale() {
                   key={p.id}
                   className="bg-white border border-gray200 rounded-xl p-3 flex items-center justify-between gap-2"
                 >
-                  <div className="min-w-0">
-                    <p className="text-sm font-medium text-ink truncate">{p.name}</p>
-                    <p className="text-xs text-gray500">
-                      {formatMoney(p.price)} · {p.stockQty} in stock
-                      {p.productCode ? ` · ${p.productCode}` : ''}
-                    </p>
+                  <div className="flex items-center gap-3 min-w-0">
+                    <ProductImage
+                      src={p.imageUrl}
+                      alt={p.name}
+                      className="w-12 h-12 shrink-0"
+                      iconSize={16}
+                    />
+                    <div className="min-w-0">
+                      <p className="text-sm font-medium text-ink truncate">{p.name}</p>
+                      <p className="text-xs text-gray500">
+                        {formatMoney(p.price)} · {p.stockQty} in stock
+                        {p.productCode ? ` · ${p.productCode}` : ''}
+                      </p>
+                    </div>
                   </div>
                   <button
                     onClick={() => addToCart(p)}
@@ -305,13 +314,21 @@ export default function NewSale() {
                 {cart.map((c) => (
                   <div key={c.product.id} className="p-4">
                     <div className="flex items-start justify-between gap-2">
-                      <div className="min-w-0">
-                        <p className="text-sm font-medium text-ink truncate">
-                          {c.product.name}
-                        </p>
-                        <p className="text-xs text-gray500">
-                          {formatMoney(c.product.price)} each
-                        </p>
+                      <div className="flex items-start gap-3 min-w-0">
+                        <ProductImage
+                          src={c.product.imageUrl}
+                          alt={c.product.name}
+                          className="w-14 h-14 shrink-0"
+                          iconSize={18}
+                        />
+                        <div className="min-w-0">
+                          <p className="text-sm font-medium text-ink truncate">
+                            {c.product.name}
+                          </p>
+                          <p className="text-xs text-gray500">
+                            {formatMoney(c.product.price)} each
+                          </p>
+                        </div>
                       </div>
                       <button
                         onClick={() => removeLine(c.product.id)}
