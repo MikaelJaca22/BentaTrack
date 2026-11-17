@@ -7,7 +7,7 @@ import ProductImage from './ProductImage.js';
 // store-owner and supplier dashboards.
 export default function ProductGallery({
   images = [],
-  title = 'Product Images',
+  title = 'Products',
   hint = 'Product photos will appear here once products have images.',
 }) {
   const { width } = useWindowDimensions();
@@ -20,12 +20,7 @@ export default function ProductGallery({
 
   return (
     <View className="mb-5">
-      <View className="flex-row items-center justify-between mb-2">
-        <Text className="text-sm font-semibold text-ink">{title}</Text>
-        <Text className="text-xs font-medium text-gray500">
-          {images.length} {images.length === 1 ? 'image' : 'images'}
-        </Text>
-      </View>
+      <Text className="text-sm font-semibold text-ink mb-2">{title}</Text>
 
       {images.length === 0 ? (
         <View className="items-center justify-center py-10 px-6 border border-dashed border-gray300 rounded-xl bg-white">

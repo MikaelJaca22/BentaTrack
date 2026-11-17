@@ -142,7 +142,7 @@ It creates (or reuses) two accounts — store owner `kaeljaca` (password `kael12
 
 ### Product photos
 
-The 32 generated catalogue photos live in `backend/public/products/` and are served publicly at `/media/products/<file>` (the same files also remain under `frontend/public/products/`). `app.js` serves that folder before the API routes, so both the web client and Expo can load the images from the API origin. `src/utils/productImages.js` reads `manifest.json` and resolves an image by product name when a row has no stored `image_url`, which keeps older databases working without a reseed. Both dashboards show a **Product Images** gallery: owners see their full catalogue, suppliers see the catalogue of every store linked to them through `GET /api/products/gallery`.
+The 32 generated catalogue photos live in `backend/public/products/` and are served publicly at `/media/products/<file>` (the same files also remain under `frontend/public/products/`). `app.js` serves that folder before the API routes, so both the web client and Expo can load the images from the API origin. `src/utils/productImages.js` reads `manifest.json` and resolves an image by product name when a row has no stored `image_url`, which keeps older databases working without a reseed. Both dashboards show a **Products** gallery: owners see their full catalogue, suppliers see the catalogue of every store linked to them through `GET /api/products/gallery`.
 
 To get back to a truly empty database, stop the backend and delete `backend/data/`.
 

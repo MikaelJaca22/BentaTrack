@@ -68,7 +68,6 @@ export default function SupplierDashboard() {
 
       <ProductGallery
         images={images}
-        title="Product Images"
         hint="Product photos from the stores linked to your supplier account will appear here."
       />
 

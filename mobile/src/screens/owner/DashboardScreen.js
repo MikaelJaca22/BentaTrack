@@ -75,7 +75,6 @@ export default function DashboardScreen() {
 
             <ProductGallery
               images={images}
-              title="Product Images"
               hint="Add products with images to see the generated catalogue photos here."
             />
 

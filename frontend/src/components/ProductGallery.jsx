@@ -5,17 +5,12 @@ import ProductImage from './ProductImage.jsx';
 // store-owner and supplier dashboards.
 export default function ProductGallery({
   images = [],
-  title = 'Product Images',
+  title = 'Products',
   hint = 'Product photos will appear here once products have images.',
 }) {
   return (
     <section>
-      <div className="flex items-center justify-between mb-3">
-        <h2 className="text-sm font-semibold text-ink">{title}</h2>
-        <span className="text-xs font-medium text-gray500">
-          {images.length} {images.length === 1 ? 'image' : 'images'}
-        </span>
-      </div>
+      <h2 className="text-sm font-semibold text-ink mb-3">{title}</h2>
 
       {images.length === 0 ? (
         <div className="border border-dashed border-gray300 rounded-xl bg-white py-10 px-6 text-center">
