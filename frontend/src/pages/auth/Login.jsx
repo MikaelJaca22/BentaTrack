@@ -44,7 +44,7 @@ export default function Login() {
             <img
               src="/logo.jpg"
               alt="Che-Che Variety Store logo"
-              className="h-28 w-auto mix-blend-multiply"
+              className="h-28 w-auto"
             />
           </div>
           <h1
