@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
-import { Printer, Share2, Download, BarChart3, Package, Truck } from 'lucide-react';
+import { MonitorDown, Share, FileDown, PieChart, Box, ArrowUpFromLine } from 'lucide-react';
 import client, { extractError } from '../../api/client.js';
 import { formatMoney, SYSTEM_TITLE } from '../../config.js';
 import { toXlsxBlob } from '../../utils/xlsx.js';
@@ -10,9 +10,9 @@ import Badge from '../../components/Badge.jsx';
 import { SkeletonList } from '../../components/Skeleton.jsx';
 
 const TABS = [
-  { id: 'sales', label: 'Sales', icon: BarChart3 },
-  { id: 'inventory', label: 'Inventory', icon: Package },
-  { id: 'restock', label: 'Restock', icon: Truck },
+  { id: 'sales', label: 'Sales', icon: PieChart },
+  { id: 'inventory', label: 'Inventory', icon: Box },
+  { id: 'restock', label: 'Restock', icon: ArrowUpFromLine },
 ];
 
 function rangeForPreset(preset) {
@@ -249,13 +249,13 @@ export default function Reports() {
           </div>
         )}
         <div className="ml-auto flex gap-2">
-          <Button variant="secondary" icon={Printer} onClick={() => window.print()}>
+          <Button variant="secondary" icon={MonitorDown} onClick={() => window.print()}>
             Print / PDF
           </Button>
-          <Button variant="ghost" icon={Share2} onClick={shareSummary}>
+          <Button variant="ghost" icon={Share} onClick={shareSummary}>
             Share
           </Button>
-          <Button variant="ghost" icon={Download} onClick={downloadExcel}>
+          <Button variant="ghost" icon={FileDown} onClick={downloadExcel}>
             Excel
           </Button>
         </div>

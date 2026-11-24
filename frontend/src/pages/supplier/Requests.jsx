@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Inbox } from 'lucide-react';
+import { Mail } from 'lucide-react';
 import client, { extractError } from '../../api/client.js';
 import { useToast } from '../../components/Toast.jsx';
 import Badge from '../../components/Badge.jsx';
@@ -61,7 +61,7 @@ export default function Requests() {
         <SkeletonList rows={4} />
       ) : requests.length === 0 ? (
         <EmptyState
-          icon={Inbox}
+          icon={Mail}
           title="No requests"
           hint="There are no requests matching this filter."
         />

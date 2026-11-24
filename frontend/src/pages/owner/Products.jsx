@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useOutletContext } from 'react-router-dom';
-import { Plus, Search, Pencil, Trash2, SlidersHorizontal, AlertTriangle } from 'lucide-react';
+import { Search, SquarePen, SquarePlus, Trash, SlidersHorizontal, AlertTriangle } from 'lucide-react';
 import client, { extractError } from '../../api/client.js';
 import { formatMoney } from '../../config.js';
 import { useToast } from '../../components/Toast.jsx';
@@ -171,7 +171,7 @@ export default function Products() {
             className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-white border border-gray300 text-sm focus:outline-none focus:ring-2 focus:ring-black"
           />
         </div>
-        <Button icon={Plus} onClick={openNew}>
+        <Button icon={SquarePlus} onClick={openNew}>
           Add
         </Button>
       </div>
@@ -180,7 +180,7 @@ export default function Products() {
         <SkeletonList rows={4} />
       ) : products.length === 0 ? (
         <EmptyState
-          icon={Plus}
+          icon={SquarePlus}
           title="No products yet"
           hint="Add your first product to start selling and tracking stock."
           action={<Button onClick={openNew}>Add Product</Button>}
@@ -233,14 +233,14 @@ export default function Products() {
                     aria-label="Edit"
                     className="p-2 rounded-lg hover:bg-gray100 text-black touch-target"
                   >
-                    <Pencil size={16} strokeWidth={1.5} />
+                    <SquarePen size={16} strokeWidth={1.5} />
                   </button>
                   <button
                     onClick={() => setToDelete(p)}
                     aria-label="Delete"
                     className="p-2 rounded-lg hover:bg-gray100 text-black touch-target"
                   >
-                    <Trash2 size={16} strokeWidth={1.5} />
+                    <Trash size={16} strokeWidth={1.5} />
                   </button>
                 </div>
               </div>

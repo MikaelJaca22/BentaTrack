@@ -1,7 +1,8 @@
 import { useNavigate } from 'react-router-dom';
-import { LogOut, Bell } from 'lucide-react';
+import { LogOut, BellDot } from 'lucide-react';
 import { useAuth } from '../context/AuthContext.jsx';
 import { SYSTEM_TITLE } from '../config.js';
+import ProfileAvatar from './ProfileAvatar.jsx';
 
 export default function TopBar({ unread = 0, notificationsPath }) {
   const { user, logout } = useAuth();
@@ -22,9 +23,9 @@ export default function TopBar({ unread = 0, notificationsPath }) {
             <button
               onClick={() => navigate(notificationsPath)}
               aria-label="Notifications"
-              className="relative p-2.5 rounded-xl hover:bg-gray100 text-black touch-target"
+              className="inline-flex items-center justify-center relative p-2.5 rounded-xl hover:bg-gray100 text-black touch-target"
             >
-              <Bell size={16} strokeWidth={1.5} />
+              <BellDot size={16} strokeWidth={1.5} />
               {unread > 0 ? (
                 <span className="absolute top-1 right-1 min-w-[16px] h-4 px-1 rounded-full bg-white text-black text-[9px] flex items-center justify-center">
                   {unread > 9 ? '9+' : unread}
@@ -32,7 +33,8 @@ export default function TopBar({ unread = 0, notificationsPath }) {
               ) : null}
             </button>
           ) : null}
-          <span className="hidden sm:inline text-xs text-black px-2">
+          <span className="inline-flex items-center gap-1.5 text-xs text-black px-2">
+            <ProfileAvatar user={user} />
             {user?.name}
           </span>
           <button

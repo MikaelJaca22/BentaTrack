@@ -3,11 +3,11 @@ import { useOutletContext } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import {
   Search,
-  Plus,
+  SquarePlus,
   Minus,
-  Trash2,
+  Trash,
   X,
-  ShoppingCart,
+  CreditCard,
   AlertTriangle,
   Truck,
   Check,
@@ -282,7 +282,7 @@ export default function NewSale() {
                     className="group relative p-2.5 rounded-lg bg-white text-black disabled:opacity-40 touch-target shrink-0"
                   >
                     <span className="group-hover:scale-110 inline-flex h-6 w-6 items-center justify-center rounded-md bg-black">
-                      <Plus size={14} strokeWidth={1.5} className="text-white" />
+                      <SquarePlus size={14} strokeWidth={1.5} className="text-white" />
                     </span>
                   </button>
                 </div>
@@ -303,7 +303,7 @@ export default function NewSale() {
         <div className="space-y-4">
           {cart.length === 0 ? (
             <EmptyState
-              icon={ShoppingCart}
+              icon={CreditCard}
               title="Cart is empty"
               hint="Go back and add items to this sale."
               action={
@@ -337,16 +337,16 @@ export default function NewSale() {
                       <button
                         onClick={() => removeLine(c.product.id)}
                         aria-label="Remove"
-                        className="p-2 rounded-lg hover:bg-gray100 text-black touch-target"
+                        className="inline-flex items-center justify-center p-2 rounded-lg hover:bg-gray100 text-black touch-target"
                       >
-                        <Trash2 size={16} strokeWidth={1.5} />
+                        <Trash size={16} strokeWidth={1.5} />
                       </button>
                     </div>
                     <div className="mt-2 flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <button
                           onClick={() => setQty(c.product.id, c.quantity - 1)}
-                          className="p-2 rounded-lg border border-gray300 touch-target"
+                          className="inline-flex items-center justify-center p-2 rounded-lg border border-gray300 touch-target"
                           aria-label="Decrease"
                         >
                           <Minus size={14} strokeWidth={1.5} />
@@ -357,10 +357,10 @@ export default function NewSale() {
                         <button
                           onClick={() => setQty(c.product.id, c.quantity + 1)}
                           disabled={c.quantity >= c.product.stockQty}
-                          className="p-2 rounded-lg border border-gray300 disabled:opacity-40 touch-target"
+                          className="inline-flex items-center justify-center p-2 rounded-lg border border-gray300 disabled:opacity-40 touch-target"
                           aria-label="Increase"
                         >
-                          <Plus size={14} strokeWidth={1.5} />
+                          <SquarePlus size={14} strokeWidth={1.5} />
                         </button>
                       </div>
                       <span className="text-sm font-semibold text-black">

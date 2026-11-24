@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Bell, CheckCheck, Package, Trash2, Truck } from 'lucide-react';
+import { BellDot, CheckCheck, Box, Trash, ArrowUpFromLine } from 'lucide-react';
 import client, { extractError } from '../api/client.js';
 import { useAuth } from '../context/AuthContext.jsx';
 import { useToast } from './Toast.jsx';
@@ -9,13 +9,13 @@ import EmptyState from './EmptyState.jsx';
 import { SkeletonList } from './Skeleton.jsx';
 
 const TYPE_ICON = {
-  low_stock: Package,
-  restock_new: Truck,
-  restock_accepted: Truck,
-  restock_delivered: Truck,
-  restock_completed: Truck,
-  restock_declined: Truck,
-  restock_discrepancy: Truck,
+  low_stock: Box,
+  restock_new: ArrowUpFromLine,
+  restock_accepted: ArrowUpFromLine,
+  restock_delivered: ArrowUpFromLine,
+  restock_completed: ArrowUpFromLine,
+  restock_declined: ArrowUpFromLine,
+  restock_discrepancy: ArrowUpFromLine,
 };
 
 export default function NotificationsView({ refreshUnread }) {
@@ -114,7 +114,7 @@ export default function NotificationsView({ refreshUnread }) {
           </Button>
         ) : null}
         {items.length > 0 ? (
-          <Button variant="secondary" icon={Trash2} onClick={clearAll}>
+          <Button variant="secondary" icon={Trash} onClick={clearAll}>
             Clear notifications
           </Button>
         ) : null}
@@ -122,14 +122,14 @@ export default function NotificationsView({ refreshUnread }) {
 
       {items.length === 0 ? (
         <EmptyState
-          icon={Bell}
+          icon={BellDot}
           title="No notifications"
           hint="Low-stock alerts and restock updates will appear here."
         />
       ) : (
         <div className="bg-white border border-gray200 rounded-xl divide-y divide-gray200">
           {items.map((n) => {
-            const Icon = TYPE_ICON[n.type] || Bell;
+            const Icon = TYPE_ICON[n.type] || BellDot;
             return (
               <button
                 key={n.id}

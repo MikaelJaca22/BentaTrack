@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
-import { Link2, Trash2, Search, UserPlus, Users } from 'lucide-react';
+import { Link2, Trash, Search, UserPlus, UsersRound } from 'lucide-react';
 import client, { extractError } from '../../api/client.js';
 import { useToast } from '../../components/Toast.jsx';
 import Button from '../../components/Button.jsx';
@@ -85,7 +85,7 @@ export default function Suppliers() {
           <SkeletonList rows={2} />
         ) : linked.length === 0 ? (
           <EmptyState
-            icon={Users}
+            icon={UsersRound}
             title="No linked suppliers"
             hint="Search below to link suppliers who have created their own accounts."
           />
@@ -100,9 +100,9 @@ export default function Suppliers() {
                 <button
                   onClick={() => setToUnlink(s)}
                   aria-label="Unlink"
-                  className="p-2 rounded-lg hover:bg-gray100 text-black touch-target"
+                  className="inline-flex items-center justify-center p-2 rounded-lg hover:bg-gray100 text-black touch-target"
                 >
-                  <Trash2 size={16} strokeWidth={1.5} />
+                  <Trash size={16} strokeWidth={1.5} />
                 </button>
               </div>
             ))}

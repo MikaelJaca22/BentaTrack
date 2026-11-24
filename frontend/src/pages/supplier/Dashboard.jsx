@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Inbox, CheckCircle2, Truck, ArrowRight } from 'lucide-react';
+import { Mail, CheckCircle2, ArrowUpFromLine, ArrowRight } from 'lucide-react';
 import client from '../../api/client.js';
 import { useToast } from '../../components/Toast.jsx';
 import { SkeletonList } from '../../components/Skeleton.jsx';
@@ -61,9 +61,9 @@ export default function SupplierDashboard() {
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-3 gap-3">
-        <Stat icon={Inbox} label="Pending" value={counts.pending} />
+        <Stat icon={Mail} label="Pending" value={counts.pending} />
         <Stat icon={CheckCircle2} label="Accepted" value={counts.accepted} />
-        <Stat icon={Truck} label="Awaiting verify" value={counts.delivered} />
+        <Stat icon={ArrowUpFromLine} label="Awaiting verify" value={counts.delivered} />
       </div>
 
       <ProductGallery
@@ -83,7 +83,7 @@ export default function SupplierDashboard() {
         </div>
         {recent.length === 0 ? (
           <EmptyState
-            icon={Inbox}
+            icon={Mail}
             title="No requests yet"
             hint="Restock requests from store owners will appear here."
           />

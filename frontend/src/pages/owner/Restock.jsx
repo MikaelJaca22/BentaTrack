@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useLocation, useNavigate, useOutletContext } from 'react-router-dom';
-import { Plus, Truck, X, Minus, Search } from 'lucide-react';
+import { SquarePlus, Truck, X, Minus, Search } from 'lucide-react';
 import client, { extractError } from '../../api/client.js';
 import { useToast } from '../../components/Toast.jsx';
 import Button from '../../components/Button.jsx';
@@ -47,7 +47,7 @@ export default function Restock() {
     <div className="space-y-4">
       <div className="flex justify-between items-center">
         <p className="text-sm text-black">Create and track restock requests to suppliers.</p>
-        <Button icon={Plus} onClick={() => setCreating(true)}>
+        <Button icon={SquarePlus} onClick={() => setCreating(true)}>
           New Request
         </Button>
       </div>
@@ -59,7 +59,6 @@ export default function Restock() {
           icon={Truck}
           title="No restock requests yet"
           hint="When stock runs low, create a request to send to a supplier."
-          action={<Button onClick={() => setCreating(true)}>New Request</Button>}
         />
       ) : (
         <div className="bg-white border border-gray200 rounded-xl divide-y divide-gray200">
@@ -260,7 +259,7 @@ function CreateRequestModal({ open, onClose, onCreated, preselect }) {
                     className="p-2 rounded-lg border border-gray300 touch-target"
                     aria-label="Increase"
                   >
-                    <Plus size={14} strokeWidth={1.5} />
+                    <SquarePlus size={14} strokeWidth={1.5} />
                   </button>
                 </div>
                 <button
@@ -296,8 +295,7 @@ function ProductPicker({ products, lines, onAdd }) {
         !lines.find((l) => l.productId === p.id) &&
         (p.name.toLowerCase().includes(q.toLowerCase()) ||
           (p.productCode || '').toLowerCase().includes(q.toLowerCase()))
-    )
-    .slice(0, 6);
+    );
   return (
     <div>
       <label className="block mb-1.5 text-sm font-medium text-black">Add products</label>

@@ -5,46 +5,46 @@ import BottomNav from './BottomNav.jsx';
 import TopBar from './TopBar.jsx';
 
 const OWNER_NAV = [
-  { to: '/owner', label: 'Dashboard', short: 'Home', icon: 'LayoutDashboard', end: true },
+  { to: '/owner', label: 'Dashboard', short: 'Home', icon: 'House', end: true },
   { to: '/owner/sale', label: 'New Sale', short: 'Sale', icon: 'CreditCard' },
-  { to: '/owner/products', label: 'Products', short: 'Stock', icon: 'Package' },
-  { to: '/owner/restock', label: 'Restock', short: 'Restock', icon: 'Truck' },
-  { to: '/owner/suppliers', label: 'Suppliers', short: 'Suppliers', icon: 'Users' },
-  { to: '/owner/reports', label: 'Reports', short: 'Reports', icon: 'BarChart3' },
-  { to: '/owner/notifications', label: 'Notifications', short: 'Alerts', icon: 'Bell' },
+  { to: '/owner/products', label: 'Products', short: 'Stock', icon: 'Box' },
+  { to: '/owner/restock', label: 'Restock', short: 'Restock', icon: 'ArrowUpFromLine' },
+  { to: '/owner/suppliers', label: 'Suppliers', short: 'Suppliers', icon: 'UsersRound' },
+  { to: '/owner/reports', label: 'Reports', short: 'Reports', icon: 'PieChart' },
+  { to: '/owner/notifications', label: 'Notifications', short: 'Alerts', icon: 'BellDot' },
 ];
 
 const SUPPLIER_NAV = [
-  { to: '/supplier', label: 'Dashboard', short: 'Home', icon: 'LayoutDashboard', end: true },
-  { to: '/supplier/requests', label: 'Requests', short: 'Requests', icon: 'Inbox' },
-  { to: '/supplier/history', label: 'History', short: 'History', icon: 'History' },
-  { to: '/supplier/notifications', label: 'Notifications', short: 'Alerts', icon: 'Bell' },
+  { to: '/supplier', label: 'Dashboard', short: 'Home', icon: 'House', end: true },
+  { to: '/supplier/requests', label: 'Requests', short: 'Requests', icon: 'Mail' },
+  { to: '/supplier/history', label: 'History', short: 'History', icon: 'FileClock' },
+  { to: '/supplier/notifications', label: 'Notifications', short: 'Alerts', icon: 'BellDot' },
 ];
 
 const ICONS = {};
 
 // Lazily import lucide icons by name to keep nav data serializable.
 import {
-  LayoutDashboard,
+  House,
   CreditCard,
-  Package,
-  Truck,
-  Users,
-  BarChart3,
-  Bell,
-  Inbox,
-  History,
+  Box,
+  ArrowUpFromLine,
+  UsersRound,
+  PieChart,
+  BellDot,
+  Mail,
+  FileClock,
 } from 'lucide-react';
 Object.assign(ICONS, {
-  LayoutDashboard,
+  House,
   CreditCard,
-  Package,
-  Truck,
-  Users,
-  BarChart3,
-  Bell,
-  Inbox,
-  History,
+  Box,
+  ArrowUpFromLine,
+  UsersRound,
+  PieChart,
+  BellDot,
+  Mail,
+  FileClock,
 });
 
 export default function AppLayout() {
@@ -57,7 +57,7 @@ export default function AppLayout() {
   const items = baseNav.map((n) => ({
     ...n,
     icon: ICONS[n.icon],
-    badge: n.icon === 'Bell' ? unread : 0,
+    badge: n.icon === 'BellDot' ? unread : 0,
   }));
 
   const refreshUnread = useCallback(() => {

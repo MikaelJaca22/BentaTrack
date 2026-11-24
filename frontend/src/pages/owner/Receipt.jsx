@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Printer, Share2, Copy, Check } from 'lucide-react';
+import { ArrowLeft, MonitorDown, Share, Copy, Check } from 'lucide-react';
 import client, { extractError } from '../../api/client.js';
 import { formatMoney, SYSTEM_TITLE } from '../../config.js';
 import { useToast } from '../../components/Toast.jsx';
@@ -93,10 +93,10 @@ export default function Receipt() {
       </div>
 
       <div className="no-print flex flex-wrap gap-2">
-        <Button variant="secondary" icon={Printer} onClick={() => window.print()}>
+        <Button variant="secondary" icon={MonitorDown} onClick={() => window.print()}>
           Print
         </Button>
-        <Button variant="secondary" icon={Share2} onClick={share}>
+        <Button variant="secondary" icon={Share} onClick={share}>
           Share
         </Button>
         <Button variant="ghost" icon={copied ? Check : Copy} onClick={copy}>

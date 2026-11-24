@@ -11,8 +11,10 @@ export default function BottomNav({ items }) {
           to={it.to}
           end={it.end}
           className={({ isActive }) =>
-            `flex flex-col items-center justify-center gap-0.5 px-2 py-1.5 rounded-lg flex-1 min-h-[56px] ${
-              isActive ? 'text-primary font-semibold' : 'text-black font-medium'
+            `nav-tab flex flex-col items-center justify-center gap-0.5 px-2 py-1.5 rounded-lg flex-1 min-h-[56px] ${
+              isActive
+                ? 'nav-tab-active text-primary font-semibold'
+                : 'text-black font-medium'
             } hover:bg-gray100`
           }
         >

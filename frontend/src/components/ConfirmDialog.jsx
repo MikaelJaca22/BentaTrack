@@ -1,6 +1,6 @@
 import Modal from './Modal.jsx';
 import Button from './Button.jsx';
-import { Trash2 } from 'lucide-react';
+import { Trash } from 'lucide-react';
 
 export default function ConfirmDialog({
   open,
@@ -26,7 +26,7 @@ export default function ConfirmDialog({
             variant={destructive ? 'secondary' : 'primary'}
             onClick={onConfirm}
             disabled={busy}
-            icon={destructive ? Trash2 : undefined}
+            icon={destructive ? Trash : undefined}
           >
             {busy ? 'Working…' : confirmLabel}
           </Button>

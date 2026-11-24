@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
-  ShoppingCart,
+  CreditCard,
   AlertTriangle,
-  Truck,
+  ArrowUpFromLine,
   ArrowRight,
-  Package,
+  Tag,
   Receipt as ReceiptIcon,
 } from 'lucide-react';
 import client from '../../api/client.js';
@@ -73,7 +73,7 @@ export default function Dashboard() {
     <div className="space-y-6">
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         <StatCard
-          icon={ShoppingCart}
+          icon={CreditCard}
           label="Today's Sales"
           value={formatMoney(stats.todaySales)}
           sub={`${stats.todayCount} transactions`}
@@ -85,13 +85,13 @@ export default function Dashboard() {
           sub="items to reorder"
         />
         <StatCard
-          icon={Truck}
+          icon={ArrowUpFromLine}
           label="Pending Requests"
           value={stats.pending}
           sub="restock in flight"
         />
         <StatCard
-          icon={Package}
+          icon={Tag}
           label="Quick Action"
           value="New Sale"
           sub="record a cash sale"
@@ -123,7 +123,7 @@ export default function Dashboard() {
             action={
               <Link to="/owner/sale">
                 <button className="bg-white text-black border border-black rounded-xl px-4 py-2.5 text-sm font-medium touch-target">
-                  New Sale
+                  <Tag size={14} strokeWidth={1.5} /> New Sale
                 </button>
               </Link>
             }
