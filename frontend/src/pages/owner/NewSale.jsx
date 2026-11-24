@@ -170,7 +170,7 @@ export default function NewSale() {
         </div>
 
         {low.length > 0 ? (
-          <div className="bg-white border-2 border-black rounded-xl p-5">
+          <div className="bg-white border-2 border-primary rounded-xl p-5">
             <div className="flex items-center gap-2 text-ink">
               <AlertTriangle size={18} />
               <h3 className="text-sm font-semibold">Output: low-stock alert</h3>
@@ -218,7 +218,7 @@ export default function NewSale() {
             key={s}
             className={`px-3 py-1.5 rounded-xl border ${
               step === s
-                ? 'bg-black text-white border-black'
+                ? 'bg-primary text-white border-primary'
                 : 'bg-white text-gray500 border-gray300'
             }`}
           >
@@ -277,7 +277,7 @@ export default function NewSale() {
                     onClick={() => addToCart(p)}
                     disabled={p.stockQty <= 0 || cartQty(p.id) >= p.stockQty}
                     aria-label={`Add ${p.name}`}
-                    className="p-2.5 rounded-lg bg-black text-white disabled:opacity-40 touch-target shrink-0"
+                    className="p-2.5 rounded-lg bg-primary text-white disabled:opacity-40 touch-target shrink-0"
                   >
                     <Plus size={16} />
                   </button>
@@ -399,14 +399,14 @@ export default function NewSale() {
               step="0.01"
               value={tendered}
               onChange={(e) => setTendered(e.target.value)}
-              className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-gray300 text-sm focus:outline-none focus:ring-2 focus:ring-black touch-target"
+              className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-gray300 text-sm focus:outline-none focus:ring-2 focus:ring-primary touch-target"
               placeholder="0.00"
             />
             <div className="mt-2 flex items-center justify-between text-sm">
               <span className="text-gray600">Change due</span>
               <span
                 className={`font-semibold ${
-                  changeDue < 0 ? 'text-black' : 'text-ink'
+                  changeDue < 0 ? 'text-danger' : 'text-ink'
                 }`}
               >
                 {changeDue < 0 ? 'Insufficient' : formatMoney(changeDue)}

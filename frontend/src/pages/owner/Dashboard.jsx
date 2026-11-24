@@ -109,7 +109,7 @@ export default function Dashboard() {
           <h2 className="text-sm font-semibold text-ink">Recent Receipts</h2>
           <Link
             to="/owner/reports"
-            className="text-xs font-medium text-gray600 hover:text-black inline-flex items-center gap-1"
+            className="text-xs font-medium text-gray600 hover:text-primary inline-flex items-center gap-1"
           >
             View reports <ArrowRight size={14} />
           </Link>
@@ -122,7 +122,7 @@ export default function Dashboard() {
             hint="Start a new sale to record your first receipt."
             action={
               <Link to="/owner/sale">
-                <button className="bg-black text-white rounded-xl px-4 py-2.5 text-sm font-medium touch-target">
+                <button className="bg-primary text-white rounded-xl px-4 py-2.5 text-sm font-medium touch-target">
                   New Sale
                 </button>
               </Link>
@@ -157,7 +157,7 @@ export default function Dashboard() {
 
 function StatCard({ icon: Icon, label, value, sub, to }) {
   const inner = (
-    <div className="bg-white border border-gray200 rounded-xl p-4 h-full hover:border-black transition-colors">
+    <div className="bg-white border border-gray200 rounded-xl p-4 h-full hover:border-primary transition-colors">
       <div className="flex items-center gap-2 text-gray600">
         <Icon size={16} />
         <span className="text-xs font-medium">{label}</span>

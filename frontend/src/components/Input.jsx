@@ -20,13 +20,13 @@ export default function Input({
       ) : null}
       <input
         id={inputId}
-        className={`w-full rounded-xl bg-white border px-3.5 py-2.5 text-sm text-ink placeholder:text-gray400 focus:outline-none focus:ring-2 focus:ring-black focus:border-black touch-target ${
-          error ? 'border-black border-2' : 'border-gray300'
+        className={`w-full rounded-xl bg-white border px-3.5 py-2.5 text-sm text-ink placeholder:text-gray400 focus:outline-none focus:ring-2 focus:ring-primary touch-target ${
+          error ? 'border-danger border-2' : 'border-gray300'
         } ${className}`}
         {...props}
       />
       {error ? (
-        <p className="mt-1.5 flex items-center gap-1.5 text-xs font-medium text-black">
+        <p className="mt-1.5 flex items-center gap-1.5 text-xs font-medium text-danger">
           <AlertCircle size={14} strokeWidth={2} />
           {error}
         </p>

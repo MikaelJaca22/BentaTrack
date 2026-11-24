@@ -15,6 +15,10 @@ export default {
         gray200: '#E5E5E5',
         gray100: '#F5F5F5',
         white: '#FFFFFF',
+        primary: '#F97316',
+        primaryDark: '#EA580C',
+        primaryLight: '#FFEDD5',
+        danger: '#DC2626',
       },
       fontFamily: {
         sans: ['Inter', 'system-ui', 'sans-serif'],

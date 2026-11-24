@@ -1,15 +1,15 @@
 import { X, AlertTriangle } from 'lucide-react';
 
-// Monochrome status badges. Status is shown via fill/border/icon/text only.
+// Status badges use the system accent (primary) and danger colors.
 const styles = {
-  pending: 'bg-white text-black border border-gray400',
-  accepted: 'bg-gray200 text-black border border-gray200',
-  delivered: 'bg-gray800 text-white border border-gray800',
-  completed: 'bg-black text-white border border-black',
+  pending: 'bg-white text-primary border border-primary',
+  accepted: 'bg-gray200 text-primary border border-gray200',
+  delivered: 'bg-primary text-white border border-primary',
+  completed: 'bg-primary text-white border border-primary',
   declined: 'bg-white text-gray600 border border-gray400',
-  discrepancy: 'bg-white text-black border-2 border-black',
-  low: 'bg-white text-black border-2 border-black',
-  default: 'bg-white text-black border border-gray300',
+  discrepancy: 'bg-white text-danger border-2 border-danger',
+  low: 'bg-white text-danger border-2 border-danger',
+  default: 'bg-white text-primary border border-gray300',
 };
 
 const labels = {

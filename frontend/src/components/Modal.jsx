@@ -14,7 +14,7 @@ export default function Modal({ open, onClose, title, children, footer }) {
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center">
       <div
-        className="absolute inset-0 bg-black/40"
+        className="absolute inset-0 bg-primary/20"
         onClick={onClose}
         aria-hidden="true"
       />

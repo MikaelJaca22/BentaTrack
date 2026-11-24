@@ -282,7 +282,7 @@ function CreateRequestModal({ open, onClose, onCreated, preselect }) {
           placeholder="e.g. needed before weekend"
         />
 
-        {err ? <p className="text-xs font-medium text-black">{err}</p> : null}
+        {err ? <p className="text-xs font-medium text-danger">{err}</p> : null}
       </div>
     </Modal>
   );

@@ -48,7 +48,7 @@ export default function Requests() {
             onClick={() => setFilter(f.id)}
             className={`px-3 py-1.5 rounded-lg text-xs font-medium border whitespace-nowrap ${
               filter === f.id
-                ? 'bg-black text-white border-black'
+                ? 'bg-primary text-white border-primary'
                 : 'bg-white text-gray600 border-gray300'
             }`}
           >

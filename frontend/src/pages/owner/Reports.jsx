@@ -116,7 +116,7 @@ export default function Reports() {
             onClick={() => setTab(t.id)}
             className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium border ${
               tab === t.id
-                ? 'bg-black text-white border-black'
+                ? 'bg-primary text-white border-primary'
                 : 'bg-white text-gray600 border-gray300'
             }`}
           >
@@ -140,7 +140,7 @@ export default function Reports() {
                 onClick={() => applyPreset(v)}
                 className={`px-2.5 py-1.5 rounded-lg text-xs font-medium border ${
                   preset === v
-                    ? 'bg-black text-white border-black'
+                    ? 'bg-primary text-white border-primary'
                     : 'bg-white text-gray600 border-gray300'
                 }`}
               >

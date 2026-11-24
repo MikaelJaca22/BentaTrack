@@ -323,7 +323,7 @@ export default function Products() {
               error={formErr.reorderLevel}
             />
           </div>
-          {formErr.form ? <p className="text-xs font-medium text-black">{formErr.form}</p> : null}
+          {formErr.form ? <p className="text-xs font-medium text-danger">{formErr.form}</p> : null}
         </div>
       </Modal>
 

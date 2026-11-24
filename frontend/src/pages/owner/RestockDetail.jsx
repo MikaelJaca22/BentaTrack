@@ -188,7 +188,7 @@ export default function RestockDetail() {
 
       {/* Store verifies delivery? actions */}
       {canVerify ? (
-        <div className="bg-white border-2 border-black rounded-xl p-4 no-print">
+        <div className="bg-white border-2 border-primary rounded-xl p-4 no-print">
           <p className="text-sm font-semibold text-ink mb-1">Store verifies delivery?</p>
           <p className="text-xs text-gray600 mb-3">
             Enter quantity received per item. If every item matches delivered, confirm to complete

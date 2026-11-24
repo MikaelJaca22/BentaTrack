@@ -41,7 +41,7 @@ export function ToastProvider({ children }) {
           <div
             key={t.id}
             role="status"
-            className="flex items-center gap-2.5 bg-black text-white text-sm rounded-xl px-4 py-3 shadow-lg border border-black"
+            className="flex items-center gap-2.5 bg-primary text-white text-sm rounded-xl px-4 py-3 shadow-lg border border-primary"
           >
             {icons[t.type]}
             <span className="flex-1">{t.message}</span>

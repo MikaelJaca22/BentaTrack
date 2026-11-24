@@ -151,7 +151,7 @@ export default function NotificationsView({ refreshUnread }) {
                   <span className="flex items-center gap-2">
                     <span className="text-sm font-medium text-ink">{n.title}</span>
                     {!n.isRead ? (
-                      <span className="w-2 h-2 rounded-full bg-black shrink-0" aria-label="unread" />
+                      <span className="w-2 h-2 rounded-full bg-primary shrink-0" aria-label="unread" />
                     ) : null}
                   </span>
                   <span className="block text-xs text-gray600 mt-0.5">{n.body}</span>

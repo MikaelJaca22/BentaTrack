@@ -76,7 +76,7 @@ export default function SupplierDashboard() {
           <h2 className="text-sm font-semibold text-ink">Recent Requests</h2>
           <Link
             to="/supplier/requests"
-            className="text-xs font-medium text-gray600 hover:text-black inline-flex items-center gap-1"
+            className="text-xs font-medium text-gray600 hover:text-primary inline-flex items-center gap-1"
           >
             All requests <ArrowRight size={14} />
           </Link>

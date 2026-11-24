@@ -156,7 +156,7 @@ export default function RequestDetail() {
       </div>
 
       {data.status === 'discrepancy' ? (
-        <div className="bg-white border-2 border-black rounded-xl p-4">
+        <div className="bg-white border-2 border-primary rounded-xl p-4">
           <div className="flex items-center gap-2 text-ink">
             <AlertTriangle size={16} />
             <p className="text-sm font-semibold">Output: report discrepancy</p>
@@ -177,7 +177,7 @@ export default function RequestDetail() {
 
       {/* Can fulfil? */}
       {canAct ? (
-        <div className="bg-white border-2 border-black rounded-xl p-4 no-print">
+        <div className="bg-white border-2 border-primary rounded-xl p-4 no-print">
           <p className="text-sm font-semibold text-ink mb-3">Can fulfil this request?</p>
           <div className="flex flex-wrap gap-2">
             <Button icon={Check} onClick={accept} disabled={busy}>

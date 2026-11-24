@@ -45,12 +45,12 @@ export default function Login() {
             />
           </div>
           <h1
-            className="text-2xl font-bold text-black leading-snug"
+            className="text-2xl font-bold text-primary leading-snug"
           >
             BentaTrack:
           </h1>
           <p
-            className="mt-1.5 text-sm font-bold text-black leading-snug"
+            className="mt-1.5 text-sm font-bold text-gray600 leading-snug"
           >
             {SYSTEM_TITLE}
           </p>
@@ -82,8 +82,8 @@ export default function Login() {
           />
 
           {error ? (
-            <p className="flex items-center gap-1.5 text-sm font-medium text-black">
-              <AlertCircle size={16} /> {error}
+            <p className="flex items-center gap-1.5 text-sm font-medium text-danger">
+              <AlertCircle size={16} className="text-danger" /> {error}
             </p>
           ) : null}
         </form>
@@ -94,13 +94,13 @@ export default function Login() {
             type="submit"
             form="login-form"
             disabled={busy}
-            className="text-sm font-semibold text-black hover:text-gray600 focus:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2 rounded-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="text-sm font-semibold text-primary hover:text-primaryDark focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {busy ? 'Signing in…' : 'Sign In'}
           </button>
           <Link
             to="/create-account"
-            className="text-sm font-semibold text-black hover:text-gray600 focus:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2 rounded-sm transition-colors"
+            className="text-sm font-semibold text-primary hover:text-primaryDark focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded-sm transition-colors"
           >
             Create Account
           </Link>

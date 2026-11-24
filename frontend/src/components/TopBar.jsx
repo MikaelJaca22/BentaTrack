@@ -13,7 +13,7 @@ export default function TopBar({ unread = 0, notificationsPath }) {
       <div className="grid grid-cols-[1fr_minmax(0,auto)_1fr] items-center px-4 md:px-8 h-16">
         <div />
         <div className="text-center min-w-0 px-2">
-          <p className="text-base font-bold text-ink leading-snug">
+          <p className="text-base font-bold text-primary leading-snug">
             BentaTrack: {SYSTEM_TITLE}
           </p>
         </div>
@@ -26,7 +26,7 @@ export default function TopBar({ unread = 0, notificationsPath }) {
             >
               <Bell size={18} />
               {unread > 0 ? (
-                <span className="absolute top-1 right-1 min-w-[16px] h-4 px-1 rounded-full bg-black text-white text-[9px] flex items-center justify-center">
+                <span className="absolute top-1 right-1 min-w-[16px] h-4 px-1 rounded-full bg-primary text-white text-[9px] flex items-center justify-center">
                   {unread > 9 ? '9+' : unread}
                 </span>
               ) : null}

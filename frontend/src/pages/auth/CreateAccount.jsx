@@ -80,8 +80,8 @@ export default function CreateAccount() {
                   onClick={() => setRole(opt.v)}
                   className={`rounded-xl px-3 py-2.5 text-sm font-medium border touch-target ${
                     role === opt.v
-                      ? 'bg-black text-white border-black'
-                      : 'bg-white text-black border-gray300'
+                      ? 'bg-primary text-white border-primary'
+                      : 'bg-white text-primary border-gray300'
                   }`}
                 >
                   {opt.l}
@@ -129,7 +129,7 @@ export default function CreateAccount() {
           />
 
           {error ? (
-            <p className="flex items-center gap-1.5 text-sm font-medium text-black">
+            <p className="flex items-center gap-1.5 text-sm font-medium text-danger">
               <AlertCircle size={16} /> {error}
             </p>
           ) : null}
@@ -143,7 +143,7 @@ export default function CreateAccount() {
         <div className="flex items-center justify-center gap-6 mt-4">
           <Link
             to="/login"
-            className="text-sm font-semibold text-black hover:text-gray600 focus:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2 rounded-sm transition-colors"
+            className="text-sm font-semibold text-primary hover:text-primaryDark focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded-sm transition-colors"
           >
             Back to Sign In
           </Link>
