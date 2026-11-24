@@ -32,17 +32,14 @@ export default function Login() {
     <div
       className="min-h-screen flex flex-col items-center justify-center px-4 py-10"
       style={{
-        backgroundImage: "url('/ormoc-city-wet-market-exterior.png')",
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat',
+        backgroundColor: 'white',
       }}
     >
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
           <div className="flex justify-center mb-3">
             <img
-              src="/che-che-variety-store-no-bg.png"
+              src="/logo.jpg"
               alt="Che-Che Variety Store logo"
               className="h-28 w-auto"
             />
