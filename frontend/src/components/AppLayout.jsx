@@ -80,8 +80,7 @@ export default function AppLayout() {
     <div
       className="min-h-screen flex flex-col"
       style={{
-        backgroundImage:
-          "linear-gradient(160deg, rgba(138, 144, 155, 0.88) 0%, rgba(74, 82, 97, 0.94) 100%), url('/ormoc-city-wet-market-exterior.png')",
+        backgroundImage: "url('/ormoc-city-wet-market-exterior.png')",
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',

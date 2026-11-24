@@ -32,8 +32,7 @@ export default function Login() {
     <div
       className="min-h-screen flex flex-col items-center justify-center px-4 py-10"
       style={{
-        backgroundImage:
-          "linear-gradient(160deg, rgba(138, 144, 155, 0.88) 0%, rgba(74, 82, 97, 0.94) 100%), url('/ormoc-city-wet-market-exterior.png')",
+        backgroundImage: "url('/ormoc-city-wet-market-exterior.png')",
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
@@ -48,10 +47,16 @@ export default function Login() {
               className="h-28 w-auto mix-blend-multiply"
             />
           </div>
-          <h1 className="text-2xl font-bold text-ink leading-snug">
+          <h1
+            className="text-2xl font-bold text-ink leading-snug"
+            style={{ textShadow: '0 1px 3px rgba(0, 0, 0, 0.65)' }}
+          >
             BentaTrack:
           </h1>
-          <p className="mt-1.5 text-sm font-bold text-gray500 leading-snug">
+          <p
+            className="mt-1.5 text-sm font-bold text-gray500 leading-snug"
+            style={{ textShadow: '0 1px 3px rgba(0, 0, 0, 0.65)' }}
+          >
             {SYSTEM_TITLE}
           </p>
         </div>
