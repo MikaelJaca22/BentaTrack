@@ -45,14 +45,12 @@ export default function Login() {
             />
           </div>
           <h1
-            className="text-2xl font-bold text-ink leading-snug"
-            style={{ textShadow: '0 1px 3px rgba(0, 0, 0, 0.65)' }}
+            className="text-2xl font-bold text-black leading-snug"
           >
             BentaTrack:
           </h1>
           <p
-            className="mt-1.5 text-sm font-bold text-gray500 leading-snug"
-            style={{ textShadow: '0 1px 3px rgba(0, 0, 0, 0.65)' }}
+            className="mt-1.5 text-sm font-bold text-black leading-snug"
           >
             {SYSTEM_TITLE}
           </p>
