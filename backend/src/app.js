@@ -33,7 +33,25 @@ if (env.trustProxy !== null) {
 
 // Product photos are served to clients on a different origin (Vite/Expo), so
 // the default same-origin resource policy would make browsers refuse them.
-app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
+// The browser app (Vite/Expo dev server) calls this API cross-origin, so the
+// CSP must allow connect-src to the API ('self') plus the configured browser
+// origins; helmet's default falls back to default-src 'self' and would block
+// every API call, surfacing in the browser as a network error.
+app.use(
+  helmet({
+    crossOriginResourcePolicy: { policy: 'cross-origin' },
+    contentSecurityPolicy: {
+      useDefaults: true,
+      directives: {
+        ...helmet.contentSecurityPolicy.getDefaultDirectives(),
+        'connect-src': ["'self'", ...env.corsOrigins],
+        // Local dev runs plain http://localhost:<port> for the API + dev server;
+        // upgrade-insecure-requests would rewrite these to https and break them.
+        'upgrade-insecure-requests': null,
+      },
+    },
+  })
+);
 // Bounded so a single oversized request cannot exhaust memory.
 app.use(express.json({ limit: '1mb' }));
 app.use(morgan('dev'));
