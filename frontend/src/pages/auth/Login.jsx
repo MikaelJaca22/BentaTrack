@@ -42,7 +42,7 @@ export default function Login() {
         <div className="text-center mb-8">
           <div className="flex justify-center mb-3">
             <img
-              src="/logo.jpg"
+              src="/che-che-variety-store-no-bg.png"
               alt="Che-Che Variety Store logo"
               className="h-28 w-auto"
             />
