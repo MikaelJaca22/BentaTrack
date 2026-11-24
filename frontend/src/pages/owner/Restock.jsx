@@ -246,7 +246,7 @@ function CreateRequestModal({ open, onClose, onCreated, preselect }) {
                     className="p-2 rounded-lg border border-gray300 touch-target"
                     aria-label="Decrease"
                   >
-                    <Minus size={14} />
+                    <Minus size={14} strokeWidth={1.5} />
                   </button>
                   <input
                     type="number"
@@ -260,7 +260,7 @@ function CreateRequestModal({ open, onClose, onCreated, preselect }) {
                     className="p-2 rounded-lg border border-gray300 touch-target"
                     aria-label="Increase"
                   >
-                    <Plus size={14} />
+                    <Plus size={14} strokeWidth={1.5} />
                   </button>
                 </div>
                 <button
@@ -268,7 +268,7 @@ function CreateRequestModal({ open, onClose, onCreated, preselect }) {
                   className="p-2 rounded-lg hover:bg-gray100 text-gray600 touch-target"
                   aria-label="Remove"
                 >
-                  <X size={16} />
+                  <X size={16} strokeWidth={1.5} />
                 </button>
               </div>
             ))}
@@ -302,7 +302,7 @@ function ProductPicker({ products, lines, onAdd }) {
     <div>
       <label className="block mb-1.5 text-sm font-medium text-ink">Add products</label>
       <div className="relative">
-        <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray400" />
+        <Search size={16} strokeWidth={1.5} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray400" />
         <input
           value={q}
           onChange={(e) => setQ(e.target.value)}

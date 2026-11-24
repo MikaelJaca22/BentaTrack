@@ -116,7 +116,7 @@ export default function RequestDetail() {
           className="p-2 rounded-lg hover:bg-gray100 touch-target"
           aria-label="Back"
         >
-          <ArrowLeft size={18} />
+          <ArrowLeft size={18} strokeWidth={1.5} />
         </button>
         <h2 className="text-base font-semibold text-ink">Request #{data.id}</h2>
         <Badge status={data.status} />
@@ -158,7 +158,7 @@ export default function RequestDetail() {
       {data.status === 'discrepancy' ? (
         <div className="bg-white border-2 border-primary rounded-xl p-4">
           <div className="flex items-center gap-2 text-ink">
-            <AlertTriangle size={16} />
+            <AlertTriangle size={16} strokeWidth={1.5} />
             <p className="text-sm font-semibold">Output: report discrepancy</p>
           </div>
           <p className="mt-1 text-xs text-gray600">
@@ -205,7 +205,7 @@ export default function RequestDetail() {
         <div className="space-y-3">
           {data.events.map((e) => (
             <div key={e.id} className="flex gap-2 text-sm">
-              <Clock size={14} className="text-gray400 mt-0.5 shrink-0" />
+              <Clock size={14} strokeWidth={1.5} className="text-gray400 mt-0.5 shrink-0" />
               <div>
                 <p className="text-ink">
                   {e.actorName} · <span className="font-medium">{e.eventType}</span>

@@ -120,7 +120,7 @@ export default function Reports() {
                 : 'bg-white text-gray600 border-gray300'
             }`}
           >
-            <t.icon size={15} /> {t.label}
+            <t.icon size={15} strokeWidth={1.5} /> {t.label}
           </button>
         ))}
       </div>

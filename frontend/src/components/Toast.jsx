@@ -28,9 +28,9 @@ export function ToastProvider({ children }) {
   };
 
   const icons = {
-    success: <CheckCircle2 size={16} />,
-    error: <AlertCircle size={16} />,
-    info: <Info size={16} />,
+    success: <CheckCircle2 size={16} strokeWidth={1.5} />,
+    error: <AlertCircle size={16} strokeWidth={1.5} />,
+    info: <Info size={16} strokeWidth={1.5} />,
   };
 
   return (
@@ -50,7 +50,7 @@ export function ToastProvider({ children }) {
               className="text-gray300 hover:text-white text-xs px-1"
               aria-label="Dismiss"
             >
-              <X size={14} />
+              <X size={14} strokeWidth={1.5} />
             </button>
           </div>
         ))}

@@ -130,7 +130,7 @@ export default function CreateAccount() {
 
           {error ? (
             <p className="flex items-center gap-1.5 text-sm font-medium text-danger">
-              <AlertCircle size={16} /> {error}
+              <AlertCircle size={16} strokeWidth={1.5} /> {error}
             </p>
           ) : null}
 

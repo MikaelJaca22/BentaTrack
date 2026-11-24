@@ -83,7 +83,7 @@ export default function Login() {
 
           {error ? (
             <p className="flex items-center gap-1.5 text-sm font-medium text-danger">
-              <AlertCircle size={16} className="text-danger" /> {error}
+              <AlertCircle size={16} className="text-danger" strokeWidth={1.5} /> {error}
             </p>
           ) : null}
         </form>

@@ -6,7 +6,7 @@ import TopBar from './TopBar.jsx';
 
 const OWNER_NAV = [
   { to: '/owner', label: 'Dashboard', short: 'Home', icon: 'LayoutDashboard', end: true },
-  { to: '/owner/sale', label: 'New Sale', short: 'Sale', icon: 'ShoppingCart' },
+  { to: '/owner/sale', label: 'New Sale', short: 'Sale', icon: 'CreditCard' },
   { to: '/owner/products', label: 'Products', short: 'Stock', icon: 'Package' },
   { to: '/owner/restock', label: 'Restock', short: 'Restock', icon: 'Truck' },
   { to: '/owner/suppliers', label: 'Suppliers', short: 'Suppliers', icon: 'Users' },
@@ -26,7 +26,7 @@ const ICONS = {};
 // Lazily import lucide icons by name to keep nav data serializable.
 import {
   LayoutDashboard,
-  ShoppingCart,
+  CreditCard,
   Package,
   Truck,
   Users,
@@ -37,7 +37,7 @@ import {
 } from 'lucide-react';
 Object.assign(ICONS, {
   LayoutDashboard,
-  ShoppingCart,
+  CreditCard,
   Package,
   Truck,
   Users,

@@ -111,7 +111,7 @@ export default function Dashboard() {
             to="/owner/reports"
             className="text-xs font-medium text-gray600 hover:text-primary inline-flex items-center gap-1"
           >
-            View reports <ArrowRight size={14} />
+            View reports <ArrowRight size={14} strokeWidth={1.5} />
           </Link>
         </div>
 

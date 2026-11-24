@@ -30,7 +30,7 @@ export default function Modal({ open, onClose, title, children, footer }) {
             aria-label="Close"
             className="p-2 rounded-lg hover:bg-gray100 text-gray600 touch-target"
           >
-            <X size={18} />
+            <X size={18} strokeWidth={1.5} />
           </button>
         </div>
         <div className="px-5 py-4">{children}</div>

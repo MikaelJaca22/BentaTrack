@@ -78,7 +78,7 @@ export default function SupplierDashboard() {
             to="/supplier/requests"
             className="text-xs font-medium text-gray600 hover:text-primary inline-flex items-center gap-1"
           >
-            All requests <ArrowRight size={14} />
+            All requests <ArrowRight size={14} strokeWidth={1.5} />
           </Link>
         </div>
         {recent.length === 0 ? (

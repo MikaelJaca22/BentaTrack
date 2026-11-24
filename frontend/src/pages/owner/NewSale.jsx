@@ -149,7 +149,7 @@ export default function NewSale() {
       <div className="space-y-5">
         <div className="bg-white border border-gray200 rounded-xl p-5">
           <div className="flex items-center gap-2 text-ink">
-            <Check size={18} />
+            <Check size={18} strokeWidth={1.5} />
             <h2 className="text-base font-semibold">Sale recorded</h2>
           </div>
           <p className="mt-1 text-sm text-gray600">
@@ -172,7 +172,7 @@ export default function NewSale() {
         {low.length > 0 ? (
           <div className="bg-white border-2 border-primary rounded-xl p-5">
             <div className="flex items-center gap-2 text-ink">
-              <AlertTriangle size={18} />
+              <AlertTriangle size={18} strokeWidth={1.5} />
               <h3 className="text-sm font-semibold">Output: low-stock alert</h3>
             </div>
             <p className="mt-1 text-xs text-gray600">
@@ -279,7 +279,7 @@ export default function NewSale() {
                     aria-label={`Add ${p.name}`}
                     className="p-2.5 rounded-lg bg-primary text-white disabled:opacity-40 touch-target shrink-0"
                   >
-                    <Plus size={16} />
+                    <Plus size={16} strokeWidth={1.5} />
                   </button>
                 </div>
               ))}
@@ -335,7 +335,7 @@ export default function NewSale() {
                         aria-label="Remove"
                         className="p-2 rounded-lg hover:bg-gray100 text-gray600 touch-target"
                       >
-                        <Trash2 size={16} />
+                        <Trash2 size={16} strokeWidth={1.5} />
                       </button>
                     </div>
                     <div className="mt-2 flex items-center justify-between">
@@ -345,7 +345,7 @@ export default function NewSale() {
                           className="p-2 rounded-lg border border-gray300 touch-target"
                           aria-label="Decrease"
                         >
-                          <Minus size={14} />
+                          <Minus size={14} strokeWidth={1.5} />
                         </button>
                         <span className="w-8 text-center text-sm font-medium">
                           {c.quantity}
@@ -356,7 +356,7 @@ export default function NewSale() {
                           className="p-2 rounded-lg border border-gray300 disabled:opacity-40 touch-target"
                           aria-label="Increase"
                         >
-                          <Plus size={14} />
+                          <Plus size={14} strokeWidth={1.5} />
                         </button>
                       </div>
                       <span className="text-sm font-semibold text-ink">

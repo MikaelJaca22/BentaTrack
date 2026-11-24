@@ -87,7 +87,7 @@ export default function Receipt() {
           className="p-2 rounded-lg hover:bg-gray100 touch-target"
           aria-label="Back"
         >
-          <ArrowLeft size={18} />
+          <ArrowLeft size={18} strokeWidth={1.5} />
         </button>
         <span className="text-sm font-medium text-ink">Receipt</span>
       </div>

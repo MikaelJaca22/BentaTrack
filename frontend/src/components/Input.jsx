@@ -27,7 +27,7 @@ export default function Input({
       />
       {error ? (
         <p className="mt-1.5 flex items-center gap-1.5 text-xs font-medium text-danger">
-          <AlertCircle size={14} strokeWidth={2} />
+          <AlertCircle size={14} strokeWidth={1.5} />
           {error}
         </p>
       ) : null}

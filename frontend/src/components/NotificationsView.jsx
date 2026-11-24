@@ -145,7 +145,7 @@ export default function NotificationsView({ refreshUnread }) {
                 }`}
               >
                 <span className="mt-0.5 text-gray600 shrink-0">
-                  <Icon size={18} />
+                  <Icon size={18} strokeWidth={1.5} />
                 </span>
                 <span className="flex-1 min-w-0">
                   <span className="flex items-center gap-2">

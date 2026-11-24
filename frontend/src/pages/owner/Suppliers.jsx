@@ -102,7 +102,7 @@ export default function Suppliers() {
                   aria-label="Unlink"
                   className="p-2 rounded-lg hover:bg-gray100 text-gray600 touch-target"
                 >
-                  <Trash2 size={16} />
+                  <Trash2 size={16} strokeWidth={1.5} />
                 </button>
               </div>
             ))}
@@ -113,7 +113,7 @@ export default function Suppliers() {
       <section>
         <h2 className="text-sm font-semibold text-ink mb-3">Register Supplier (find an account)</h2>
         <div className="relative mb-3">
-          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray400" />
+          <Search size={16} strokeWidth={1.5} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray400" />
           <input
             value={q}
             onChange={(e) => setQ(e.target.value)}

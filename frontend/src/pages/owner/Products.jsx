@@ -207,7 +207,7 @@ export default function Products() {
                       <p className="text-sm font-semibold text-ink truncate">{p.name}</p>
                       {p.isLow && p.isActive ? (
                         <Badge status="low">
-                          <AlertTriangle size={12} /> Low
+                          <AlertTriangle size={12} strokeWidth={1.5} /> Low
                         </Badge>
                       ) : null}
                       {!p.isActive ? <Badge status="declined">Inactive</Badge> : null}
@@ -226,21 +226,21 @@ export default function Products() {
                     aria-label="Adjust stock"
                     className="p-2 rounded-lg hover:bg-gray100 text-gray600 touch-target"
                   >
-                    <SlidersHorizontal size={16} />
+                    <SlidersHorizontal size={16} strokeWidth={1.5} />
                   </button>
                   <button
                     onClick={() => openEdit(p)}
                     aria-label="Edit"
                     className="p-2 rounded-lg hover:bg-gray100 text-gray600 touch-target"
                   >
-                    <Pencil size={16} />
+                    <Pencil size={16} strokeWidth={1.5} />
                   </button>
                   <button
                     onClick={() => setToDelete(p)}
                     aria-label="Delete"
                     className="p-2 rounded-lg hover:bg-gray100 text-gray600 touch-target"
                   >
-                    <Trash2 size={16} />
+                    <Trash2 size={16} strokeWidth={1.5} />
                   </button>
                 </div>
               </div>

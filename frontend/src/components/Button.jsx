@@ -20,7 +20,7 @@ export default function Button({
       disabled={disabled}
       {...props}
     >
-      {Icon ? <Icon size={16} strokeWidth={2} /> : null}
+      {Icon ? <Icon size={16} strokeWidth={1.5} /> : null}
       {children}
     </button>
   );
