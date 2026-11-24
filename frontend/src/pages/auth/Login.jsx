@@ -29,7 +29,16 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gray100 px-4 py-10">
+    <div
+      className="min-h-screen flex flex-col items-center justify-center px-4 py-10"
+      style={{
+        backgroundImage:
+          "linear-gradient(160deg, rgba(138, 144, 155, 0.88) 0%, rgba(74, 82, 97, 0.94) 100%), url('/ormoc-city-wet-market-exterior.png')",
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+      }}
+    >
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
           <div className="flex justify-center mb-3">

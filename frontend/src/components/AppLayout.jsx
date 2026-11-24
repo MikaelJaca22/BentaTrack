@@ -77,7 +77,16 @@ export default function AppLayout() {
   }, [refreshUnread, pathname]);
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray100">
+    <div
+      className="min-h-screen flex flex-col"
+      style={{
+        backgroundImage:
+          "linear-gradient(160deg, rgba(138, 144, 155, 0.88) 0%, rgba(74, 82, 97, 0.94) 100%), url('/ormoc-city-wet-market-exterior.png')",
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+      }}
+    >
       <TopBar
         unread={unread}
         notificationsPath={`${navBase}/notifications`}
