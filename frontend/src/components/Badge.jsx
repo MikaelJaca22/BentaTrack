@@ -4,11 +4,11 @@ import { X, AlertTriangle } from 'lucide-react';
 const styles = {
   pending: 'bg-white text-primary border border-primary',
   accepted: 'bg-gray200 text-primary border border-gray200',
-  delivered: 'bg-primary text-white border border-primary',
-  completed: 'bg-primary text-white border border-primary',
-  declined: 'bg-white text-gray600 border border-gray400',
-  discrepancy: 'bg-white text-danger border-2 border-danger',
-  low: 'bg-white text-danger border-2 border-danger',
+  delivered: 'bg-white text-black border border-black',
+  completed: 'bg-white text-black border border-black',
+  declined: 'bg-white text-black border border-gray400',
+  discrepancy: 'bg-white text-black border-2 border-danger',
+  low: 'bg-white text-black border-2 border-danger',
   default: 'bg-white text-primary border border-gray300',
 };
 

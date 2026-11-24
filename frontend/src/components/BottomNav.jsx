@@ -12,14 +12,14 @@ export default function BottomNav({ items }) {
           end={it.end}
           className={({ isActive }) =>
             `flex flex-col items-center justify-center gap-0.5 px-2 py-1.5 rounded-lg flex-1 min-h-[56px] ${
-              isActive ? 'text-primary font-semibold' : 'text-gray400 font-medium'
+              isActive ? 'text-primary font-semibold' : 'text-black font-medium'
             } hover:bg-gray100`
           }
         >
           <div className="relative">
             <it.icon size={20} strokeWidth={1.5} />
             {it.badge ? (
-              <span className="absolute -top-1.5 -right-2 min-w-[16px] h-4 px-1 rounded-full bg-primary text-white text-[9px] flex items-center justify-center">
+              <span className="absolute -top-1.5 -right-2 min-w-[16px] h-4 px-1 rounded-full bg-white text-black text-[9px] flex items-center justify-center">
                 {it.badge > 9 ? '9+' : it.badge}
               </span>
             ) : null}

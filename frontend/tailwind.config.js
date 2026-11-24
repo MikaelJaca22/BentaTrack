@@ -15,13 +15,16 @@ export default {
         gray200: '#E5E5E5',
         gray100: '#F5F5F5',
         white: '#FFFFFF',
-        primary: '#F97316',
-        primaryDark: '#EA580C',
-        primaryLight: '#FFEDD5',
-        danger: '#DC2626',
+        primary: '#000000',
+        primaryDark: '#000000',
+        primaryLight: '#000000',
+        danger: '#000000',
       },
       fontFamily: {
         sans: ['Inter', 'system-ui', 'sans-serif'],
+      },
+      height: {
+        auto: 'auto',
       },
       borderRadius: {
         xl: '0.75rem',

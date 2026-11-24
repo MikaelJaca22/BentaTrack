@@ -24,11 +24,11 @@ export default function Modal({ open, onClose, title, children, footer }) {
         className="relative w-full sm:max-w-lg bg-white border border-gray300 rounded-t-xl sm:rounded-xl max-h-[90vh] overflow-y-auto"
       >
         <div className="flex items-center justify-between px-5 py-4 border-b border-gray200 sticky top-0 bg-white">
-          <h2 className="text-base font-semibold text-ink">{title}</h2>
+          <h2 className="text-base font-semibold text-black">{title}</h2>
           <button
             onClick={onClose}
             aria-label="Close"
-            className="p-2 rounded-lg hover:bg-gray100 text-gray600 touch-target"
+            className="p-2 rounded-lg hover:bg-gray100 text-black touch-target"
           >
             <X size={18} strokeWidth={1.5} />
           </button>

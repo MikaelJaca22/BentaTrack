@@ -50,7 +50,7 @@ export default function Login() {
             BentaTrack:
           </h1>
           <p
-            className="mt-1.5 text-sm font-bold text-gray600 leading-snug"
+            className="mt-1.5 text-sm font-bold text-black leading-snug"
           >
             {SYSTEM_TITLE}
           </p>
@@ -82,8 +82,8 @@ export default function Login() {
           />
 
           {error ? (
-            <p className="flex items-center gap-1.5 text-sm font-medium text-danger">
-              <AlertCircle size={16} className="text-danger" strokeWidth={1.5} /> {error}
+            <p className="flex items-center gap-1.5 text-sm font-medium text-black">
+              <AlertCircle size={16} className="text-black" strokeWidth={1.5} /> {error}
             </p>
           ) : null}
         </form>

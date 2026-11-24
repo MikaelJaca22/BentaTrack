@@ -144,18 +144,18 @@ export default function NotificationsView({ refreshUnread }) {
                   n.isRead ? 'opacity-60' : 'hover:bg-gray100'
                 }`}
               >
-                <span className="mt-0.5 text-gray600 shrink-0">
+                <span className="mt-0.5 text-black shrink-0">
                   <Icon size={18} strokeWidth={1.5} />
                 </span>
                 <span className="flex-1 min-w-0">
                   <span className="flex items-center gap-2">
-                    <span className="text-sm font-medium text-ink">{n.title}</span>
+                    <span className="text-sm font-medium text-black">{n.title}</span>
                     {!n.isRead ? (
                       <span className="w-2 h-2 rounded-full bg-primary shrink-0" aria-label="unread" />
                     ) : null}
                   </span>
-                  <span className="block text-xs text-gray600 mt-0.5">{n.body}</span>
-                  <span className="block text-[11px] text-gray400 mt-0.5">{n.createdAt}</span>
+                  <span className="block text-xs text-black mt-0.5">{n.body}</span>
+                  <span className="block text-[11px] text-black mt-0.5">{n.createdAt}</span>
                 </span>
               </button>
             );

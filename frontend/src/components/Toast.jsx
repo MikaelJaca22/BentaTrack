@@ -41,13 +41,13 @@ export function ToastProvider({ children }) {
           <div
             key={t.id}
             role="status"
-            className="flex items-center gap-2.5 bg-primary text-white text-sm rounded-xl px-4 py-3 shadow-lg border border-primary"
+            className="flex items-center gap-2.5 bg-white text-black text-sm rounded-xl px-4 py-3 shadow-lg border border-black"
           >
             {icons[t.type]}
             <span className="flex-1">{t.message}</span>
             <button
               onClick={() => dismiss(t.id)}
-              className="text-gray300 hover:text-white text-xs px-1"
+              className="text-black hover:text-gray300 text-xs px-1"
               aria-label="Dismiss"
             >
               <X size={14} strokeWidth={1.5} />

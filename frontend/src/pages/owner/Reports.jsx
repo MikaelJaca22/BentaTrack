@@ -2,7 +2,8 @@ import { useEffect, useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { Printer, Share2, Download, BarChart3, Package, Truck } from 'lucide-react';
 import client, { extractError } from '../../api/client.js';
-import { formatMoney, API_URL, SYSTEM_TITLE } from '../../config.js';
+import { formatMoney, SYSTEM_TITLE } from '../../config.js';
+import { toXlsxBlob } from '../../utils/xlsx.js';
 import { useToast } from '../../components/Toast.jsx';
 import Button from '../../components/Button.jsx';
 import Badge from '../../components/Badge.jsx';
@@ -70,24 +71,105 @@ export default function Reports() {
     }
   }
 
-  // Download CSV with the JWT via fetch (endpoint returns text/csv).
-  async function downloadCsv() {
-    const token = localStorage.getItem('bentatrack_token');
-    const qs = tab === 'inventory' ? '' : `?from=${from}&to=${to}`;
-    const url = `${API_URL}/reports/${tab}${qs}${qs ? '&' : '?'}format=csv`;
-    try {
-      const res = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
-      if (!res.ok) throw new Error('failed');
-      const blob = await res.blob();
-      const link = document.createElement('a');
-      link.href = URL.createObjectURL(blob);
-      link.download = `${tab}-report.csv`;
-      link.click();
-      URL.revokeObjectURL(link.href);
-      toast.success('CSV downloaded');
-    } catch (e) {
-      toast.error('Could not download CSV');
+  // Export the current report as a real Excel (.xlsx) file, built client-side
+  // from the data already loaded for the active tab.
+  function downloadExcel() {
+    const sheets = [];
+    if (tab === 'sales' && sales) {
+      sheets.push(
+        {
+          name: 'Sales summary',
+          rows: [
+            ['Metric', 'Value'],
+            ['Total Sales', formatMoney(sales.summary.totalSales)],
+            ['Transactions', sales.summary.transactionCount],
+            ['Items Sold', sales.summary.itemsSold],
+            ['Average Sale', formatMoney(sales.summary.averageSale)],
+          ],
+        },
+        {
+          name: 'Daily Sales',
+          rows: [
+            ['Day', 'Transactions', 'Revenue'],
+            ...sales.daily.map((d) => [d.day, d.txns, formatMoney(d.revenue)]),
+          ],
+        },
+        {
+          name: 'Receipts',
+          rows: [
+            ['Receipt No', 'Total', 'Date'],
+            ...sales.receipts.map((r) => [
+              r.receiptNo,
+              formatMoney(r.total),
+              r.createdAt,
+            ]),
+          ],
+        },
+      );
+    } else if (tab === 'inventory' && inventory) {
+      sheets.push(
+        {
+          name: 'Inventory Summary',
+          rows: [
+            ['Metric', 'Value'],
+            ['Total Stock Value', formatMoney(inventory.summary.totalStockValue)],
+            ['Low Stock Count', inventory.summary.lowStockCount],
+            ['Product Count', inventory.summary.productCount],
+          ],
+        },
+        {
+          name: 'Products',
+          rows: [
+            ['Code', 'Name', 'Category', 'Stock', 'Reorder Level', 'Cost', 'Stock Value', 'Low Stock', 'Active'],
+            ...inventory.products.map((p) => [
+              p.productCode,
+              p.name,
+              p.category,
+              p.stockQty,
+              p.reorderLevel,
+              formatMoney(p.cost),
+              formatMoney(p.stockValue),
+              p.isLow ? 'YES' : 'NO',
+              p.isActive ? 'YES' : 'NO',
+            ]),
+          ],
+        },
+      );
+    } else if (tab === 'restock' && restock) {
+      sheets.push(
+        {
+          name: 'Restock Summary',
+          rows: [
+            ['Status', 'Count'],
+            ...Object.entries(restock.summary.byStatus || {}).map(([s, c]) => [s, c]),
+          ],
+        },
+        {
+          name: 'By Supplier',
+          rows: [
+            ['Supplier', 'Total', 'Completed', 'Discrepancy', 'Declined'],
+            ...restock.perSupplier.map((s) => [
+              s.supplierName,
+              s.total,
+              s.completed,
+              s.discrepancy,
+              s.declined,
+            ]),
+          ],
+        },
+      );
     }
+    if (sheets.length === 0) {
+      toast.error('No data to export');
+      return;
+    }
+    const blob = toXlsxBlob(sheets);
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `${tab}-report.xlsx`;
+    link.click();
+    URL.revokeObjectURL(link.href);
+    toast.success('Excel downloaded');
   }
 
   async function shareSummary() {
@@ -116,8 +198,8 @@ export default function Reports() {
             onClick={() => setTab(t.id)}
             className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium border ${
               tab === t.id
-                ? 'bg-primary text-white border-primary'
-                : 'bg-white text-gray600 border-gray300'
+                ? 'bg-white text-black border-black'
+                : 'bg-white text-black border-gray300'
             }`}
           >
             <t.icon size={15} strokeWidth={1.5} /> {t.label}
@@ -140,8 +222,8 @@ export default function Reports() {
                 onClick={() => applyPreset(v)}
                 className={`px-2.5 py-1.5 rounded-lg text-xs font-medium border ${
                   preset === v
-                    ? 'bg-primary text-white border-primary'
-                    : 'bg-white text-gray600 border-gray300'
+                    ? 'bg-white text-black border-black'
+                    : 'bg-white text-black border-gray300'
                 }`}
               >
                 {l}
@@ -157,7 +239,7 @@ export default function Reports() {
               onChange={(e) => setFrom(e.target.value)}
               className="px-2 py-1.5 rounded-lg border border-gray300 text-xs"
             />
-            <span className="text-xs text-gray500">to</span>
+            <span className="text-xs text-black">to</span>
             <input
               type="date"
               value={to}
@@ -173,14 +255,14 @@ export default function Reports() {
           <Button variant="ghost" icon={Share2} onClick={shareSummary}>
             Share
           </Button>
-          <Button variant="ghost" icon={Download} onClick={downloadCsv}>
-            CSV
+          <Button variant="ghost" icon={Download} onClick={downloadExcel}>
+            Excel
           </Button>
         </div>
       </div>
 
       <div className="print-area space-y-4">
-        <p className="hidden print:block text-xs text-gray600">
+        <p className="hidden print:block text-xs text-black">
           {SYSTEM_TITLE} — {tab} report
         </p>
 
@@ -209,27 +291,27 @@ function SalesReport({ sales, maxDaily }) {
     <div className="space-y-4">
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         <Card>
-          <p className="text-xs text-gray500">Total Sales</p>
-          <p className="text-lg font-bold text-ink">{formatMoney(sales.summary.totalSales)}</p>
+          <p className="text-xs text-black">Total Sales</p>
+          <p className="text-lg font-bold text-black">{formatMoney(sales.summary.totalSales)}</p>
         </Card>
         <Card>
-          <p className="text-xs text-gray500">Transactions</p>
-          <p className="text-lg font-bold text-ink">{sales.summary.transactionCount}</p>
+          <p className="text-xs text-black">Transactions</p>
+          <p className="text-lg font-bold text-black">{sales.summary.transactionCount}</p>
         </Card>
         <Card>
-          <p className="text-xs text-gray500">Items Sold</p>
-          <p className="text-lg font-bold text-ink">{sales.summary.itemsSold}</p>
+          <p className="text-xs text-black">Items Sold</p>
+          <p className="text-lg font-bold text-black">{sales.summary.itemsSold}</p>
         </Card>
         <Card>
-          <p className="text-xs text-gray500">Average Sale</p>
-          <p className="text-lg font-bold text-ink">{formatMoney(sales.summary.averageSale)}</p>
+          <p className="text-xs text-black">Average Sale</p>
+          <p className="text-lg font-bold text-black">{formatMoney(sales.summary.averageSale)}</p>
         </Card>
       </div>
 
       <Card>
-        <p className="text-sm font-semibold text-ink mb-3">Daily Breakdown</p>
+        <p className="text-sm font-semibold text-black mb-3">Daily Breakdown</p>
         {sales.daily.length === 0 ? (
-          <p className="text-xs text-gray500">No sales in this range.</p>
+          <p className="text-xs text-black">No sales in this range.</p>
         ) : (
           <div className="flex items-end gap-2 h-32">
             {sales.daily.slice(-14).map((d) => (
@@ -238,7 +320,7 @@ function SalesReport({ sales, maxDaily }) {
                   className="w-full bg-gray800 rounded-t"
                   style={{ height: `${(d.revenue / maxDaily) * 100}%`, minHeight: 4 }}
                 />
-                <span className="text-[9px] text-gray500">{d.day.slice(5)}</span>
+                <span className="text-[9px] text-black">{d.day.slice(5)}</span>
               </div>
             ))}
           </div>
@@ -247,19 +329,19 @@ function SalesReport({ sales, maxDaily }) {
 
       <div className="grid sm:grid-cols-2 gap-3">
         <Card>
-          <p className="text-sm font-semibold text-ink mb-2">Top Products (quantity)</p>
+          <p className="text-sm font-semibold text-black mb-2">Top Products (quantity)</p>
           <TopList rows={sales.topProductsByQuantity} metric="quantity" />
         </Card>
         <Card>
-          <p className="text-sm font-semibold text-ink mb-2">Top Products (revenue)</p>
+          <p className="text-sm font-semibold text-black mb-2">Top Products (revenue)</p>
           <TopList rows={sales.topProductsByRevenue} metric="revenue" />
         </Card>
       </div>
 
       <Card>
-        <p className="text-sm font-semibold text-ink mb-2">Receipts</p>
+        <p className="text-sm font-semibold text-black mb-2">Receipts</p>
         {sales.receipts.length === 0 ? (
-          <p className="text-xs text-gray500">No receipts in this range.</p>
+          <p className="text-xs text-black">No receipts in this range.</p>
         ) : (
           <div className="divide-y divide-gray200">
             {sales.receipts.map((r) => (
@@ -268,8 +350,8 @@ function SalesReport({ sales, maxDaily }) {
                 to={`/owner/receipt/${r.id}`}
                 className="flex justify-between py-2 text-sm hover:bg-gray100 -mx-1 px-1 rounded"
               >
-                <span className="text-ink">{r.receiptNo}</span>
-                <span className="text-gray600">{formatMoney(r.total)}</span>
+                <span className="text-black">{r.receiptNo}</span>
+                <span className="text-black">{formatMoney(r.total)}</span>
               </Link>
             ))}
           </div>
@@ -280,16 +362,16 @@ function SalesReport({ sales, maxDaily }) {
 }
 
 function TopList({ rows, metric }) {
-  if (!rows.length) return <p className="text-xs text-gray500">No data.</p>;
+  if (!rows.length) return <p className="text-xs text-black">No data.</p>;
   return (
     <ol className="space-y-1.5">
       {rows.map((p, i) => (
         <li key={p.name + i} className="flex justify-between text-sm">
-          <span className="text-ink truncate">
-            <span className="text-gray400">{i + 1}. </span>
+          <span className="text-black truncate">
+            <span className="text-black">{i + 1}. </span>
             {p.name}
           </span>
-          <span className="text-gray600 shrink-0">
+          <span className="text-black shrink-0">
             {metric === 'quantity' ? `${p.quantity} sold` : formatMoney(p.revenue)}
           </span>
         </li>
@@ -303,30 +385,30 @@ function InventoryReport({ inventory }) {
     <div className="space-y-4">
       <div className="grid grid-cols-3 gap-3">
         <Card>
-          <p className="text-xs text-gray500">Total Stock Value</p>
-          <p className="text-lg font-bold text-ink">{formatMoney(inventory.summary.totalStockValue)}</p>
+          <p className="text-xs text-black">Total Stock Value</p>
+          <p className="text-lg font-bold text-black">{formatMoney(inventory.summary.totalStockValue)}</p>
         </Card>
         <Card>
-          <p className="text-xs text-gray500">Low Stock</p>
-          <p className="text-lg font-bold text-ink">{inventory.summary.lowStockCount}</p>
+          <p className="text-xs text-black">Low Stock</p>
+          <p className="text-lg font-bold text-black">{inventory.summary.lowStockCount}</p>
         </Card>
         <Card>
-          <p className="text-xs text-gray500">Products</p>
-          <p className="text-lg font-bold text-ink">{inventory.summary.productCount}</p>
+          <p className="text-xs text-black">Products</p>
+          <p className="text-lg font-bold text-black">{inventory.summary.productCount}</p>
         </Card>
       </div>
       <Card>
         {inventory.products.length === 0 ? (
-          <p className="text-xs text-gray500">No products yet.</p>
+          <p className="text-xs text-black">No products yet.</p>
         ) : (
           <div className="divide-y divide-gray200">
             {inventory.products.map((p) => (
               <div key={p.id} className="flex items-center justify-between py-2.5 text-sm gap-2">
                 <div className="min-w-0 flex items-center gap-2">
                   {p.isLow ? <Badge status="low">Low</Badge> : null}
-                  <span className="text-ink truncate">{p.name}</span>
+                  <span className="text-black truncate">{p.name}</span>
                 </div>
-                <div className="text-right shrink-0 text-xs text-gray600">
+                <div className="text-right shrink-0 text-xs text-black">
                   <p>
                     {p.stockQty} · reorder {p.reorderLevel}
                   </p>
@@ -346,32 +428,32 @@ function RestockReport({ restock }) {
   return (
     <div className="space-y-4">
       <Card>
-        <p className="text-sm font-semibold text-ink mb-3">By Status</p>
+        <p className="text-sm font-semibold text-black mb-3">By Status</p>
         <div className="flex flex-wrap gap-2">
           {statuses.map((s) => (
             <div key={s} className="flex items-center gap-2">
               <Badge status={s} />
-              <span className="text-sm text-ink">{restock.summary.byStatus[s] || 0}</span>
+              <span className="text-sm text-black">{restock.summary.byStatus[s] || 0}</span>
             </div>
           ))}
-          <span className="ml-auto text-sm text-gray600">
+          <span className="ml-auto text-sm text-black">
             Discrepancies: {restock.summary.discrepancyCount}
           </span>
         </div>
       </Card>
       <Card>
-        <p className="text-sm font-semibold text-ink mb-2">Per Supplier</p>
+        <p className="text-sm font-semibold text-black mb-2">Per Supplier</p>
         {restock.perSupplier.length === 0 ? (
-          <p className="text-xs text-gray500">No restock requests yet.</p>
+          <p className="text-xs text-black">No restock requests yet.</p>
         ) : (
           <div className="divide-y divide-gray200">
             {restock.perSupplier.map((s) => (
               <div key={s.supplierId} className="py-2.5 text-sm">
                 <div className="flex justify-between">
-                  <span className="text-ink">{s.supplierName}</span>
-                  <span className="text-gray600">{s.total} request(s)</span>
+                  <span className="text-black">{s.supplierName}</span>
+                  <span className="text-black">{s.total} request(s)</span>
                 </div>
-                <p className="text-xs text-gray500 mt-0.5">
+                <p className="text-xs text-black mt-0.5">
                   Completed {s.completed} · Discrepancy {s.discrepancy} · Declined {s.declined}
                 </p>
               </div>

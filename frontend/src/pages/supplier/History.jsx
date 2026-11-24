@@ -61,8 +61,8 @@ export default function History() {
               className="w-full flex items-center justify-between px-4 py-3 hover:bg-gray100 text-left"
             >
               <div>
-                <p className="text-sm font-medium text-ink">Request #{r.id}</p>
-                <p className="text-xs text-gray500">
+                <p className="text-sm font-medium text-black">Request #{r.id}</p>
+                <p className="text-xs text-black">
                   {r.itemCount} item(s) · {r.counterpart} · {r.updatedAt}
                 </p>
               </div>

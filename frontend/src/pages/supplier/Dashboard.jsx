@@ -73,10 +73,10 @@ export default function SupplierDashboard() {
 
       <section>
         <div className="flex items-center justify-between mb-3">
-          <h2 className="text-sm font-semibold text-ink">Recent Requests</h2>
+          <h2 className="text-sm font-semibold text-black">Recent Requests</h2>
           <Link
             to="/supplier/requests"
-            className="text-xs font-medium text-gray600 hover:text-primary inline-flex items-center gap-1"
+            className="text-xs font-medium text-black hover:text-primary inline-flex items-center gap-1"
           >
             All requests <ArrowRight size={14} strokeWidth={1.5} />
           </Link>
@@ -96,8 +96,8 @@ export default function SupplierDashboard() {
                 className="flex items-center justify-between px-4 py-3 hover:bg-gray100"
               >
                 <div>
-                  <p className="text-sm font-medium text-ink">Request #{r.id}</p>
-                  <p className="text-xs text-gray500">
+                  <p className="text-sm font-medium text-black">Request #{r.id}</p>
+                  <p className="text-xs text-black">
                     {r.itemCount} item(s) · {r.counterpart}
                   </p>
                 </div>
@@ -114,11 +114,11 @@ export default function SupplierDashboard() {
 function Stat({ icon: Icon, label, value }) {
   return (
     <div className="bg-white border border-gray200 rounded-xl p-4">
-      <div className="flex items-center gap-2 text-gray600">
+      <div className="flex items-center gap-2 text-black">
         <Icon size={15} />
         <span className="text-[11px] font-medium">{label}</span>
       </div>
-      <p className="mt-1.5 text-2xl font-bold text-ink">{value}</p>
+      <p className="mt-1.5 text-2xl font-bold text-black">{value}</p>
     </div>
   );
 }

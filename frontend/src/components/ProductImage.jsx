@@ -30,7 +30,7 @@ export default function ProductImage({
           className="w-full h-full object-contain"
         />
       ) : (
-        <ImageOff size={iconSize} className="text-gray400" aria-hidden="true" />
+        <ImageOff size={iconSize} className="text-black" aria-hidden="true" />
       )}
     </div>
   );

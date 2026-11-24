@@ -118,7 +118,7 @@ export default function RequestDetail() {
         >
           <ArrowLeft size={18} strokeWidth={1.5} />
         </button>
-        <h2 className="text-base font-semibold text-ink">Request #{data.id}</h2>
+        <h2 className="text-base font-semibold text-black">Request #{data.id}</h2>
         <Badge status={data.status} />
       </div>
 
@@ -132,7 +132,7 @@ export default function RequestDetail() {
       </div>
 
       <div className="bg-white border border-gray200 rounded-xl divide-y divide-gray200">
-        <div className="px-4 py-2 text-xs font-medium text-gray600">Items</div>
+        <div className="px-4 py-2 text-xs font-medium text-black">Items</div>
         {data.items.map((it) => (
           <div key={it.id} className="px-4 py-3 text-sm">
             <div className="flex items-start gap-3">
@@ -143,8 +143,8 @@ export default function RequestDetail() {
                 iconSize={16}
               />
               <div className="min-w-0">
-                <p className="font-medium text-ink">{it.name}</p>
-                <div className="mt-1 flex flex-wrap gap-3 text-xs text-gray600">
+                <p className="font-medium text-black">{it.name}</p>
+                <div className="mt-1 flex flex-wrap gap-3 text-xs text-black">
                   <span>Requested: {it.quantityRequested}</span>
                   <span>Delivered: {it.quantityDelivered ?? '—'}</span>
                   <span>Received: {it.quantityReceived ?? '—'}</span>
@@ -157,14 +157,14 @@ export default function RequestDetail() {
 
       {data.status === 'discrepancy' ? (
         <div className="bg-white border-2 border-primary rounded-xl p-4">
-          <div className="flex items-center gap-2 text-ink">
+          <div className="flex items-center gap-2 text-black">
             <AlertTriangle size={16} strokeWidth={1.5} />
             <p className="text-sm font-semibold">Output: report discrepancy</p>
           </div>
-          <p className="mt-1 text-xs text-gray600">
+          <p className="mt-1 text-xs text-black">
             The store reported a discrepancy. Review the received quantities below and re-deliver.
           </p>
-          <div className="mt-2 text-xs text-gray600 space-y-1">
+          <div className="mt-2 text-xs text-black space-y-1">
             {data.items.map((it) => (
               <p key={it.id}>
                 {it.name}: delivered {it.quantityDelivered ?? '—'}, received{' '}
@@ -178,7 +178,7 @@ export default function RequestDetail() {
       {/* Can fulfil? */}
       {canAct ? (
         <div className="bg-white border-2 border-primary rounded-xl p-4 no-print">
-          <p className="text-sm font-semibold text-ink mb-3">Can fulfil this request?</p>
+          <p className="text-sm font-semibold text-black mb-3">Can fulfil this request?</p>
           <div className="flex flex-wrap gap-2">
             <Button icon={Check} onClick={accept} disabled={busy}>
               Accept
@@ -201,17 +201,17 @@ export default function RequestDetail() {
       ) : null}
 
       <div className="bg-white border border-gray200 rounded-xl p-4">
-        <p className="text-xs font-medium text-gray600 mb-3">History</p>
+        <p className="text-xs font-medium text-black mb-3">History</p>
         <div className="space-y-3">
           {data.events.map((e) => (
             <div key={e.id} className="flex gap-2 text-sm">
-              <Clock size={14} strokeWidth={1.5} className="text-gray400 mt-0.5 shrink-0" />
+              <Clock size={14} strokeWidth={1.5} className="text-black mt-0.5 shrink-0" />
               <div>
-                <p className="text-ink">
+                <p className="text-black">
                   {e.actorName} · <span className="font-medium">{e.eventType}</span>
                 </p>
-                {e.message ? <p className="text-xs text-gray500">{e.message}</p> : null}
-                <p className="text-[11px] text-gray400">{e.createdAt}</p>
+                {e.message ? <p className="text-xs text-black">{e.message}</p> : null}
+                <p className="text-[11px] text-black">{e.createdAt}</p>
               </div>
             </div>
           ))}
@@ -268,8 +268,8 @@ export default function RequestDetail() {
                 iconSize={14}
               />
               <div className="flex-1 min-w-0">
-                <p className="text-sm text-ink truncate">{it.name}</p>
-                <p className="text-xs text-gray500">Requested: {it.quantityRequested}</p>
+                <p className="text-sm text-black truncate">{it.name}</p>
+                <p className="text-xs text-black">Requested: {it.quantityRequested}</p>
               </div>
               <input
                 type="number"
@@ -291,8 +291,8 @@ export default function RequestDetail() {
 function Line({ label, value }) {
   return (
     <div className="flex justify-between gap-4">
-      <span className="text-gray500">{label}</span>
-      <span className="text-ink text-right">{value}</span>
+      <span className="text-black">{label}</span>
+      <span className="text-black text-right">{value}</span>
     </div>
   );
 }

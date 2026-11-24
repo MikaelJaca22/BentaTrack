@@ -55,8 +55,8 @@ export default function CreateAccount() {
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray100 px-4 py-10">
       <div className="w-full max-w-sm">
         <div className="text-center mb-6">
-          <h1 className="text-lg font-bold text-ink">BentaTrack:</h1>
-          <p className="mt-1 text-xs text-gray500">{SYSTEM_TITLE}</p>
+          <h1 className="text-lg font-bold text-black">BentaTrack:</h1>
+          <p className="mt-1 text-xs text-black">{SYSTEM_TITLE}</p>
         </div>
 
         <form
@@ -66,7 +66,7 @@ export default function CreateAccount() {
         >
           {/* Account type toggle */}
           <div>
-            <span className="block mb-1.5 text-sm font-medium text-ink">
+            <span className="block mb-1.5 text-sm font-medium text-black">
               Account Type
             </span>
             <div className="grid grid-cols-2 gap-2">
@@ -80,7 +80,7 @@ export default function CreateAccount() {
                   onClick={() => setRole(opt.v)}
                   className={`rounded-xl px-3 py-2.5 text-sm font-medium border touch-target ${
                     role === opt.v
-                      ? 'bg-primary text-white border-primary'
+                      ? 'bg-white text-black border-black'
                       : 'bg-white text-primary border-gray300'
                   }`}
                 >
@@ -129,7 +129,7 @@ export default function CreateAccount() {
           />
 
           {error ? (
-            <p className="flex items-center gap-1.5 text-sm font-medium text-danger">
+            <p className="flex items-center gap-1.5 text-sm font-medium text-black">
               <AlertCircle size={16} strokeWidth={1.5} /> {error}
             </p>
           ) : null}

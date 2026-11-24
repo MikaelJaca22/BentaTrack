@@ -22,17 +22,17 @@ export default function TopBar({ unread = 0, notificationsPath }) {
             <button
               onClick={() => navigate(notificationsPath)}
               aria-label="Notifications"
-              className="relative p-2.5 rounded-xl hover:bg-gray100 text-ink touch-target"
+              className="relative p-2.5 rounded-xl hover:bg-gray100 text-black touch-target"
             >
               <Bell size={16} strokeWidth={1.5} />
               {unread > 0 ? (
-                <span className="absolute top-1 right-1 min-w-[16px] h-4 px-1 rounded-full bg-primary text-white text-[9px] flex items-center justify-center">
+                <span className="absolute top-1 right-1 min-w-[16px] h-4 px-1 rounded-full bg-white text-black text-[9px] flex items-center justify-center">
                   {unread > 9 ? '9+' : unread}
                 </span>
               ) : null}
             </button>
           ) : null}
-          <span className="hidden sm:inline text-xs text-gray600 px-2">
+          <span className="hidden sm:inline text-xs text-black px-2">
             {user?.name}
           </span>
           <button
@@ -41,7 +41,7 @@ export default function TopBar({ unread = 0, notificationsPath }) {
               navigate('/login');
             }}
             aria-label="Log out"
-            className="p-2.5 rounded-xl hover:bg-gray100 text-ink touch-target"
+            className="p-2.5 rounded-xl hover:bg-gray100 text-black touch-target"
           >
             <LogOut size={16} strokeWidth={1.5} />
           </button>

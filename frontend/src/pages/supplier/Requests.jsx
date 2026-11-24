@@ -48,8 +48,8 @@ export default function Requests() {
             onClick={() => setFilter(f.id)}
             className={`px-3 py-1.5 rounded-lg text-xs font-medium border whitespace-nowrap ${
               filter === f.id
-                ? 'bg-primary text-white border-primary'
-                : 'bg-white text-gray600 border-gray300'
+                ? 'bg-white text-black border-black'
+                : 'bg-white text-black border-gray300'
             }`}
           >
             {f.label}
@@ -74,8 +74,8 @@ export default function Requests() {
               className="w-full flex items-center justify-between px-4 py-3 hover:bg-gray100 text-left"
             >
               <div>
-                <p className="text-sm font-medium text-ink">Request #{r.id}</p>
-                <p className="text-xs text-gray500">
+                <p className="text-sm font-medium text-black">Request #{r.id}</p>
+                <p className="text-xs text-black">
                   {r.itemCount} item(s) · {r.counterpart} · {r.createdAt}
                 </p>
               </div>

@@ -6,6 +6,22 @@
   font-family: Inter, system-ui, sans-serif;
 }
 
+/* Hover transitions for every button (elements without Tailwind transition-*
+   utilities get these; buttons with Tailwind transition utilities keep theirs). */
+button,
+input[type='button'],
+input[type='submit'] {
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease,
+    opacity 0.2s ease, transform 0.2s ease;
+}
+
+/* Not-so-subtle hover: buttons visibly grow on hover. */
+button:hover,
+input[type='button']:hover,
+input[type='submit']:hover {
+  transform: scale(1.05);
+}
+
 html,
 body,
 #root {
@@ -25,7 +41,7 @@ body {
   min-width: 44px;
 }
 
-/* Print stylesheet: only the receipt/report area prints (Save as PDF via browser) */
+/* Print stylesheet: the receipt/report area prints as a formal, black-and-white document. */
 @media print {
   body * {
     visibility: hidden;
@@ -39,6 +55,35 @@ body {
     left: 0;
     top: 0;
     width: 100%;
+    color: black;
+  }
+  @page {
+    size: A4;
+    margin: 1.5cm 2cm;
+  }
+  body {
+    background-color: white;
+    color: black;
+  }
+  .print-area h1,
+  .print-area h2,
+  .print-area h3 {
+    color: black;
+    font-weight: 700;
+  }
+  .print-area table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  .print-area table th,
+  .print-area table td {
+    padding: 0.25rem 0.5rem;
+    border-bottom: 1px solid black;
+  }
+  /* The page is formal and black-and-white even where classes set bright colors. */
+  .print-area .text-white,
+  .print-area .text-primary {
+    color: black !important;
   }
   .no-print {
     display: none !important;

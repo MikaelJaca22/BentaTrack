@@ -46,7 +46,7 @@ export default function Restock() {
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
-        <p className="text-sm text-gray600">Create and track restock requests to suppliers.</p>
+        <p className="text-sm text-black">Create and track restock requests to suppliers.</p>
         <Button icon={Plus} onClick={() => setCreating(true)}>
           New Request
         </Button>
@@ -70,8 +70,8 @@ export default function Restock() {
               className="w-full flex items-center justify-between px-4 py-3 hover:bg-gray100 text-left"
             >
               <div>
-                <p className="text-sm font-medium text-ink">Request #{r.id}</p>
-                <p className="text-xs text-gray500">
+                <p className="text-sm font-medium text-black">Request #{r.id}</p>
+                <p className="text-xs text-black">
                   {r.itemCount} item(s) · {r.counterpart} · {r.createdAt}
                 </p>
               </div>
@@ -204,13 +204,13 @@ function CreateRequestModal({ open, onClose, onCreated, preselect }) {
     >
       <div className="space-y-4">
         {noSuppliers ? (
-          <div className="border border-gray300 rounded-xl p-4 text-sm text-gray600">
+          <div className="border border-gray300 rounded-xl p-4 text-sm text-black">
             No suppliers linked yet. Link a supplier first from the{' '}
-            <span className="font-medium text-ink">Suppliers</span> screen.
+            <span className="font-medium text-black">Suppliers</span> screen.
           </div>
         ) : (
           <div>
-            <label className="block mb-1.5 text-sm font-medium text-ink">Supplier</label>
+            <label className="block mb-1.5 text-sm font-medium text-black">Supplier</label>
             <select
               value={supplierId}
               onChange={(e) => setSupplierId(e.target.value)}
@@ -230,7 +230,7 @@ function CreateRequestModal({ open, onClose, onCreated, preselect }) {
 
         {lines.length > 0 && (
           <div className="space-y-2">
-            <p className="text-xs font-medium text-gray600">Items</p>
+            <p className="text-xs font-medium text-black">Items</p>
             {lines.map((l) => (
               <div key={l.productId} className="flex items-center gap-2">
                 <ProductImage
@@ -239,7 +239,7 @@ function CreateRequestModal({ open, onClose, onCreated, preselect }) {
                   className="w-9 h-9 shrink-0"
                   iconSize={14}
                 />
-                <span className="flex-1 text-sm text-ink truncate">{l.name}</span>
+                <span className="flex-1 text-sm text-black truncate">{l.name}</span>
                 <div className="flex items-center gap-1">
                   <button
                     onClick={() => setQty(l.productId, l.quantity - 1)}
@@ -265,7 +265,7 @@ function CreateRequestModal({ open, onClose, onCreated, preselect }) {
                 </div>
                 <button
                   onClick={() => removeLine(l.productId)}
-                  className="p-2 rounded-lg hover:bg-gray100 text-gray600 touch-target"
+                  className="p-2 rounded-lg hover:bg-gray100 text-black touch-target"
                   aria-label="Remove"
                 >
                   <X size={16} strokeWidth={1.5} />
@@ -282,7 +282,7 @@ function CreateRequestModal({ open, onClose, onCreated, preselect }) {
           placeholder="e.g. needed before weekend"
         />
 
-        {err ? <p className="text-xs font-medium text-danger">{err}</p> : null}
+        {err ? <p className="text-xs font-medium text-black">{err}</p> : null}
       </div>
     </Modal>
   );
@@ -300,9 +300,9 @@ function ProductPicker({ products, lines, onAdd }) {
     .slice(0, 6);
   return (
     <div>
-      <label className="block mb-1.5 text-sm font-medium text-ink">Add products</label>
+      <label className="block mb-1.5 text-sm font-medium text-black">Add products</label>
       <div className="relative">
-        <Search size={16} strokeWidth={1.5} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray400" />
+        <Search size={16} strokeWidth={1.5} className="absolute left-3 top-1/2 -translate-y-1/2 text-black" />
         <input
           value={q}
           onChange={(e) => setQ(e.target.value)}
@@ -312,7 +312,7 @@ function ProductPicker({ products, lines, onAdd }) {
       </div>
       <div className="mt-2 space-y-1">
         {q && shown.length === 0 ? (
-          <p className="text-xs text-gray500">No matching products.</p>
+          <p className="text-xs text-black">No matching products.</p>
         ) : (
           shown.map((p) => (
             <button
@@ -327,9 +327,9 @@ function ProductPicker({ products, lines, onAdd }) {
                   className="w-9 h-9 shrink-0"
                   iconSize={14}
                 />
-                <span className="text-sm text-ink truncate">{p.name}</span>
+                <span className="text-sm text-black truncate">{p.name}</span>
               </span>
-              <span className="text-xs text-gray500 shrink-0">stock {p.stockQty}</span>
+              <span className="text-xs text-black shrink-0">stock {p.stockQty}</span>
             </button>
           ))
         )}

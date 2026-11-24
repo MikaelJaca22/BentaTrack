@@ -106,10 +106,10 @@ export default function Dashboard() {
 
       <section>
         <div className="flex items-center justify-between mb-3">
-          <h2 className="text-sm font-semibold text-ink">Recent Receipts</h2>
+          <h2 className="text-sm font-semibold text-black">Recent Receipts</h2>
           <Link
             to="/owner/reports"
-            className="text-xs font-medium text-gray600 hover:text-primary inline-flex items-center gap-1"
+            className="text-xs font-medium text-black hover:text-primary inline-flex items-center gap-1"
           >
             View reports <ArrowRight size={14} strokeWidth={1.5} />
           </Link>
@@ -122,7 +122,7 @@ export default function Dashboard() {
             hint="Start a new sale to record your first receipt."
             action={
               <Link to="/owner/sale">
-                <button className="bg-primary text-white rounded-xl px-4 py-2.5 text-sm font-medium touch-target">
+                <button className="bg-white text-black border border-black rounded-xl px-4 py-2.5 text-sm font-medium touch-target">
                   New Sale
                 </button>
               </Link>
@@ -137,11 +137,11 @@ export default function Dashboard() {
                 className="flex items-center justify-between px-4 py-3 hover:bg-gray100"
               >
                 <div>
-                  <p className="text-sm font-medium text-ink">{r.receiptNo}</p>
-                  <p className="text-xs text-gray500">{r.createdAt}</p>
+                  <p className="text-sm font-medium text-black">{r.receiptNo}</p>
+                  <p className="text-xs text-black">{r.createdAt}</p>
                 </div>
                 <div className="text-right">
-                  <p className="text-sm font-semibold text-ink">
+                  <p className="text-sm font-semibold text-black">
                     {formatMoney(r.total)}
                   </p>
                   <Badge status="completed">Paid</Badge>
@@ -158,12 +158,12 @@ export default function Dashboard() {
 function StatCard({ icon: Icon, label, value, sub, to }) {
   const inner = (
     <div className="bg-white border border-gray200 rounded-xl p-4 h-full hover:border-primary transition-colors">
-      <div className="flex items-center gap-2 text-gray600">
+      <div className="flex items-center gap-2 text-black">
         <Icon size={16} />
         <span className="text-xs font-medium">{label}</span>
       </div>
-      <p className="mt-2 text-xl font-bold text-ink truncate">{value}</p>
-      <p className="text-xs text-gray500">{sub}</p>
+      <p className="mt-2 text-xl font-bold text-black truncate">{value}</p>
+      <p className="text-xs text-black">{sub}</p>
     </div>
   );
   return to ? <Link to={to}>{inner}</Link> : inner;

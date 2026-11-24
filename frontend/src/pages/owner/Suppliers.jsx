@@ -80,7 +80,7 @@ export default function Suppliers() {
   return (
     <div className="space-y-5">
       <section>
-        <h2 className="text-sm font-semibold text-ink mb-3">Linked Suppliers</h2>
+        <h2 className="text-sm font-semibold text-black mb-3">Linked Suppliers</h2>
         {loading ? (
           <SkeletonList rows={2} />
         ) : linked.length === 0 ? (
@@ -94,13 +94,13 @@ export default function Suppliers() {
             {linked.map((s) => (
               <div key={s.id} className="flex items-center justify-between px-4 py-3">
                 <div>
-                  <p className="text-sm font-medium text-ink">{s.name}</p>
-                  <p className="text-xs text-gray500">@{s.username}</p>
+                  <p className="text-sm font-medium text-black">{s.name}</p>
+                  <p className="text-xs text-black">@{s.username}</p>
                 </div>
                 <button
                   onClick={() => setToUnlink(s)}
                   aria-label="Unlink"
-                  className="p-2 rounded-lg hover:bg-gray100 text-gray600 touch-target"
+                  className="p-2 rounded-lg hover:bg-gray100 text-black touch-target"
                 >
                   <Trash2 size={16} strokeWidth={1.5} />
                 </button>
@@ -111,9 +111,9 @@ export default function Suppliers() {
       </section>
 
       <section>
-        <h2 className="text-sm font-semibold text-ink mb-3">Register Supplier (find an account)</h2>
+        <h2 className="text-sm font-semibold text-black mb-3">Register Supplier (find an account)</h2>
         <div className="relative mb-3">
-          <Search size={16} strokeWidth={1.5} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray400" />
+          <Search size={16} strokeWidth={1.5} className="absolute left-3 top-1/2 -translate-y-1/2 text-black" />
           <input
             value={q}
             onChange={(e) => setQ(e.target.value)}
@@ -122,21 +122,21 @@ export default function Suppliers() {
           />
         </div>
         {q.trim() === '' ? (
-          <p className="text-xs text-gray500">
+          <p className="text-xs text-black">
             Only suppliers who created their own accounts can be linked. There are no preloaded
             suppliers.
           </p>
         ) : searching ? (
           <SkeletonList rows={2} />
         ) : results.length === 0 ? (
-          <p className="text-sm text-gray500">No matching suppliers found.</p>
+          <p className="text-sm text-black">No matching suppliers found.</p>
         ) : (
           <div className="bg-white border border-gray200 rounded-xl divide-y divide-gray200">
             {results.map((s) => (
               <div key={s.id} className="flex items-center justify-between px-4 py-3">
                 <div>
-                  <p className="text-sm font-medium text-ink">{s.name}</p>
-                  <p className="text-xs text-gray500">@{s.username}</p>
+                  <p className="text-sm font-medium text-black">{s.name}</p>
+                  <p className="text-xs text-black">@{s.username}</p>
                 </div>
                 <Button variant="secondary" icon={UserPlus} onClick={() => link(s.id)}>
                   Link

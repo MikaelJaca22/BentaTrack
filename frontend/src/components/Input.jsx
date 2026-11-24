@@ -13,20 +13,20 @@ export default function Input({
       {label ? (
         <label
           htmlFor={inputId}
-          className="block mb-1.5 text-sm font-medium text-ink"
+          className="block mb-1.5 text-sm font-medium text-black"
         >
           {label}
         </label>
       ) : null}
       <input
         id={inputId}
-        className={`w-full rounded-xl bg-white border px-3.5 py-2.5 text-sm text-ink placeholder:text-gray400 focus:outline-none focus:ring-2 focus:ring-primary touch-target ${
+        className={`w-full rounded-xl bg-white border px-3.5 py-2.5 text-sm text-black placeholder:text-black focus:outline-none focus:ring-2 focus:ring-primary touch-target ${
           error ? 'border-danger border-2' : 'border-gray300'
         } ${className}`}
         {...props}
       />
       {error ? (
-        <p className="mt-1.5 flex items-center gap-1.5 text-xs font-medium text-danger">
+        <p className="mt-1.5 flex items-center gap-1.5 text-xs font-medium text-black">
           <AlertCircle size={14} strokeWidth={1.5} />
           {error}
         </p>

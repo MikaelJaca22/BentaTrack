@@ -89,7 +89,7 @@ export default function Receipt() {
         >
           <ArrowLeft size={18} strokeWidth={1.5} />
         </button>
-        <span className="text-sm font-medium text-ink">Receipt</span>
+        <span className="text-sm font-medium text-black">Receipt</span>
       </div>
 
       <div className="no-print flex flex-wrap gap-2">
@@ -106,8 +106,8 @@ export default function Receipt() {
 
       <div className="print-area bg-white border border-gray200 rounded-xl p-6 max-w-md mx-auto">
         <div className="text-center border-b border-gray200 pb-4">
-          <p className="text-sm font-bold text-ink">BentaTrack</p>
-          <p className="text-[11px] text-gray500">{SYSTEM_TITLE}</p>
+          <p className="text-sm font-bold text-black">BentaTrack</p>
+          <p className="text-[11px] text-black">{SYSTEM_TITLE}</p>
         </div>
         <div className="py-4 text-sm space-y-1">
           <Row label="Store" value={data.store.name} />
@@ -118,12 +118,12 @@ export default function Receipt() {
           {data.items.map((i) => (
             <div key={i.id} className="text-sm">
               <div className="flex justify-between">
-                <span className="text-ink">{i.name}</span>
-                <span className="text-gray600">
+                <span className="text-black">{i.name}</span>
+                <span className="text-black">
                   {i.quantity} × {formatMoney(i.unitPrice)}
                 </span>
               </div>
-              <div className="flex justify-between text-gray600 text-xs">
+              <div className="flex justify-between text-black text-xs">
                 <span>Line total</span>
                 <span>{formatMoney(i.lineTotal)}</span>
               </div>
@@ -136,7 +136,7 @@ export default function Receipt() {
           <Row label="Change" value={formatMoney(data.sale.changeDue)} />
           <Row label="Payment" value={data.sale.paymentMethod} />
         </div>
-        <p className="text-center text-xs text-gray500 mt-4">Thank you!</p>
+        <p className="text-center text-xs text-black mt-4">Thank you!</p>
       </div>
     </div>
   );
@@ -145,8 +145,8 @@ export default function Receipt() {
 function Row({ label, value, bold }) {
   return (
     <div className="flex justify-between">
-      <span className="text-gray600">{label}</span>
-      <span className={bold ? 'font-bold text-ink' : 'text-ink'}>{value}</span>
+      <span className="text-black">{label}</span>
+      <span className={bold ? 'font-bold text-black' : 'text-black'}>{value}</span>
     </div>
   );
 }
