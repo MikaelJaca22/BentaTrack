@@ -28,7 +28,7 @@ export default function Modal({ open, onClose, title, children, footer }) {
           <button
             onClick={onClose}
             aria-label="Close"
-            className="p-2 rounded-lg hover:bg-gray100 text-black touch-target"
+            className="inline-flex items-center justify-center p-2 rounded-lg hover:bg-gray100 text-black touch-target"
           >
             <X size={18} strokeWidth={1.5} />
           </button>

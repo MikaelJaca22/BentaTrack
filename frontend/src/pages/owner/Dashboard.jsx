@@ -122,7 +122,7 @@ export default function Dashboard() {
             hint="Start a new sale to record your first receipt."
             action={
               <Link to="/owner/sale">
-                <button className="bg-white text-black border border-black rounded-xl px-4 py-2.5 text-sm font-medium touch-target">
+                <button className="inline-flex items-center gap-1.5 bg-white text-black border border-black rounded-xl px-4 py-2.5 text-sm font-medium touch-target">
                   <Tag size={14} strokeWidth={1.5} /> New Sale
                 </button>
               </Link>

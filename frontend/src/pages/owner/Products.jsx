@@ -224,21 +224,21 @@ export default function Products() {
                   <button
                     onClick={() => openAdjust(p)}
                     aria-label="Adjust stock"
-                    className="p-2 rounded-lg hover:bg-gray100 text-black touch-target"
+                    className="inline-flex items-center justify-center p-2 rounded-lg hover:bg-gray100 text-black touch-target"
                   >
                     <SlidersHorizontal size={16} strokeWidth={1.5} />
                   </button>
                   <button
                     onClick={() => openEdit(p)}
                     aria-label="Edit"
-                    className="p-2 rounded-lg hover:bg-gray100 text-black touch-target"
+                    className="inline-flex items-center justify-center p-2 rounded-lg hover:bg-gray100 text-black touch-target"
                   >
                     <SquarePen size={16} strokeWidth={1.5} />
                   </button>
                   <button
                     onClick={() => setToDelete(p)}
                     aria-label="Delete"
-                    className="p-2 rounded-lg hover:bg-gray100 text-black touch-target"
+                    className="inline-flex items-center justify-center p-2 rounded-lg hover:bg-gray100 text-black touch-target"
                   >
                     <Trash size={16} strokeWidth={1.5} />
                   </button>

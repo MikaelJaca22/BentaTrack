@@ -8,18 +8,22 @@
 
 /* Hover transitions for every button (elements without Tailwind transition-*
    utilities get these; buttons with Tailwind transition utilities keep theirs). */
-button,
-input[type='button'],
-input[type='submit'] {
+button:not(:disabled),
+input[type='button']:not(:disabled),
+input[type='submit']:not(:disabled) {
+  /* Transparent base shadow so the hover tint can fade in smoothly. */
+  box-shadow: inset 0 0 0 9999px rgba(0, 0, 0, 0);
   transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease,
-    opacity 0.2s ease, transform 0.2s ease;
+    opacity 0.2s ease, box-shadow 0.2s ease;
 }
 
-/* Not-so-subtle hover: buttons visibly grow on hover. */
-button:hover,
-input[type='button']:hover,
-input[type='submit']:hover {
-  transform: scale(1.05);
+/* Every button gets a subtle light-gray/darkening hover tint. The inset
+   overlay darkens whatever background the button already has, so white
+   buttons read as light gray while colored ones just get slightly darker. */
+button:hover:not(:disabled),
+input[type='button']:hover:not(:disabled),
+input[type='submit']:hover:not(:disabled) {
+  box-shadow: inset 0 0 0 9999px rgba(0, 0, 0, 0.08);
 }
 
 /* Fade animations for changing tabs on the navbar */
@@ -66,21 +70,6 @@ body {
   text-align: center;
   justify-content: center;
 }
-
-/* Re-center the three action buttons when hovered, keeping them in line. */
-.stock-actions:hover {
-  justify-content: center;
-  align-items: center;
-}
-
-.stock-actions button:hover,
-.stock-actions input[type='button']:hover,
-.stock-actions input[type='submit']:hover {
-  text-align: center;
-  justify-content: center;
-  align-self: center;
-}
-
 
 /* Print stylesheet: the receipt/report area prints as a formal, black-and-white document. */
 @media print {
