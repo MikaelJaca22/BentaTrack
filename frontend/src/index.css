@@ -59,6 +59,29 @@ body {
   min-width: 44px;
 }
 
+/* Centered buttons on the Stock tab (Products page). */
+.stock-page button,
+.stock-page input[type='button'],
+.stock-page input[type='submit'] {
+  text-align: center;
+  justify-content: center;
+}
+
+/* Re-center the three action buttons when hovered, keeping them in line. */
+.stock-actions:hover {
+  justify-content: center;
+  align-items: center;
+}
+
+.stock-actions button:hover,
+.stock-actions input[type='button']:hover,
+.stock-actions input[type='submit']:hover {
+  text-align: center;
+  justify-content: center;
+  align-self: center;
+}
+
+
 /* Print stylesheet: the receipt/report area prints as a formal, black-and-white document. */
 @media print {
   body * {

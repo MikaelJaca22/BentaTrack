@@ -160,7 +160,7 @@ export default function Products() {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 stock-page">
       <div className="flex gap-2">
         <div className="relative flex-1">
           <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-black" />
@@ -220,7 +220,7 @@ export default function Products() {
                     </p>
                   </div>
                 </div>
-                <div className="flex gap-1 shrink-0">
+                <div className="flex gap-1 shrink-0 justify-center items-center stock-actions">
                   <button
                     onClick={() => openAdjust(p)}
                     aria-label="Adjust stock"
